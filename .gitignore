@@ -16,6 +16,7 @@ Thumbs.db
 out/
 venv/
 .idea/
+__pycache__
 
 
 
