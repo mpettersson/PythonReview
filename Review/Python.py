@@ -161,7 +161,7 @@ print("Cast", ord('a'), type(ord('a')))
 
 
 # Printing/Output
-print(4, 22, 1982, sep='/')
+print(4, 1, 1982, sep='/')
 print("How to print without a trailing newline (use end='').", end='')
 
 # Printing with formatting using the %:
@@ -190,11 +190,10 @@ int_one += 1
 # fstring or "formatted string literals" Notes:
 #   Added in Python 3.6
 #   String with a f or F at the beginning and {} that expressions to be replaced with values at run time.
-# print(f"'{int_one} + {int_one} = {int_one + int_one}")
-# import datetime
-# today = datetime.datetime.today()
-# print(f"{today:%B %d, %Y}")
-
+print(f"{int_one} + {int_one} = {int_one + int_one}")
+import datetime
+today = datetime.datetime.today()
+print(f"{today:%B %d, %Y}")
 
 # infinity, or inf
 print(math.inf > 0)
@@ -205,6 +204,7 @@ print(math.inf - math.inf)
 # How to print binary with python functions
 print("bin(37): ", bin(37))                         # This includes the 0b prefix.
 print("\"{0:b}\".format(37)", "{0:b}".format(37))   # This does NOT include the 0b prefix.
+
 
 
 #########################
@@ -358,8 +358,6 @@ print(list(range(0, 10)))
 # CAN have different types,
 # CAN have duplicates
 # ARE Hashable.
-
-print("\n" + ("= TUPLE =" * 10) + "\n")
 
 tup_var = (1, 3.14, "Matt", "Matt")
 
@@ -604,7 +602,7 @@ print("FILTER:", list(filter((lambda x: x % 2 == 0), range(1, 11))))
 
 # REDUCE
 import functools
-print("REDUCE", reduce((lambda x, y: x + y), range(1, 6)))
+print("REDUCE", functools.reduce((lambda x, y: x + y), range(1, 6)))
 
 # How to make a mult() function (like built-in sum()):
 lambda_mult = lambda x:functools.reduce((lambda y,z:y*z), x)
@@ -657,7 +655,7 @@ try:
     i = int(s.strip())
 except OSError as err:
     print("OS error: {0}".format(err))
-except ValueError:
+except (ValueError, TypeError) as er:
     print("Could not convert data to an integer.")
 except:
     print("Unexpected error:", sys.exc_info()[0])
@@ -670,7 +668,7 @@ finally:
 
 # How to raise an exception.
 try:
-    raise Exception('spam', 'eggs')
+    raise Exception('arg1', 'arg2')
 except Exception as inst:
         print(type(inst))   # the exception instance
         print(inst.args)    # arguments stored in .args
@@ -746,11 +744,26 @@ new_sub_list = random.sample(old_list, len(old_list) // 2)
 # ITERATOR & ITERABLE #
 #######################
 
-# ITERABLE: anything you’re able to loop over, like: list, tuple, string etc. are iterables
-# ITERATOR: The object that does the actual iterating.
-
-# To create create an ITERABLE implement __iter__() in a class then yield one or more values from it.
-
+# ITERABLE
+# An object capable of returning its members one at a time.
+#
+# Examples of iterables include all sequence types (such as list, str, and tuple) and some non-sequence types like dict,
+# file objects, and objects of any classes you define with an __iter__() method or with a __getitem__() method that
+# implements Sequence semantics.
+#
+# Not every Iterable is an Iterator (i.e., list IS iterable, but ISN'T a iterator).
+#
+#
+# ITERATOR
+# An object representing a stream of data.
+#
+# Repeated calls to the iterator’s __next__() method return successive items in the stream. When no more data are
+# available a StopIteration exception is raised instead. At this point, the iterator object is exhausted and any further
+# calls to its __next__() method just raise StopIteration again.
+#
+# Iterators are required to have an __iter__() method that returns the iterator object itself so EVERY ITERATOR IS ALSO
+# ITERABLE and may be used in most places where other iterables are accepted.
+#
 # To create an ITERATOR you only need to implement the __iter__() and __next__() methods.
 # The __iter__() method returns the iterator object itself.
 # And the __next__() method must return the next item in the sequence. On reaching the end, and in subsequent calls,
@@ -768,7 +781,7 @@ my_iter = iter(iter_list)
 
 # iterate through it using next()
 print(next(my_iter))
-print(next(my_iter), None)  # Using default value to prevent StopIteration exception.
+print(next(my_iter, None))  # Using default value to prevent StopIteration exception.
 # next(my_iter) is same as my_iter.__next__()
 print(my_iter.__next__())
 print(my_iter.__next__())
@@ -778,6 +791,15 @@ try:
     next(my_iter)
 except StopIteration:
     print("StopIteration Error! (used next() too many times...)")
+
+
+# Function that tests if an object is iterable:
+def iterable(obj):
+    try:
+        iter(obj)
+        return True
+    except TypeError:
+        return False
 
 
 ##################
@@ -829,7 +851,7 @@ d = {value: key for key, value in d.items()}
 s = {"1", "3"}
 d = {key: d[key] for key in d.keys() - s}
 
-# GENERATOR COMPREHENSIONS
+# GENERATOR EXPRESSION (COMPREHENSIONS)
 generator = (x for x in int_list if x % 2 == 0)
 
 for x in generator:
@@ -861,8 +883,31 @@ ge = (x for x in range(n + 1))
 # FILE IO #
 ###########
 
+import os
+
+# How to create file if it does not exist:
+if not os.path.exists('my_file.txt'):
+    with open('my_file.txt', 'w'):
+        pass
+
+# Current working dir:
+print("os.getcwd():", os.getcwd())
+
+# Name of executing python script:
+print("__file__:", __file__)
+
+# How to find file path from dir root:
+print(os.path.abspath("my_file.txt"))  # abspath DOES NOT dereference symbolic links! Just provides path from root.
+print(os.path.realpath("my_file.txt"))  # realpath DOES derefence symbolic links!
+
+# How to get directory name of a file:
+print(os.path.dirname(os.path.realpath("my_file.txt")))  # Must use real/abs path.
+
+# How to split directory/file name:
+path, filename = os.path.split(os.path.realpath("my_file.txt"))  # Must use real/abs path.
+
 # How to write (use mode="a" to append) to a file
-with open("mydata.txt", mode="w", encoding="utf-8") as my_file:
+with open("my_file.txt", mode="w", encoding="utf-8") as my_file:
     my_file.write("Some Random\nText, blah, blah, blah,\nLet's get schwifty baby!")
 
 # The modes are:
@@ -873,7 +918,7 @@ with open("mydata.txt", mode="w", encoding="utf-8") as my_file:
 #   wb - Open for writing binary data
 
 # How to read from a file:
-with open("mydata.txt", encoding="utf-8") as my_file:
+with open("my_file.txt", encoding="utf-8") as my_file:
     print(my_file.read())
     # my_file.readline() would just read one line.
 
@@ -895,13 +940,9 @@ print(my_file.close())
 # How to check if a file has been closed:
 print(my_file.closed)
 
-# How to find file path:
-import os
-print(os.path.abspath("mydata.txt"))
-
 # How to delete a file:
 try:
-    os.remove("mydata.txt")
+    os.remove("my_file.txt")
 except OSError as e:  # if failed, report it back to the user ##
     print("Error: %s - %s." % (e.filename, e.strerror))
 
@@ -945,6 +986,10 @@ PythonModule.__double_leading_underscore_function()
 # CLASS METHODS (not Functions)
 # A method is implicitly passed the object on which it is invoked (via self).
 # A method can operate on the data (instance variables) that is contained by the corresponding class
+# A @classmethod decorated method has the class (not instance) passed as first arg (not self). Can be called without a
+# class instance: MyClass.classmethod().
+# A @staticmethod decorated method has neither the class, nor instance (self), passed as the first arg. These act like
+# normal functions, but are grouped in, or associated with a class.
 
 # SINGLE LEADING UNDERSCORE
 # Methods and variables with single leading underscores indicate to other programmers that the method or variable is
@@ -977,6 +1022,12 @@ PythonModule.__double_leading_underscore_function()
 #   __ne__      "Rich comparison" not equal to method; x!=y will call x.__ne__(y)
 #   __gt__      "Rich comparison" greater than method; x>y will call x.__gt__(y)
 #   __ge__      "Rich comparison" greater than or equal to method; x>=y will call x.__ge__(y)
+#   __iter__    This method is called when an iterator is required for a container. This method should return a new
+#               iterator object that can iterate over all the objects in the container.
+#   __next__    For use on iterator objects; return the next item from the container.
+#   __call__    Called when the instance is “called” as a function; x(arg1, arg2, ...) is shorthand for
+#               x.__call__(arg1, arg2, ...).
+#   __len__     Called to implement the built-in function len().
 
 # NESTED CLASS NOTE: Most python developers do NOT use nested/inner classes; nested classes don't reduce/increase
 # efficiency but it may alter maintenance and understanding efficiency.
@@ -1109,7 +1160,7 @@ class Base1(object):
         self.str1 = "Base Object ONE String"
 
 
-class Base2(object):
+class Base2:
     def __init__(self):
         self.str2 = "Base Object TWO String"
 
@@ -1119,12 +1170,12 @@ class Derived(Base1, Base2):
         Base1.__init__(self)
         Base2.__init__(self)
 
-    def printStrs(self):
+    def print_strs(self):
         print(self.str1, self.str2)
 
 
 derived = Derived()
-derived.printStrs()
+derived.print_strs()
 
 
 # NOTE: Sometimes it is useful to have a data type similar C “struct”, bundling together a few named data items; an
@@ -1209,7 +1260,7 @@ if re.search(r'^(-?\d*\.?\d+)((\+|\-|\*|\/)(-?\d*\.?\d+))*$', input):
 print(re.findall('\d+', "I went to him at 11 A.M. on 4th July 1886"))
 
 # SPLIT
-print(re.split('[a-f]+', 'Aey, Boy oh boy, come here', flags=re.IGNORECASE))
+print(re.split('[aeiou]+', 'Aey, Boy oh boy, come here', flags=re.IGNORECASE))
 
 # SUB
 print(re.sub('ub', '~*' , 'Subject has Uber booked already', count=1, flags = re.IGNORECASE))
@@ -1508,6 +1559,56 @@ display_info('john', 35)
 display()
 
 
+# TIMER CLASS DECORATOR EXAMPLE
+class Timer:
+    def __init__(self, fn, *params):
+        self.function = fn
+        self.params = params
+
+    def __call__(self, *args, **kwargs):
+        import time
+        start_time = time.time()
+        result = self.function(*args, **kwargs)
+        end_time = time.time()
+        print("Execution of {} took {} seconds".format(self.function.__name__, end_time - start_time))
+        return result
+
+
+@Timer
+def sleepy_function():
+    import time
+    time.sleep(random.random())
+
+
+sleepy_function()
+
+
+# TYPE CHECKER FUNCTION DECORATOR EXAMPLE:
+def type_check(T):
+    def decorator(f):
+        import functools
+        @functools.wraps(f)
+        def wrapped(*args):
+            if any([not isinstance(i, T) for i in args]):
+                raise TypeError(f"Parameters not all of type {T.__name__}!")
+            else:
+                return f(*args)
+        return wrapped
+    return decorator
+
+
+@type_check(int)
+def add_ints(*ints):
+    return sum(ints)
+
+
+print(add_ints(1, 2, 3))
+try:
+    print(add_ints(1, '2', 3))
+except:
+    pass
+
+
 # PYTHON LOGGER & TIMER DECORATOR EXAMPLE
 from functools import wraps
 # The @wraps is used to maintain a decorated functions info.
@@ -1657,7 +1758,7 @@ executor.shutdown(wait=True)                    # BLOCKING by default, use wait=
 
 # ThreadPoolExecutor using a context manager (to manage creation and destruction)
 with ThreadPoolExecutor(max_workers=2) as executor_context_manager:
-    executor_context_manager.submit(nap_time)
+    returned_future = executor_context_manager.submit(nap_time)
     executor_context_manager.submit(print, "I'm a ThreadPoolExecutor Thread!")
 
 # How to get the number and list of active threads:
@@ -1713,7 +1814,7 @@ print("primitive_lock.locked():", primitive_lock.locked())
 # Reentrant lock uses acquire and release (no locked).
 
 reentrant_lock = threading.RLock()
-reentrant_lock.acquire() # BLOCKING if locked.
+reentrant_lock.acquire()  # BLOCKING if locked.
 # OWNING thread must unlock, else "RuntimeError: cannot release un-acquired lock"
 Thread(target=reentrant_lock.release).start()
 
@@ -1838,11 +1939,15 @@ executor = ProcessPoolExecutor(max_workers=2)
 executor.submit(nap_time)                       # NON-BLOCKING
 executor.shutdown(wait=True)                    # BLOCKING by default, use wait=False to shut down immediately.
 
+future_obj = None
+
 # ThreadPoolExecutor using a context manager (to manage creation and destruction)
 with ProcessPoolExecutor(max_workers=2) as executor_context_manager:
-    executor_context_manager.submit(nap_time)
+    future_obj = executor_context_manager.submit(nap_time)
     executor_context_manager.submit(print, "I'm a ProcessPoolExecutor Thread!")
 
+if future_obj.done():
+    print("future_obj.result(timeout=1):", future_obj.result(timeout=1))
 
 
 
