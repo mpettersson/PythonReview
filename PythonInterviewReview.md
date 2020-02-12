@@ -2,12 +2,10 @@
 Python Interview Review
 =======================
 
-[//]: # (This file is layedout this way so that it can be printed, then folded in half and studied)
+[//]: # (This file is formatted such that it can be printed and the solutions can be obscured while reviewing.)
 
-This file is meant as a very quick study guide for the polyglot programmer who needs to make sure that
-they don't forget something foolish in an interview.  
-
-
+This file is meant as a very quick study guide for the polyglot programmer who needs to make sure that they don't forget 
+something foolish in an interview.  
 
 Numbers & Math
 --------------
@@ -30,7 +28,7 @@ Numbers & Math
                                         base = 2  
                                         math.sqrt(num)  
                                         math.log(num, base)  
-                                        math.floor(num)                                         
+                                        math.floor(num)  
                                         math.ceil(num)  
                                         abs(num)  
 -[ ] Random  
@@ -39,7 +37,7 @@ Numbers & Math
                                         random.random()                         # Random float:  0.0 <= x < 1.0  
                                         random.uniform(2.5, 10.0)               # Random float:  2.5 <= x < 10.0  
                                         random.randrange(10)                    # Random Integer:  0 to 9 inclusive  
-                                        random.randrange(0, 101, 2)             # Random (Even) Integer from 0 to 100 inclusive  
+                                        random.randrange(0, 101, 2)             # Ran (Even) Int from 0 to 100 inclusive  
                                         random.choice(['win', 'lose', 'draw'])  # Single random element from a sequence  
                                         l = [0, 1, 2, 3, 4]  
                                         random.shuffle(l)                       # (In place) shuffled the list l.  
@@ -53,105 +51,105 @@ Numbers & Math
                                         str(-42)  
                                         bin(-42)  
                                         hex(-42)  
-                                        oct(-42)  
+                                        oct(-42)   
 -[ ] Decimal/Binary/Hex/Octal String 
      --> int  
-                                        int('-42')
-                                        int('-0b1000101', 2)
-                                        int('-0x45', 16)
-                                        int('-0o105', 8)  
-
+                                        int('-42')  
+                                        int('-0b1000101', 2)  
+                                        int('-0x45', 16)  
+                                        int('-0o105', 8)    
+ 
 Formatting & I/O
 ----------------
 -[ ] User Input  
                                         var = input("Enter input text:")  
 -[ ] Formatting  
-                                        print(4, 1, 1982, sep='/')
-                                        print("Print w/o trailing newline.", end='')
-                                        print("\n%04d %s %.2f %c" % (1, "Matt", 3.14, 'A'))
-                                        x = 2
-                                        print('{0:2d} {1:3d} {2:4d}'.format(x, x*x, x*x*x))
-                                        print(f"{x} + {x} = {x + x}")  # Added in python 3.6
+                                        print(4, 1, 1982, sep='/')  
+                                        print("Print w/o trailing newline.", end='')  
+                                        print("\n%04d %s %.2f %c" % (1, "Matt", 3.14, 'A'))  
+                                        x = 2  
+                                        print('{0:2d} {1:3d} {2:4d}'.format(x, x*x, x*x*x))  
+                                        print(f"{x} + {x} = {x + x}")  # Added in python 3.6  
 -[ ] Get Directory/script file  
-                                        import os
-                                        os.getcwd()                     # Current working directory. 
-                                        __file__                        # File name of the executing script. 
-                                        os.path.realpath(__file__)      # Full path (following symlinks) of exe script.
+                                        import os  
+                                        os.getcwd()                     # Current working directory.   
+                                        __file__                        # File name of the executing script.   
+                                        os.path.realpath(__file__)      # Full path (following symlinks) of exe script.  
                                         os.path.dirname(__file__)       # Directory only of executing script.   
 -[ ] Create file (if d.n.e.)  
-                                        import os
-                                        if not os.path.exists('my_file.txt'):
-                                            with open('my_file.txt', 'w'): 
-                                                pass
+                                        import os  
+                                        if not os.path.exists('my_file.txt'):  
+                                            with open('my_file.txt', 'w'):   
+                                                pass  
 -[ ] Open/Read/Write File  
-                                        # The modes are:
-                                        #   r  - Open for reading plain text
-                                        #   w  - Open for writing plain text
-                                        #   a  - Open an existing file for appending plain text
-                                        #   rb - Open for reading binary data
-                                        #   wb - Open for writing binary data
-                                        with open("my_file.txt", mode="w", encoding="utf-8") as f:
-                                            f.write("Some Random\nText, blah, blah, blah,\nLet's get schwifty baby!")
-                                        with open("mydata.txt", encoding="utf-8") as f:
-                                            print(f.read())     # f.readline() would just read one line.
-                                        print(my_file.closed)   # Check if file is closed
+                                        # The modes are:  
+                                        #   r  - Open for reading plain text  
+                                        #   w  - Open for writing plain text  
+                                        #   a  - Open an existing file for appending plain text  
+                                        #   rb - Open for reading binary data  
+                                        #   wb - Open for writing binary data  
+                                        with open("my_file.txt", mode="w", encoding="utf-8") as f:  
+                                            f.write("Some Random\nText, blah, blah, blah,\nLet's get schwifty baby!")  
+                                        with open("mydata.txt", encoding="utf-8") as f:  
+                                            print(f.read())     # f.readline() would just read one line.  
+                                        print(my_file.closed)   # Check if file is closed  
 -[ ] Delete File  
-                                        try:
-                                            if not os.path.exists('my_file.txt'):
-                                                os.remove("my_file.txt")
-                                        except OSError as e:  # if failed, report it back to the user ##
-                                            print("Error: %s - %s." % (e.filename, e.strerror))
+                                        try:  
+                                            if not os.path.exists('my_file.txt'):  
+                                                os.remove("my_file.txt")  
+                                        except OSError as e:  # if failed, report it back to the user ##  
+                                            print("Error: %s - %s." % (e.filename, e.strerror))  
 
 String Manipulation
 -------------------                          
 -[ ] Strip  
                                         s = "    M a tthew \t  \n Pettersson    \n"  
-                                        s.strip()                       # ONLY rm leading/trailing non-visible char.
-                                        "".join(s.split())              # Remove all non-visible chars, fast.
+                                        s.strip()                       # ONLY rm leading/trailing non-visible char.  
+                                        "".join(s.split())              # Remove all non-visible chars, fast.  
                                         import re                       # Via REGEX  
                                         re.sub(r'\s+', '', s)           # Remove all non-visible chars, slower.  
 -[ ] Replace  
                                         s = "Ohhhhhhh Myyyyyyyyyyy"  
                                         count = 1  
-                                        s.replace("hh", "HH", count)    # Only one set is replaced
+                                        s.replace("hh", "HH", count)    # Only one set is replaced  
                                         count = -1                      # Replace ALL sets, (-1 is default value).  
-                                        s.replace("hh", "HH", count)    # Replace ALL sets.
+                                        s.replace("hh", "HH", count)    # Replace ALL sets.  
                                         s.replace("yy", "YY")           # Same as using -1 count.  
 -[ ] Find  
                                         s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ, now I know my ABC's..."  
-                                        i = s.find("C")                 # Find FIRST match.
+                                        i = s.find("C")                 # Find FIRST match.  
                                         start = 1; end = len(s) - 1  
-                                        i = s.find("C", start, end)     # Find FIRST match in range start to end.
+                                        i = s.find("C", start, end)     # Find FIRST match in range start to end.  
                                         i = s.rfind("C", start, end)    # Find RIGHT most match in range start to end.  
 -[ ] Substring  
                                         s = "SayMayHeyHayBayWay"  
                                         s[3:6]                          # "May"  
                                         s[3:12:3]                       # "MHH" (every 3rd char from 3 to 12)  
                                         s[5:2:-1]                       # "yaM" (going BACKWARDS, from y(5) to M(2))  
-                                        s[::-1]                         # REVERSE String: "yaWyaByaHyeHyaMyaS"
+                                        s[::-1]                         # REVERSE String: "yaWyaByaHyeHyaMyaS"  
 -[ ] Upper/Lower  
                                         s.upper()  
                                         s.lower()  
 -[ ] Digit/Alpha  
-                                        s.isdecimal()  
-                                        s.isalpha()
-                                        s.isdigit()
-                                        s.isalnum()
+                                        s.isdecimal()   
+                                        s.isalpha()  
+                                        s.isdigit()  
+                                        s.isalnum()  
 -[ ] list --> string (join)  
                                         l = [1, "two", 6, 33, "zero", -12]  
                                         str(l)                          # will produce "[1, 'two', 6, 33, 'zero', -12]"  
                                         ", ".join([str(i) for i in l])  # Join expects str instance.  
                                         "".join(map(str, l))  
 -[ ] string --> list (split)  
-                                        s = "I'm a str.\n"
-                                        l = s.split()                   # ["I'm", 'a', 'str.']
-                                        l = s.split('\'')               # ['I', 'm a str.\n']                                 
+                                        s = "I'm a str.\n"  
+                                        l = s.split()           # ["I'm", 'a', 'str.']  
+                                        l = s.split('\'')       # ['I', 'm a str.\n']      
 -[ ] string --> list of 1 len strings  
-                                        s = "I'm a str.\n"
-                                        l = list(s)                     # ['I', "'", 'm', ' ', 'a', ' ', 's', 't', 'r', '.', '\n']
+                                        s = "I'm a str.\n"  
+                                        l = list(s)             # ['I', "'", 'm', ' ', 'a', ' ', 's', 't', 'r', '.', '\n']  
 -[ ] Sort  
-                                        s = "aB0 \t"
-                                        s_s = sorted(s)                 # CAN use sorted on string (CANT use s.sort())  
+                                        s = "aB0 \t"  
+                                        s_s = sorted(s)         # CAN use sorted on string (CANT use s.sort())  
 
 List Manipulation
 -----------------
@@ -163,20 +161,20 @@ List Manipulation
                                         l = [1, 3.14, "Matt", True]  
                                         l = list([1, 3.14, "Matt", True])  
                                         l.append("new string at end of list")  
-                                        l.insert(2, "new string at index 2")  
-                                        l[4:4] = ["Adding new string to index 4"]
-                                        l.pop(2)                            # Remove item at index (default index = -1).
-                                        l.remove("new string at index 2")   # Remove first matched value or raise ValueError.
-                                        l.index(True)                       # Return first value index, else raise ValueError. 
+                                        l.insert(2, "new string at index 2")   
+                                        l[4:4] = ["Adding new string to index 4"]  
+                                        l.pop(2)                            # Remove item at index (default index = -1).  
+                                        l.remove("new string at index 2")   # Remove 1st matched value or raise ValueError.  
+                                        l.index(True)                       # Return 1st value index, else raise ValueError.  
                                         l.sort()  
                                         l.reverse()  
                                         l = l[::-1]  
                                         l.extend([False, 99])  
                                         l += [False, 99]  
 -[ ] Fill  
-                                        l = [None] * 10  
-                                        l = [0] * 10 
-                                        l = [[None] * 10 for _ in range(10)]
+                                        l = [None] * 10   
+                                        l = [0] * 10  
+                                        l = [[None] * 10 for _ in range(10)]  
 -[ ] Shallow Copy  
                                         l = [1, 2, 3]  
                                         copy = l  
@@ -186,13 +184,13 @@ List Manipulation
                                         import copy  
                                         deep_copy = copy.deepcopy(l)  
 -[ ] Sort  
-                                        l = [4, 2, 0]
-                                        s_l = sorted(l)                 # Return sorted list.
-                                        l.sort()                        # sort() is LIST ONLY, sorts in place, returns None.  
-                                        tup_l = [(0, "C", 0.125), (1, "A", 0.25), (2, "B", 0.0)]  
-                                        s_t = sorted(tup_l, key=lambda x: x[1]) # Sort and return tup_l by second item.
-                                        tup_l.sort(key=lambda x: x[1])          # Sort (IN PLACE) tup_l by second item.
-                                        tup_l.sort(key=lambda x: (x[0], x[1]))  # Sort (IN PLACE) by first THEN second item.
+                                        l = [4, 2, 0]  
+                                        s_l = sorted(l)                 # Return sorted list.  
+                                        l.sort()                        # sort() is LIST ONLY, sorts in place, returns None.   
+                                        tup_l = [(0, "C", 0.125), (1, "A", 0.25), (2, "B", 0.0)]   
+                                        s_t = sorted(tup_l, key=lambda x: x[1]) # Sort and return tup_l by second item.  
+                                        tup_l.sort(key=lambda x: x[1])          # Sort (IN PLACE) tup_l by second item.  
+                                        tup_l.sort(key=lambda x: (x[0], x[1]))  # Sort (IN PLACE) by first THEN second item.  
 
 Dict. Manipulation
 ------------------
@@ -219,8 +217,10 @@ Dict. Manipulation
                                         for k, v in d.items():  
 -[ ] Sort  
                                         d = {1: 2, 3: 4, 4: 3, 2: 1, 0: 0}  
-                                        s_v_d = {k: v for k, v in sorted(x.items(), key=lambda item: item[1])}  # sort d by VALUE  
-                                        s_k_d = {k: v for k, v in sorted(x.items(), key=lambda item: item[0])}  # sort d by KEY  
+                                        # sort d by VALUE
+                                        s_v_d = {k: v for k, v in sorted(x.items(), key=lambda item: item[1])}    
+                                        # sort d by KEY
+                                        s_k_d = {k: v for k, v in sorted(x.items(), key=lambda item: item[0])}    
 -[ ] Tuple List <--> Dict  
                                         d_from_t = dict([("key0", "value0"),("key1", "value1")])  
                                         tl_from_d = list(d_from_t.items())  
@@ -235,10 +235,10 @@ Set Manipulation
                                         s = set()  
                                         s = {0.0, 1, "two"}  
                                         s = set([0.0, 1, "two"])  
-                                        sc = s.copy()  
-                                        fs = frozenset(s)
-                                        fs = frozenset({0.0, "one", 2})
-                                        fs = frozenset([0.0, "one", 2])
+                                        sc = s.copy()   
+                                        fs = frozenset(s)  
+                                        fs = frozenset({0.0, "one", 2})  
+                                        fs = frozenset([0.0, "one", 2])  
                                         len(s)  
                                         s.add("new_value")  
                                         s.discard("new_value")  
@@ -256,14 +256,14 @@ Tuple Manipulation
 -[ ] Tuple Properties     
                                         Immutable (NO Re-Assignment), Mixed Types & Duplicates Allowed, Hashable  
 -[ ] Tuple Operations                                          
-                                        t = (0.0, 1, "two")         # Create tuple.
-                                        t = tuple([0.0, 1, "two"])  # Tuple from list.
-                                        t[0]                        # Get first item in t.
-                                        t[-1]                       # Get last item in t.
-                                        t[0:-1:2]                   # Get a tuple with every other item in t.
+                                        t = (0.0, 1, "two")         # Create tuple.  
+                                        t = tuple([0.0, 1, "two"])  # Tuple from list.   
+                                        t[0]                        # Get first item in t.  
+                                        t[-1]                       # Get last item in t.  
+                                        t[0:-1:2]                   # Get a tuple with every other item in t.  
                                         t[::-1]                     # Get a reversed copy of t  
                                         t.count(1)                  # Return number of occurrences of value (1 here).  
-                                        t.index("two")              # Return first index of value, ValueError if not found.  
+                                        t.index("two")              # Return 1st index of value, ValueError if not found.  
                                         
 Data Structures
 ---------------
@@ -347,27 +347,27 @@ Classes
                                                    is shorthand for x.__call__(arg1, arg2, ...).   
                                         __len__ - Called to implement the built-in function len().  
 -[ ] Class Example  
-                                        class MyClass(SuperClass, SC2):  
-                                            shared_by_all = 42
+                                        class MyClass(SuperClass, SC2):    
+                                            shared_by_all = 42  
                                             
-                                            # Remember, can't have nondefault after default arg.
-                                            def __init__(self, arg_1, arg_2, arg_n="default"):  
-                                                SuperClass.__init__(self, arg_1)
-                                                SC2.__init__(self)
-                                                self.arg_2 = arg_2
-                                                self.arg_n = n
+                                            # Remember, can't have nondefault after default arg.  
+                                            def __init__(self, arg_1, arg_2, arg_n="default"):    
+                                                SuperClass.__init__(self, arg_1)  
+                                                SC2.__init__(self)  
+                                                self.arg_2 = arg_2  
+                                                self.arg_n = n  
                                                 
-                                            @property  # Getter
-                                            def arg_2(self):
-                                                return self.__arg_2
+                                            @property  # Getter  
+                                            def arg_2(self):  
+                                                return self.__arg_2  
                                             
-                                            @arg_2.setter
-                                            def arg_2(self, value):
-                                                self.__arg_2 = value
+                                            @arg_2.setter  
+                                            def arg_2(self, value):  
+                                                self.__arg_2 = value  
                                             
-                                            @arg_2.deleter
-                                            def arg_2(self):
-                                                del self.__arg_2
+                                            @arg_2.deleter  
+                                            def arg_2(self):  
+                                                del self.__arg_2  
                                                 
 Common Interview Functions & Algorithms
 ---------------------------------------
@@ -406,7 +406,7 @@ Common Interview Functions & Algorithms
 
 Miscellaneous Python 
 --------------------
--[ ] pass (keyword)
+-[ ] pass (keyword)  
                                         A no-operation statement.  
 -[ ] What is PEP8  
                                         PEP stands for Python Enhancement Proposals.  
@@ -431,33 +431,41 @@ Miscellaneous Python
                                             - Number  
                                             - Tuple  
 -[ ] Pickling & Unpickling  
-                                        Pickling is the process where a Python obj is converted into a byte stream.
-                                        Unpickling is the inverse of Pickling.
+                                        Pickling is the process where a Python obj is converted into a byte stream.  
+                                        Unpickling is the inverse of Pickling.  
                                         Pickling is alternatively known as serialization, marshalling, or flattening.  
 -[ ] How to make Python script exe?  
                                         1.  The script file's mode must be executable.  
                                         2.  The first line must begin with # ( #!/usr/local/bin/python)  
 -[ ] Module vs. Package  
-                                        Module - An object that serves as an organizational unit of Python code. 
-                                                 Modules have a namespace containing arbitrary Python objects. 
-                                                 Modules are loaded into Python by the process of importing. 
-                                        Package - A Python module which can contain submodules or recursively, subpackages.  
-                                                  Technically, a package is a Python module with an __path__ attribute.  
--[ ] @classmethod vs @staticmethod  
-                                        Normal Method - The instance (self) is passed as the first arg.  
-                                        @classmethod - The class (not instance) is passed as first arg (not self).  
-                                            Can be called w/o class instance (or with class instance): cls.classmethod().  
-                                        @staticmethod - Neither the class nor instance (self) are passed as first arg.
-                                            These act like normal functions, but are grouped in a class.  
+                                        Module  
+                                            - An object that serves as an organizational unit of Python code.  
+                                            - Modules have a namespace containing arbitrary Python objects. 
+                                            - Modules are loaded into Python by the process of importing. 
+                                        Package  
+                                            - A Python module which can contain submodules or recursively, subpackages.  
+                                            - Technically, a package is a Python module with an __path__ attribute.  
+-[ ] method vs @classmethod vs 
+     @staticmethod  
+                                        Normal Method  
+                                            - The instance (self) is passed as the first arg.  
+                                        @classmethod  
+                                            - The class (not instance) is passed as first arg (not self).  
+                                            - Can be called w/o class inst (or with class inst): cls.classmethod().  
+                                        @staticmethod  
+                                            - Neither the class nor instance (self) are passed as first arg.  
+                                            - These act like normal functions, but are grouped in a class.  
 -[ ] global vs nonlocal  
-                                        global - The global keyword can change or create a global variable from a local 
-                                            context/scope. Variables that are only referenced in a function/class scope 
-                                            are implicitly global. If a var is assigned a value in a function/class it’s 
-                                            assumed to be a local unless explicitly declared as global.  
-                                        nonlocal - A nonlocal variable (e.g., nonlocal x) refers to previously bound var 
-                                            (i.e., x) in the nearest enclosing scope, excluding globals.  The variable
-                                            must be defined in a non-global scope or there will be a SyntaxError (so the 
-                                            nonlocal keyword, unlike global, cannot create a nonlocal variable.                                
+                                        global  
+                                            - The global keyword can change/create a global var from a local context/scope.  
+                                            - Vars that are only referenced in function/class scope are implicitly global.  
+                                            - If a var is assigned a value in a function/class it’s assumed to be local 
+                                              unless explicitly declared as global.  
+                                        nonlocal  
+                                            - A nonlocal variable (e.g., nonlocal x) refers to previously bound var 
+                                              (i.e., x) in the nearest enclosing scope, excluding globals.  
+                                            - The var must be defined in a non-global scope or there'll be a SyntaxError 
+                                              (the nonlocal keyword, unlike global, can't create a nonlocal var.                            
 -[ ] Exceptions  
                                         # RAISE EXCEPTION  
                                         try:   
@@ -481,11 +489,11 @@ Miscellaneous Python
                                             print("Unexpected error:", sys.exc_info()[0])  
                                             raise  # This will raise the exception if the other 2 excepts didn't catch it.  
                                         else:  
-                                            print("The else clause (for a try) only get's printed if there was NO EXCEPTION")  
+                                            print("The else clause (for a try) only executes if there was NO EXCEPTION")  
                                             f.close()  
                                         finally:  
-                                            print("The finally cause always executes, exceptions or no exceptions!!!") 
-                                        # NOTE: There is no Python equivalent to Java's (statically typed) "throws" 
+                                            print("The finally cause always executes, exceptions or no exceptions!!!")  
+                                        # NOTE: There is no Python equivalent to Java's (statically typed) "throws"  
                                         # keyword because Python doesn't have statically typed arguments.                        
 -[ ] Lambda  
                                         (lambda x : x * x)(2)  
@@ -541,7 +549,7 @@ Miscellaneous Python
                                         It looks like a normal function except that it contains yield expressions for 
                                         producing a series of values usable in a for-loop or that can be retrieved one 
                                         at a time with the next() function.  
-                                        Every Generator is an Iterator (but not every Iterator is a Genrator).    
+                                        Every Generator is an Iterator (but not every Iterator is a Generator).    
                                         def zero_to_n(n):  
                                             i = 0  
                                             while i < n:  
@@ -563,7 +571,8 @@ Miscellaneous Python
                                                     console_handler = logging.StreamHandler()   
                                                     console_handler.setLevel(logging.ERROR)  
                                             3. formatter - Specifies the formatting strings.   
-                                                    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')  
+                                                    formatter = logging.Formatter(
+                                                        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')  
                                                     file_handler.setFormatter(formatter)  
                                                     console_handler.setFormatter(formatter)  
                                                     # Add handlers to logger  
@@ -589,7 +598,7 @@ Miscellaneous Python
                                             \w  Matches any alphanumeric character, is equivalent to the [a-zA-Z0-9_].  
                                             \W  Matches any non-alphanumeric character.  
                                         Methods:  
-                                            match(p, s)     Returns only 1 Match obj, else None, matches at BEGINNING of str.  
+                                            match(p, s)     Rtn only 1 Match obj, else None, matches at BEGINNING of str.  
                                             search(p, s)    Returns only 1 Match obj, else None, matches ANYWHERE in str.  
                                             findall(p, s)   Returns List of all matches from str ([] if None).  
                                             finditer(p, s)  Returns Match Iterator, Iterator MAY NOT have next (no match).  
@@ -597,8 +606,8 @@ Miscellaneous Python
                                             sub(p, r, s)    Returns s with all matched p replaced with r, r can be a 
                                                             string or a function, if no match return s.  
                                             subn(p, r, s)   Same as sub() but returns a tuple (new_s, #_of_subs_made), 
-                                                            if no matches returns (s, 0)  
-                                            fullmatch(p, s) Return ONLY 1 Match obj if ALL of s matches p, None if no match.  
+                                                            if no matches returns (s, 0).   
+                                            fullmatch(p, s) Return ONLY 1 Match obj if ALL of s matches p, else None.  
                                             escape(s)       Return str with all non-alphanumerics escaped with backslash.  
                                         Examples:  
                                         import re  
@@ -648,10 +657,10 @@ Miscellaneous Python
                                                 self.params = params  
                                             def __call__(self, *args, **kwargs):  
                                                 import time  
-                                                start_time = time.time()  
+                                                s = time.time()  
                                                 result = self.function(*args, **kwargs)  
-                                                end_time = time.time()  
-                                                print("Execution of {} took {} seconds".format(self.function.__name__, end_time - start_time))  
+                                                f = time.time()  
+                                                print("Execution of {} took {}".format(self.function.__name__, f - s))   
                                                 return result  
                                         
                                         @Timer  
@@ -663,54 +672,73 @@ Miscellaneous Python
 Concurrency
 -----------
 -[ ] GIL  
-                                        Global Interpreter Lock
+                                        Global Interpreter Lock  
                                         The mechanism used by the CPython interpreter to assure that only one thread 
                                         executes Python bytecode at a time. This simplifies the CPython implementation 
                                         by making the object model (including critical built-in types such as dict) 
                                         implicitly safe against concurrent access. Locking the entire interpreter makes 
                                         it easier for the interpreter to be multi-threaded, at the expense of much of 
-                                        the parallelism afforded by multi-processor machines.
+                                        the parallelism afforded by multi-processor machines.  
 -[ ] Threads/Threading   
-                                        # Threading Examples
-                                        from threading import Thread
-                                        Thread(target=print, args=("I'm a thread!",)).start()
-                                        # Run multiple statements in one line via map:
-                                        Thread(target=map, args=(lambda x: x, (print("hello"), print("world"))))
-                                        # ThreadPoolExecutor creates a reusable pool of threads, CAN return Future objs.  
-                                        with ThreadPoolExecutor(max_workers=2) as executor_context_manager:
-                                            returned_future = executor_context_manager.submit(my_function)
-                                            executor_context_manager.submit(print, "I'm a ThreadPoolExecutor Thread!")
+                                        # Threading Examples  
+                                        from threading import Thread  
+                                        Thread(target=print, args=("I'm a thread!",)).start()  
+                                        # Run multiple statements in one line via map:  
+                                        Thread(target=map, args=(lambda x: x, (print("hello"), print("world"))))  
+                                        # ThreadPoolExecutor creates a reusable pool of threads, CAN return Future objs.   
+                                        with ThreadPoolExecutor(max_workers=2) as executor_context_manager:  
+                                            returned_future = executor_context_manager.submit(my_function)  
+                                            executor_context_manager.submit(print, "I'm a ThreadPoolExecutor Thread!")  
 -[ ] Future Object  
-                                        A Future represents an eventual result of an asynchronous operation. 
-                                        Not thread-safe.
-                                        Future instances are created by Executor.submit().
-                                        Future methods include:
+                                        A Future represents an eventual result of an asynchronous operation.  
+                                        Not thread-safe.  
+                                        Future instances are created by Executor.submit().  
+                                        Future methods include:  
                                             cancel()                Attempt to cancel the call; return False if done or 
-                                                                    executing, else cancel and return True.
-                                            cancelled()             Return True if the call was cancelled.
+                                                                    executing, else cancel and return True.  
+                                            cancelled()             Return True if the call was cancelled.  
                                             running()               Return True if the call is currently being executed 
-                                                                    and cannot be cancelled.
+                                                                    and cannot be cancelled.  
                                             done()                  Return True if the call was successfully cancelled 
-                                                                    or finished.
+                                                                    or finished.  
                                             result(timeout=None)    BLOCKING, Return the value returned by the call, 
-                                                                    timeout (seconds) can be int or float.
+                                                                    timeout (seconds) can be int or float.  
                                             add_done_callback(fn)   Attaches the callable fn to the future. fn will be 
                                                                     called with the future as its only argument, when 
-                                                                    the future is cancelled or finishes running.
+                                                                    the future is cancelled or finishes running.  
 -[ ] Locks, Semaphore, 
      & Condition (variable)  
-                                        (Primitive) Lock - Synchronization primitive, has two states: locked & unlocked.  
-                                                           Can only acquire a primitive lock once.  
-                                                           Methods: locked(), release(), acquire()
-                                        Re-entrant Lock - Lock that can be acquired multiple times by one thread.  
-                                                           Methods: release(), acquire()
-                                        Semaphore - Internal counter, decremented by acquire(), incremented by release(),
-                                                    can't go below zero (it blocks aqcuire() if zero).  
-                                                    Methods: acquire(), release()  
-                                        Condition (Variable) - Represents state change, associated with lock (either a 
-                                                               lock can be passed in or it will create one).  
-                                                               Methods: acquire(), release(), wait(), wait_for(), 
-                                                                        notify(), notify_all().   
+                                        (Primitive) Lock  
+                                            - Synchronization primitive, has two states: locked & unlocked.  
+                                            - Can only acquire a primitive lock once.  
+                                            - Methods:  
+                                                - locked()   
+                                                - release()   
+                                                - acquire()   
+                                        Re-entrant Lock 
+                                            - Lock that can be acquired multiple times by one thread.  
+                                            - Methods: 
+                                                - release()  
+                                                - acquire()   
+                                        Semaphore  
+                                            - Internal counter, can't go below zero.  
+                                            - Decremented by acquire() (if previously zero, acquire() blocks)).  
+                                            - Incremented by release().  
+                                            - Methods:  
+                                                - acquire()  
+                                                - release()  
+                                        Condition (Variable)  
+                                            - Represents state change.  
+                                            - Is associated with lock:  
+                                                - A lock can be passed in on creation.  
+                                                - By default (if no supplied lock) creates lock.  
+                                            - Methods:  
+                                                - acquire()  
+                                                - release()  
+                                                - wait()  
+                                                - wait_for()  
+                                                - notify()  
+                                                - notify_all()   
 -[ ] Processes  
                                         Python processes (use Thread-like API) sidestep the GIL issue.  
                                         Multiprocessing communication is supported via Queues and Pipes.  
@@ -749,7 +777,5 @@ Memory Model & Garbage Collecting
                                                 generation and ignore all the future collections.  
                                             gc.unfreeze() - Unfreeze the objects in the permanent generation, put them 
                                                 back into the oldest generation.  
-
-
 
 
