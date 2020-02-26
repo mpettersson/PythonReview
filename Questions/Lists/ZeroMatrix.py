@@ -3,6 +3,14 @@
 
     Write an algorithm such that if an element in an MxN matrix is 0, its entire row and column is set to 0.
 
+    Example:
+        Input =  [[1, 1, 1],
+                  [1, 0, 1],
+                  [1, 1, 1]]
+        Output = [[1, 0, 1],
+                  [0, 0, 0],
+                  [1, 0, 1]]
+
     NOTE: If you naively try to do this in one iteration it'll all end up zeros, so you have to go over it twice.
           You can create a duplicate matrix, but that's not the most efficient way. You can make two new list (X, Y) but
           that's still not the most efficient way; create two flags (row_has_zero and column_has_zero) then store if
@@ -60,34 +68,24 @@ def nullify_column(mat, column):
 m0 = [[0, 0, 0],
       [0, 0, 0],
       [0, 0, 0]]
-print("m0:", m0)
-print("zero_matrix(m0):", zero_matrix(m0))
-print()
+print(f"zero_matrix({m0}):", zero_matrix(m0), "\n")
 
 m1 = [[1, 1, 1],
       [1, 1, 1],
       [1, 1, 1]]
-print("m1:", m1)
-print("zero_matrix(m1):", zero_matrix(m1))
-print()
+print(f"zero_matrix({m1}):", zero_matrix(m1), "\n")
 
 m2 = [[1, 1, 1],
       [1, 0, 1],
       [1, 1, 1]]
-print("m2:", m2)
-print("zero_matrix(m2):", zero_matrix(m2))
-print()
+print(f"zero_matrix({m2}):", zero_matrix(m2), "\n")
 
 m3 = [[0, 1, 1],
       [1, 1, 1],
       [1, 1, 0]]
-print("m3:", m3)
-print("zero_matrix(m3):", zero_matrix(m3))
-print()
+print(f"zero_matrix({m3}):", zero_matrix(m3), "\n")
 
 m4 = [[1, 1, 1],
       [1, 0, 1],
       [1, 1, 0]]
-print("m4:", m4)
-print("zero_matrix(m4):", zero_matrix(m4))
-print()
+print(f"zero_matrix({m4}):", zero_matrix(m4))

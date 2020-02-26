@@ -7,8 +7,8 @@ import copy
 
 
 def get_subsets(s):
-    if len(s) is 1:
-        return [{s.pop()}]
+    if not s or len(s) <= 1:
+        return [s]
 
     h = s.pop()
     subset_tail_no_head = get_subsets(s)
@@ -17,7 +17,7 @@ def get_subsets(s):
     for subset in subset_tail_with_head:
         subset.add(h)
 
-    return [{h}] + [ss for ss in subset_tail_no_head] + [ss for ss in subset_tail_with_head]
+    return [{h}] + subset_tail_no_head + subset_tail_with_head
 
 
 s = {"A", "B", "C", "D"}

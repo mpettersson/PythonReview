@@ -14,12 +14,10 @@
 
     NOTE: It is unnecessary to use additional space.
 """
-import copy
 
 
 # The (best possible) runtime is O(n^2).
-def rotate_matrix(original_matrix):
-    m = copy.deepcopy(original_matrix)
+def rotate_matrix(m):
     n = len(m)
     for layer in range(n // 2):
         first = layer
@@ -34,25 +32,33 @@ def rotate_matrix(original_matrix):
     return m
 
 
+def print_matrix(m):
+    return "\n" + '\n'.join([''.join(['{:4}'.format(item) for item in row]) for row in m])
+
+
 m2 = [['00', '01'],
       ['10', '11']]
-print(f"rotate_matrix({m2}):", rotate_matrix(m2), "\n")
+print("m2:", print_matrix(m2))
+print(f"rotate_matrix(m2):", print_matrix(rotate_matrix(m2)), "\n")
 
 m3 = [['00', '01', '02'],
       ['10', '11', '12'],
       ['20', '21', '22']]
-print(f"rotate_matrix({m3}):", rotate_matrix(m3), "\n")
+print("m3:", print_matrix(m3))
+print(f"rotate_matrix(m3):", print_matrix(rotate_matrix(m3)), "\n")
 
 m4 = [['00', '01', '02', '03'],
       ['10', '11', '12', '13'],
       ['20', '21', '22', '23'],
       ['30', '31', '32', '33']]
-print(f"rotate_matrix({m4}):", rotate_matrix(m4), "\n")
+print("m4:", print_matrix(m4))
+print(f"rotate_matrix(m4):", print_matrix(rotate_matrix(m4)), "\n")
 
 m5 = [['00', '01', '02', '03', '04'],
       ['10', '11', '12', '13', '14'],
       ['20', '21', '22', '23', '24'],
       ['30', '31', '32', '33', '34'],
       ['40', '41', '42', '43', '44']]
-print(f"rotate_matrix({m5}):", rotate_matrix(m5))
+print("m5:", print_matrix(m5))
+print(f"rotate_matrix(m5):", print_matrix(rotate_matrix(m5)), "\n")
 
