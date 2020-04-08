@@ -510,6 +510,11 @@ x_sorted_by_value = {k: v for k, v in sorted(x.items(), key=lambda item: item[1]
 x_sorted_by_key = {k: v for k, v in sorted(x.items(), key=lambda item: item[0])}
 
 
+# Complex Sort Example (How to lowercase and sort first by len(), then by sorted()):
+def sort_anagrams(anagrams):
+    return sorted(list(map(lambda s: s.lower(), anagrams)), key=lambda x: (len(x), sorted(x)))
+
+
 #############
 # FUNCTIONS #
 #############
@@ -584,35 +589,78 @@ print(function_with_nested_function())
 # LAMBDA #
 ##########
 
+# Anonymous functions are functions without a name; in Python this is achieved with the lambda keyword.
+# Lambdas can have multiple args but only ONE expression (see below for workarounds), which is evaluated and returned.
+#
+# NOTE: Tuple unpacking can't be used in lambda (or function) signature, that is; lambda (x, y): x + y DOESN'T work but
+# lambda x_y: x_y[0] + x_y[1] DOES work.   SEE https://www.python.org/dev/peps/pep-3113/
 
-# How to make an anonymous function via lambda:
+
+# Assigning a lambda (WHAT NOT TO DO):
+var_mult_two_num = lambda x, y: x*y
+print("var_mult_two_num(2, 4):", var_mult_two_num(2, 4))
+
+
+# (WHAT TO DO) The following function has the same behavior as the assigned lambda above:
+def def_mult_two_num(x, y):
+    return x * y
+
+
+# Lambda in a function:
 def mult_mult_by(num):
     return lambda x: x * num
 
 
-print("3 * 5 =", (mult_mult_by(3)(5)))
+print("mult_mult_by(3)('5')", mult_mult_by(3)('5'))
 
 # MAP
-one_to_4 = range(1, 5)
-times2 = lambda x : x * 2
-print("MAP: ", list(map(times2, one_to_4)))
+one_to_four_list = range(1, 5)
+double = lambda x: x * 2
+print("MAP: ", list(map(double, one_to_four_list)))
 
-# FILTER
-print("FILTER:", list(filter((lambda x: x % 2 == 0), range(1, 11))))
+# FILTER (using a function or lambda)
+one_to_ten_list = range(1, 11)
+is_even = lambda x: x % 2 == 0
+print("FILTER (via function/lambda):", list(filter(is_even, one_to_ten_list)))  # is_even can be function OR lambda.
+
+# FILTER (using a second list/iterable, which can be evaluated as True/False, to filter the first list/iterable)
+bool_list = [random.choice([True, False]) for _ in range(10)]
+int_list = [1 if x else 0 for x in bool_list]
+num_list = [i for i in range(10)]
+
+# List Compression Approach (only faster if very short list):
+print("FILTER (via 2nd list, list comprehension, and zip):", [x for x, b in zip(num_list, bool_list) if b])
+print("FILTER (via 2nd list, list comprehension, and enumerate):", [x for i, x in enumerate(num_list) if bool_list[i]])
+
+# Itertools Compress Approach (usually faster):
+import itertools
+print("FILTER (via 2nd list and itertools.compress):", list(itertools.compress(num_list, int_list)))
 
 # REDUCE
 import functools
 print("REDUCE", functools.reduce((lambda x, y: x + y), range(1, 6)))
 
+# Lambdas CAN take a list of functions:
+res_of_last_function = (lambda x: [print(var_mult_two_num(x, 2)), def_mult_two_num(x, 3)][-1])(3)
+print("res_of_last_function:", res_of_last_function)
+
+# NOTE: Lambdas can SIMULATE multiple expressions with additional lambdas:
+lst = [[567, 345, 234], [253, 465, 756, 2345], [333, 777, 111, 555]]
+second_lowest_vals = (lambda x, f: list((y[1] for y in f(x))))(lst, lambda x: (sorted(y) for y in x))
+print(second_lowest_vals)
+
+# NOTE: Lambdas can also ABUSE short circuiting to SIMULATE some types of multiple expressions:
+second_lowest_vals = list(map(lambda x: x.sort() or x[1],lst))
+print(second_lowest_vals)
+
 # How to make a mult() function (like built-in sum()):
 lambda_mult = lambda x:functools.reduce((lambda y,z:y*z), x)
 
 # How to implement sum() with lambda:
-lambda_sum = lambda *l: functools.reduce(lambda x, y: x + y, iter(l))
-lambda_sum = lambda a=0, *b: functools.reduce((lambda x, y: x + y), iter(b))
+lambda_sum = lambda l: functools.reduce(lambda x, y: x + y, l, 0)  # NOTE: The 3rd arg to reduce is the INITIAL value.
 
 # How to make a max() function (like built-in max())
-lambda_max = lambda *l: functools.reduce(lambda a, b: a if a > b else b, iter(l))
+lambda_max = lambda l: functools.reduce(lambda a, b: a if a > b else b, l)
 
 # NOTE: If you want to pass around common operator functions (in lambdas or whatever), you can find them:
 # import operator
@@ -1950,6 +1998,131 @@ if future_obj.done():
     print("future_obj.result(timeout=1):", future_obj.result(timeout=1))
 
 
+############
+# UNITTEST #
+############
+
+# The unittest unit testing framework was originally inspired by JUnit and has a similar flavor as major unit testing
+# frameworks in other languages. It supports test automation, sharing of setup and shutdown code for tests, aggregation
+# of tests into collections, and independence of the tests from the reporting framework.
+#
+# unittest CLI
+# The unittest module can be used from the command line to run tests from modules/classes/methods:
+#   python -m unittest test_module1 test_module2            # Two modules
+#   python -m unittest test_module.TestClass                # Class
+#   python -m unittest test_module.TestClass.test_method    # Method name
+#   python -m unittest tests/test_something.py              # File path
+# CLI Flags:
+#   -b, --buffer    The standard out and standard error streams are buffered during the test run, added in Python 3.2.
+#   -c, --catch     Control-C during test causes the current test to end, then reports all results so far, added in 3.2.
+#   -f, --failfast  Stop the test run on the first error or failure, added in Python 3.2.
+#   -k  <pattern>   Only run test methods and classes that match the pattern or substring, added in Python 3.7.
+#   --locals        Show local variables in tracebacks, added in Python 3.5.
+#   -v, --verbose   Verbose output, added in Python 3.2.
+#   -s <dir>        Directory to start discovery (. default), added in Python 3.2.
+#   -p <pattern>    Pattern to match test files (test*.py default), added in Python 3.2.
+#   -t <dir>        Top level directory of project (defaults to start directory), added in Python 3.2.
+#
+# Assert statements:
+#   assertEqual(a, b)               Checks that a == b
+#   assertNotEqual(a, b)            Checks that a != b
+#   assertTrue(x)                   Checks that bool(x) is True
+#   assertFalse(x)                  Checks that bool(x) is False
+#   assertIs(a, b)                  Checks that a is b
+#   assertIsNot(a, b)               Checks that a is not b
+#   assertIsNone(x)                 Checks that x is None
+#   assertIsNotNone(x)              Checks that x is not None
+#   assertIn(a, b)                  Checks that a in b
+#   assertNotIn(a, b)               Checks that a not in b
+#   assertIsInstance(a, b)          Checks that isinstance(a, b)
+#   assertNotIsInstance(a, b)       Checks that not isinstance(a, b)
+#   assertAlmostEqual(a, b)         Checks that round(a-b, 7) == 0
+#   assertNotAlmostEqual(a, b)      Checks that round(a-b, 7) != 0
+#   assertGreater(a, b)             Checks that a > b, new in 3.1
+#   assertGreaterEqual(a, b)        Checks that a >= b, new in 3.1
+#   assertLess(a, b)                Checks that a < b, new in 3.1
+#   assertLessEqual(a, b)           Checks that a <= b, new in 3.1
+#   assertRegex(s, r)               Checks that r.search(s), new in 3.1
+#   assertNotRegex(s, r)            Checks that not r.search(s), new in 3.2
+#   assertCountEqual(a, b)          Checks that a & b have the same ele in the same number, regardless of their order.
+#   assertMultiLineEqual(a, b)      Compares strings, new in 3.1
+#   assertSequenceEqual(a, b)       Compares sequences, new in 3.1
+#   assertListEqual(a, b)           Compares lists, new in 3.1
+#   assertTupleEqual(a, b)          Compares tuples, new in 3.1
+#   assertSetEqual(a, b)            Compares sets or frozensets, new in 3.1
+#   assertDictEqual(a, b)           Compares dicts, new in 3.1
+
+
+import unittest
+external_resource_available = lambda : False
+
+
+class mylib:
+    __version__ = (4, 4)
+
+
+# Classes can be skipped with: @unittest.skip("showing class skipping")
+# The test run in sorted name order.
+# __init__() is called once per test.
+class TestClassExample(unittest.TestCase):
+    def setUp(self) -> None:  # Called before each test.
+        pass
+
+    def tearDown(self) -> None:  # Called after each test.
+        pass
+
+    @classmethod
+    def setUpClass(cls):  # called before any tests
+        pass
+
+    @classmethod
+    def tearDownClass(cls):  # called after all tests
+        pass
+
+    def test_upper(self):
+        self.assertEqual('foo'.upper(), 'FOO')
+
+    def test_isupper(self):
+        self.assertTrue('FOO'.isupper())
+        self.assertFalse('Foo'.isupper())
+
+    def test_split(self):
+        s = 'hello world'
+        self.assertEqual(s.split(), ['hello', 'world'])
+        with self.assertRaises(TypeError):
+            s.split(2)  # will raise TypeError
+
+    @unittest.skip("demonstrating skipping")
+    def test_nothing(self):
+        self.fail("shouldn't happen")
+
+    @unittest.skipIf(mylib.__version__ < (1, 3), "not supported in this library version")
+    def test_format(self):
+        pass
+
+    @unittest.skipUnless(sys.platform.startswith("win"), "requires Windows")
+    def test_windows_support(self):
+        pass
+
+    def test_maybe_skipped(self):
+        if not external_resource_available():
+            self.skipTest("external resource not available")
+        pass
+
+    def test_with_subTest(self):
+        for i in range(0, 6, 2):
+            with self.subTest(i = i):
+                self.assertEqual(i % 2, 0)
+
+    @unittest.expectedFailure
+    def test_my_life(self):
+        self.assertEqual(1, 0, "broken")
+
+
+# Run unittest:
+unittest.main()
+# if __name__ == '__main__':
+#     unittest.main()
 
 
 

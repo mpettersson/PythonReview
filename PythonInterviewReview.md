@@ -291,7 +291,8 @@ Data Structures
                                         Node Variable(s): key, value, next.  
 -[ ] Graph  
                                         SEE ./Review/DataStructures/Graph.py.  
-                                        NOTE: It's easier for interviews just to have a list of nodes (no Graph Class).  
+                                        NOTE: Because graphs might not be fully connected, a Node Class needs to be 
+                                        wrapped in a Graph Class.  
                                         Node Variable(s): name, value, neighbors.   
                                         Node Method(s): add_neighbor(n), remove_neighbor(n), get_neighbors().  
 -[ ] Tree  
@@ -465,7 +466,7 @@ Miscellaneous Python
                                             - A nonlocal variable (e.g., nonlocal x) refers to previously bound var 
                                               (i.e., x) in the nearest enclosing scope, excluding globals.  
                                             - The var must be defined in a non-global scope or there'll be a SyntaxError 
-                                              (the nonlocal keyword, unlike global, can't create a nonlocal var.                            
+                                              (the nonlocal keyword, unlike global, can't create a nonlocal var.   
 -[ ] Exceptions  
                                         # RAISE EXCEPTION  
                                         try:   
@@ -668,6 +669,29 @@ Miscellaneous Python
                                             import time  
                                             time.sleep(random.random())  
                                         sleepy_function()  
+-[ ] unittest  
+                                        - Unit testing framework; "import unittest".  
+                                        - Inspired by JUnit.  
+                                        - Class should extend unittest.TestCase:
+                                            class TestStringMethods(unittest.TestCase): pass
+                                        - Some methods:  
+                                            - setUp(self)           Called before each test. 
+                                            - tearDown(self)        Called after each test.
+                                            - setUpClass(cls)       Called only once before all tests.
+                                            - tearDownClass(cls)    Called only once after all tests.
+                                        - Some assert statements:  
+                                            - assertEqual(a, b)         Checks that a == b  
+                                            - assertNotEqual(a, b)      Checks that a != b  
+                                            - assertTrue(x)             Checks that bool(x) is True  
+                                            - assertFalse(x)            Checks that bool(x) is False  
+                                            - assertIs(a, b)            Checks that a is b  
+                                            - assertIsNot(a, b)         Checks that a is not b  
+                                            - assertIsNone(x)           Checks that x is None  
+                                            - assertIsNotNone(x)        Checks that x is not None  
+                                            - assertIn(a, b)            Checks that a in b  
+                                            - assertNotIn(a, b)         Checks that a not in b  
+                                            - assertIsInstance(a, b)    Checks that isinstance(a, b)  
+                                            - assertNotIsInstance(a, b) Checks that not isinstance(a, b)  
 
 Concurrency
 -----------

@@ -4,6 +4,7 @@
     Write a method to return all subsets of a set.
 """
 import copy
+import functools
 
 
 def get_subsets(s):
@@ -19,10 +20,30 @@ def get_subsets(s):
 
     return [{h}] + subset_tail_no_head + subset_tail_with_head
 
+def powerset(lst):
+    return functools.reduce(lambda result, x: result + [subset + [x] for subset in result], lst, [[]])
+
+
+def all_subsets(s):
+    subset = [None] * len(s)
+    all_subsets_rec(list(s), subset, 0)
+
+
+def all_subsets_rec(s, subset, i):
+    if i == len(s):
+        print(subset)
+    else:
+        subset[i] = None
+        all_subsets_rec(s, subset, i + 1)
+        subset[i] = s[i]
+        all_subsets_rec(s, subset, i + 1)
+
 
 s = {"A", "B", "C", "D"}
-r = get_subsets(s)
+r = get_subsets({"A", "B", "C", "D"})
 print(r)
+
+
 
 
 
