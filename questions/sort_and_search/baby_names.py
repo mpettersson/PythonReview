@@ -14,7 +14,7 @@
                 synonyms = [("Jon", "John"), ("John", "Johnny"), ("Chris", "Kris"), ("Chris", "Christopher")]
         Output  {"John":27, "Kris":36}
 """
-from data_structures.Graph import Graph
+from data_structure.graph import Graph
 
 
 # Approach 1: Naively use list of sets.

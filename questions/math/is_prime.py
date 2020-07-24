@@ -1,5 +1,5 @@
 """
-    CHECK FOR PRIMALITY
+    IS PRIME (CHECK FOR PRIMALITY)
 
     Is a number prime?
 
