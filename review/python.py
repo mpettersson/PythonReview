@@ -174,7 +174,7 @@ print('{0:2d} {1:3d} {2:4d}'.format(x1, x1*x1, x1*x1*x1))
 print('{0:2d} {1:3d} {2:4d}'.format(x2, x2*x2, x2*x2*x2))
 print('{0:2d} {1:3d} {2:4d}'.format(x3, x3*x3, x3*x3*x3))
 
-# Simple Math
+# Simple Math Operators
 print("5 + 2 =", 5 + 2)
 print("5 - 2 =", 5 - 2)
 print("5 * 2 =", 5 * 2)
@@ -1000,12 +1000,12 @@ except OSError as e:  # if failed, report it back to the user ##
 ##########
 
 # How to import specific methods from a module.
-from Review.PythonModule import factorial, print_hello_world
+from review.python_module import factorial, print_hello_world
 print(factorial(10))
 print_hello_world()
 
 # How to import all methods (that don't start with an underscore) from a module.
-from PythonModule import *
+from python_module import *
 print_foo_bar()
 # REMEMBER: you can't do any of these:
 #   print(_single_leading_underscore_variable)
@@ -1014,13 +1014,13 @@ print_foo_bar()
 #   __double_leading_underscore_function()
 
 # How to import a EVERYTHING
-import PythonModule
-print(PythonModule.factorial(10))
+import python_module
+print(python_module.factorial(10))
 # Can use single and double leading underscore variables and functions:
-print(PythonModule._single_leading_underscore_variable)
-PythonModule._single_leading_underscore_function()
-print(PythonModule.__double_leading_underscore_variable)
-PythonModule.__double_leading_underscore_function()
+print(python_module._single_leading_underscore_variable)
+python_module._single_leading_underscore_function()
+print(python_module.__double_leading_underscore_variable)
+python_module.__double_leading_underscore_function()
 
 
 #########

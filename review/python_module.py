@@ -35,7 +35,7 @@ def print_foo_bar():
     print("foo bar")
 
 
-# NOTE: To run a Python module from the CLI with arguments (i.e., python3 PythonModule.py <arguments>)
+# NOTE: To run a Python module from the CLI with arguments (i.e., python3 python_module.py <arguments>)
 # the if __name__ == "__main__": part ought to be included at the bottom of the file:
 if __name__ == "__main__":
     factorial(10)
