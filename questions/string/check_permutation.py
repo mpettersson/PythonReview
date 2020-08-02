@@ -16,12 +16,10 @@ def check_permutation_via_sort(s1, s2):
     if not s1 and not s2 or len(s1) == len(s2) == 0:
         return True
     if len(s1) == len(s2):
-        s1 = sorted(s1)
-        s2 = sorted(s2)
-        for i in range(len(s1)):
-            if s1[i] != s2[i]:
-                return False
-        return True
+        ss1 = sorted(s1)
+        ss2 = sorted(s2)
+        if ss1 == ss2:
+            return True
     return False
 
 
@@ -33,14 +31,8 @@ def check_permutation_via_dict(s1, s2):
         d1 = dict()
         d2 = dict()
         for i in range(len(s1)):
-            if s1[i] in d1:
-                d1[s1[i]] += 1
-            else:
-                d1[s1[i]] = 1
-            if s2[i] in d2:
-                d2[s2[i]] += 1
-            else:
-                d2[s2[i]] = 1
+            d1[s1[i]] = d1[s1[i]] + 1 if s1[i] in d1 else 1
+            d2[s2[i]] = d2[s2[i]] + 1 if s2[i] in d2 else 1
         if d1.keys() == d2.keys():
             for k in d1.keys():
                 if d1[k] != d2[k]:

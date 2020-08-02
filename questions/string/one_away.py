@@ -44,10 +44,39 @@ def is_one_away_diff_len(s1, s2):
     return False
 
 
-string_list = [("abcde", "abcd"), ("abde", "abcde"), ("a", "a"), ("a", ""), ("", ""), ("abcdef", "abqdef"),
+# Runtime is O(n), where n is the length of the shorter string, and space complexity is O(1).
+# This is essentially the same as above, just combined, so might not be as easy to understand...
+def one_away(first, second):
+    if abs(len(first) - len(second)) > 1:
+        return False
+    s1 = first if len(first) < len(second) else second
+    s2 = second if len(first) < len(second) else first
+    i = j = 0
+    has_diff = False
+    while j < len(s2) and i < len(s1):
+        if s1[i] != s2[j]:
+            if has_diff:
+                return False
+            has_diff = True
+            if len(s1) < len(s2):
+                j += 1
+            elif len(s1) == len(s2):
+                i += 1
+                j += 1
+        else:
+            i += 1
+            j += 1
+    return True
+
+
+string_list = [("abcde", "abcd"), ("abde", "abcde"), ("a", "a"), ("a", ""), ("", ""), ("", "a"), ("abcdef", "abqdef"),
                ("abcdef", "abccef"), ("abcdef", "abcde"), ("aaa", "abc"), ("abcde", "abc"), ("abc", "abcde"),
                ("abc", "bcc")]
 
 for (s1, s2) in string_list:
     print(f'is_one_away("{s1}", "{s2}"):', is_one_away(s1, s2))
+print()
+
+for (s1, s2) in string_list:
+    print(f'one_away("{s1}", "{s2}"):', one_away(s1, s2))
 

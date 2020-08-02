@@ -18,7 +18,8 @@ venv/
 .idea/
 __pycache__
 
-
+# Misc.
+review/TEMP.py
 
 
 

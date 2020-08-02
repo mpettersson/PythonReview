@@ -2,12 +2,14 @@
     PALINDROME PERMUTATION (CCI 1.4)
 
     Given a string, write a function to check if it is a permutation of a palindrome.  A palindrome is a word or
-    phrase that is the same forwards and backwards.  A permutation is a rearrangement of letters.  The paindrome does
+    phrase that is the same forwards and backwards.  A permutation is a rearrangement of letters.  The palindrome does
     not need to be limited to just a dictionary words.
 
     Example:
         Input = "Tact Coa"
         Output = True (permutations: "taco cat", "atco cta", etc.)
+
+    NOTE: You ought to ask the interviewer for clarification on spaces, capitalization, text type (ASCII/Unicode), etc.
 """
 import re
 
@@ -29,6 +31,6 @@ def is_palindrome_permutation(string):
 string_list = ["Tact Coa", "Was it a car or a cat I saw", "abca", "borrow or rob", "", None]
 
 for s in string_list:
-    print(f"is_palindrome_permutation(\"{s}\"):", is_palindrome_permutation(s))
+    print(f"is_palindrome_permutation({s!r}):", is_palindrome_permutation(s))
 
 
