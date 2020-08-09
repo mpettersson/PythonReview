@@ -12,25 +12,30 @@
 """
 
 
+# Direct Approach: Time and Space Complexity of O(p), where p is the length of the string s.
+# NOTE: If string CONCATENATION was used then the time would be QUADRATIC.
 def string_compression(s):
-    if not s or len(s) <= 1:
+    if not s or len(s) < 3:
         return s
-    curr_count = 1
-    curr_char = s[0]
-    tmp_str = ""
-    for i, c in enumerate(s):
-        if i + 1 < len(s) and s[i + 1] == curr_char:
-            curr_count += 1
+    cur_count = 1
+    i = 0
+    res = []
+    while i < len(s):
+        if i + 1 < len(s) and s[i + 1] == s[i]:
+            cur_count += 1
         else:
-            tmp_str += "{}{}".format(curr_char, curr_count)
-            curr_count = 1
-            if i + 1 < len(s):
-                curr_char = s[i + 1]
-    return tmp_str if len(tmp_str) < len(s) else s
+            res.append(s[i])
+            res.append(str(cur_count))
+            cur_count = 1
+        i += 1
+    result = "".join(res)
+    return result if len(result) < len(s) else s
 
 
-# It's more efficient to determine IF a new string would be SHORTER before actually building it:
-def efficient_string_compression(s):
+# String Concatenation Approach: Runtime is O(p + k^2) where p is len(s) and k is the num of char seq. Space is O(p).
+# The quadratic time is due to the inefficiency of the string concatenation (string += string) operand.
+# IF using string concat, it's more efficient to determine IF a new string would be SHORTER before actually building it:
+def string_compression_alternative(s):
     if not s:
         return s
     final_len = count_compression(s)
@@ -57,13 +62,13 @@ def count_compression(s):
     return compressed_len
 
 
-string_list = [None, "", "a", "abcdefggaa", "aabcccccaaa"]
+string_list = [None, "", "a", "aa", "abcdefggaa", "aabcccccaaa", "caabccccccaaab"]
 
 for s in string_list:
-    print(f"string_compression({s}):", string_compression(s))
+    print(f"string_compression({s!r}): {string_compression(s)!r}")
 print()
 
 for s in string_list:
-    print(f"str_compress({s}):", efficient_string_compression(s))
+    print(f"str_compress({s!r}): {string_compression_alternative(s)!r}")
 
 

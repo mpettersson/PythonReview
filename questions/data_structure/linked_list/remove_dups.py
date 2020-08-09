@@ -1,5 +1,5 @@
 """
-    LINKED LIST REMOVE DUPS (CCI 2.1)
+    REMOVE DUPS (CCI 2.1)
 
     Write code to remove duplicates from an unsorted linked list.  How would you solve this problem if a temporary
     buffer is not allowed?
@@ -11,8 +11,8 @@
 import copy
 
 
-# Set/Hashtable Approach:  O(n) time and O(n) space complexity.
-def remove_dups_w_set(head):
+# Buffered (Set/Hashtable) Approach:  O(n) time and O(n) space complexity.
+def remove_dups(head):
     no_dups = copy.deepcopy(head)
     n = no_dups
     node_set = set()
@@ -28,7 +28,7 @@ def remove_dups_w_set(head):
 
 
 # Non-Hashtable/Set Approach:  O(n^2) time and O(1) space complexity.
-def remove_dups_wo_set(head):
+def remove_dups_wo_buff(head):
     no_dups = copy.deepcopy(head)
     curr = no_dups
     while curr:
@@ -56,11 +56,11 @@ linked_lists = [LinkedList(0, LinkedList(1, LinkedList(2, LinkedList(3, LinkedLi
                 LinkedList(0)]
 
 for ll in linked_lists:
-    print(f"remove_dups_w_set({ll}):", remove_dups_w_set(ll))
+    print(f"remove_dups_w_set({ll}):", remove_dups(ll))
 print()
 
 for ll in linked_lists:
-    print(f"remove_dups_wo_set({ll}):", remove_dups_wo_set(ll))
+    print(f"remove_dups_wo_set({ll}):", remove_dups_wo_buff(ll))
 
 
 
