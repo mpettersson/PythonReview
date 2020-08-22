@@ -107,7 +107,7 @@ class BST:
         if l is not None and l.key == key:
             return l
         r = self.get_node(root.right, key)
-        if r is not None and r.key == key:
+        if r is not None and r.value == key:
             return r
 
     def get_random_node(self, node):
@@ -162,16 +162,16 @@ class BST:
     def is_bst(self, node, min=None, max=None):
         if not node:
             return True
-        if (min != None and node.key <= min) or (max != None and node.key > max):
+        if (min and node.value <= min) or (max and node.value > max):
             return False
-        if (not self.is_bst(node.left, min, node.key)) or (not self.is_bst(node.right, node.key, max)):
+        if (not self.is_bst(node.left, min, node.value)) or (not self.is_bst(node.right, node.value, max)):
             return False
         return True
 
     def in_order_traversal(self, node):
         if not node:
             return []
-        return self.in_order_traversal(node.left) + [node.key] + self.in_order_traversal(node.right)
+        return self.in_order_traversal(node.left) + [node.value] + self.in_order_traversal(node.right)
 
     def is_balanced(self, node):
         if not node:
@@ -243,11 +243,28 @@ class BST:
 
         return total_paths
 
+    def flatten(self):
+        l = []
+        q = [(self.root, 0)]
+        while len(q) > 0:
+            node, i = q.pop(0)
+            if node.left:
+                q.append((node.left, i + 1))
+            if node.right:
+                q.append((node.right, i + 1))
+            if len(l) < (i + 1):
+                l.append([node.key])
+            else:
+                l[i].append(node.key)
+        return [y for x in l for y in x]
+
+
 
 
 
 bst1 = BST([1,2,3,4,5,6,7,8,9,10,11,12,13,14])
 bst1.display()
+print(bst1.flatten())
 print(bst1.is_balanced(bst1.root))
 
 

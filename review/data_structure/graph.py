@@ -48,10 +48,7 @@ class Graph:
         return name in self.map.keys()
 
     def get_node(self, name):
-        if name in self.map.keys():
-            return self.map[name]
-        else:
-            return None
+        return self.map[name] if name in self.map.keys() else None
 
     def get_nodes(self):
         return self.nodes

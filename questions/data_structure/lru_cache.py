@@ -88,7 +88,7 @@ class LRUCache:
             self.remove_key(key)
         # If full, remove least recently used item from cache.
         if len(self._map) >= self._max_size and self._list_tail is not None:
-            self.remove_key(self._list_tail.key)
+            self.remove_key(self._list_tail.value)
         # Insert new node.
         node = LinkedListNode(key, value)
         self._insert_at_front_of_linked_list(node)
@@ -98,7 +98,7 @@ class LRUCache:
         node = self._list_head
         result = "Max Size:%d {" % self._max_size
         while node is not None:
-            result += "%d:%s" % (node.key, node.value)
+            result += "%d:%s" % (node.value, node.value)
             if node is self._list_tail:
                 break
             node = node.next
