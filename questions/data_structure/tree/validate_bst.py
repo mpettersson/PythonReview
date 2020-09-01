@@ -54,7 +54,7 @@ def validate_bst_verbose(root):
 # O(h) where h is the height of the tree (or O(log n) where n is the number of nodes in the tree).
 def validate_bst(node, _min=None, _max=None):
     if node:
-        if _min and node.value <= _min or _max and _max < node.value:
+        if _min is not None and node.value <= _min or _max is not None and _max < node.value:
             return False
         if not validate_bst(node.left, _min, node.value) or not validate_bst(node.right, node.value, _max):
             return False
@@ -69,10 +69,10 @@ class Node:
 
     def __iter__(self):
         if self.left:
-            yield self.left
+            yield from self.left
         yield self.value
         if self.right:
-            yield self.right
+            yield from self.right
 
     def __repr__(self):
         return ", ".join(map(str, self))

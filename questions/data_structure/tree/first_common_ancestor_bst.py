@@ -61,29 +61,29 @@ def path_to_node(root, node):
 # Time complexity is O(n) where n is the number of nodes in the tree. Space complexity is O(h), where h is the height of
 # the tree ((however, the worst case space could be O(n)).
 def first_common_ancestor_bst_rec(root, n1, n2):
-    if root and n1 and n2:
-        if root is n1 and is_in_bst(root, n2) or \
-           root is n2 and is_in_bst(root, n1) or \
-           n1.value <= root.value < n2.value and is_in_bst(root.left, n1) and is_in_bst(root.right, n2) or \
-           n2.value <= root.value < n1.value and is_in_bst(root.left, n2) and is_in_bst(root.right, n1):
+
+    def wrapper(root, n1, n2):
+        if root is n1 or root is n2 or n1.value <= root.value < n2.value or n2.value <= root.value < n1.value:
             return root
-        elif n1.value <= root.value and n2.value <= root.value:
-            return first_common_ancestor_bst_rec(root.left, n1, n2)
-        elif n1.value > root.value and n2.value > root.value:
-            return first_common_ancestor_bst_rec(root.right, n1, n2)
+        if n1.value <= root.value and n2.value <= root.value:
+            return wrapper(root.left, n1, n2)
+        if root.value < n1.value and root.value < n2.value:
+            return wrapper(root.right, n1, n2)
+
+    if root and n1 and n2 and is_in_bst(root, n1) and is_in_bst(root, n2):
+        return wrapper(root, n1, n2)
 
 
 def is_in_bst(root, node):
     if root and node:
         if root is node:
             return True
-        return True if root.right and node.value > root.value and is_in_bst(root.right, node) or \
-                       root.left and node.value <= root.value and is_in_bst(root.left, node) else False
-    return False
+        return root.right and node.value > root.value and is_in_bst(root.right, node) or \
+               root.left and node.value <= root.value and is_in_bst(root.left, node)
 
 
 class Node:
-    def __init__(self, value, left=None, right=None, parent=None):
+    def __init__(self, value, left=None, right=None):
         self.value = value
         self.left = left
         self.right = right

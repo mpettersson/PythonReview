@@ -64,10 +64,10 @@ class Node:
 
     def __iter__(self):
         if self.left:
-            yield self.left
+            yield from self.left
         yield self.value
         if self.right:
-            yield self.right
+            yield from self.right
 
     def __repr__(self):
         return ", ".join(map(str, self))

@@ -75,10 +75,10 @@ class Node:
 
     def __iter__(self):
         if self.left:
-            yield self.left
+            yield from self.left
         yield self.value
         if self.right:
-            yield self.right
+            yield from self.right
 
     def __repr__(self):
         return ", ".join(map(str, self))
@@ -131,5 +131,4 @@ for i, t in enumerate(trees):
     print(f"display(t[{i}]):"); display(t)
     print(f"is_bst_via_gen(t[{i}])", is_bst_via_gen(t))
     print(f"is_bst(t[{i}]):", is_bst(t), "\n")
-
 

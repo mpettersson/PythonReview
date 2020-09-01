@@ -1,55 +1,50 @@
 r"""
-    LIST OF DEPTHS (CCI 4.3)
+    NEXT LARGER VALUE (EPI 15.2)
 
-    Given a binary tree, design an algorithm which creates a linked list of all the nodes at each depth (e.g., if you
-    have a tree with depth D, you'll have D linked lists).
+    Write a program that takes as input a BST and a value, and returns the first node that would appear in an in-order
+    traversal which is greater than the input value.
 
-    Consider the following tree:
+    Consider the following BST, t:
 
-             3
-           /   \
-          1     5
-         / \   /
-        0  2  4
+                  -19-
+                /      \
+              7         43
+            /  \       /   \
+           3   11     23   47
+         /  \   \      \    \
+        2   5   17     37   53
+                /     /  \
+               13   29   41
+                     \
+                     31
 
     Example:
-        Input = Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), None))  # or, the tree above
-        Output = [[3], [1, 5], [0, 2, 4]]
+        Input = t, 10
+        Output = 11
+
+    NOTE: For a slight variation of this question, see the successor.py/"SUCCESSOR" problem.
 """
 
 
-# BFS/Iterative Approach:  Time and space complexity is O(n) where n is the number of nodes in the tree.
-def list_of_depths_bfs(root):
-    res = []
-    q = [(root, 1)]
-    while len(q) > 0:
-        node, depth = q.pop(0)
-        if node.left:
-            q.append((node.left, depth + 1))
-        if node.right:
-            q.append((node.right, depth + 1))
-        if len(res) < depth:
-            res.append([node.value])
-        else:
-            res[depth - 1].append(node.value)
-    return res
+# In-Order Traversal Naive Approach: Time complexity is O(n), where n is the number of nodes in the tree, space
+# complexity is O(h) where h is the height of the tree.
+def next_larger_value_naive(t, v):
+    if t and v is not None:
+        it = iter(t)
+        for i in it:
+            if i > v:
+                return i
 
 
-# DFS/Recursive Approach:  Time and space complexity is O(n) where n is the number of nodes in the tree.
-def list_of_depths_dfs(root):
-    def wrapper(node, level, l):
-        if node:
-            if len(l) < level:
-                l.append([node.value])
-            else:
-                l[level - 1].append(node.value)
-            if node.left:
-                wrapper(node.left, level + 1, l)
-            if node.right:
-                wrapper(node.right, level + 1, l)
-    res = []
-    wrapper(root, 1, res)
-    return res
+# Recursive Approach: Time complexity for a balanced tree is O(log(n)), with O(n) worst case time for unbalanced trees.
+# Space complexity is O(h) where h is the height of the tree.
+def next_larger_value(t, v):
+    if t and v is not None:
+        if v < t.value:
+            res = next_larger_value(t.left, v)
+            return res if res is not None and res < t.value else t.value
+        if t.value <= v:
+            return next_larger_value(t.right, v)
 
 
 class Node:
@@ -66,10 +61,9 @@ class Node:
             yield from self.right
 
     def __repr__(self):
-        return ", ".join(map(str, self))
+        return ", ".join(map(repr, self))
 
 
-# Helper Function
 def display(node):
     def wrapper(node):
         """Returns list of strings, width, height, and horizontal coordinate of the root."""
@@ -107,19 +101,19 @@ def display(node):
             print(line)
 
 
-trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), None)),
-         Node(26, Node(5, Node(-37, Node(-74, Node(-86), Node(-51)), Node(-7, Node(-17))),
-                          Node( 17, Node(11, Node(5)), Node(26, Node(18)))),
-                  Node(74, Node(41, Node(34, Node(28)), Node(52, Node(47))),
-                           Node(90, Node(88, Node(86)), Node(99, Node(95))))),
-         Node(27, Node(2, None, Node(17, Node(11, Node(5)), Node(26, Node(18)))),
-                  Node(74, Node(41, Node(34, Node(28))),
-                           Node(90, Node(88), Node(99, None, Node(105, None, Node(420)))))),
-         Node(0)]
+tree = Node(19, Node(7, Node(3, Node(2), Node(5)), Node(11, None, Node(17, Node(13)))),
+                Node(43, Node(23, None, Node(37, Node(29, None, Node(31)), Node(41))), Node(47, None, Node(53))))
+args = [10, -3, 53, 18, 19, 17, None]
 
-for i, t in enumerate(trees):
-    print(f"display(trees[{i}]):"); display(t)
-    print(f"list_of_depths_dfs(trees[{i}]):", list_of_depths_dfs(t))
-    print(f"list_of_depths_bfs(trees[{i}]):", list_of_depths_bfs(t), "\n")
+print("display(tree):")
+display(tree)
+print()
+
+for i in args:
+    print(f"next_larger_value_naive(tree, {i}):", next_larger_value_naive(tree, i))
+print()
+
+for i in args:
+    print(f"next_larger_value(tree, {i}):", next_larger_value(tree, i))
 
 

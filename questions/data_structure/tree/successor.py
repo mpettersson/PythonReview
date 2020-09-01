@@ -15,6 +15,8 @@ r"""
     Example:
         Input = tree[0] # or, the node with value 0 in the BST (tree) above
         Output = 1      # or, the node with value 1
+
+    NOTE: For a slight variation of this question, see find_first_greater_than_k.py/"FIND FIRST GREATER THAN K".
 """
 
 
@@ -62,10 +64,10 @@ class Node:
 
     def __iter__(self):
         if self.left:
-            yield self.left
+            yield from self.left
         yield self.value
         if self.right:
-            yield self.right
+            yield from self.right
 
     def __repr__(self):
         return repr(self.value)
