@@ -14,6 +14,12 @@ def logical_right_shift(num, i):
     return (num % 0x100000000) >> i
 
 
+def get_sign_bit(num):
+    return -(num >> num.bit_length())   # Have to use .bit_length() bc we don't know the length of num.
+    # return -(num >> 31)               # If num is 32 bit.
+    # return -(num >> 63)               # If num is 64 bit.
+
+
 def get_ith_bit(num, i):
     return 1 if (num & (1 << i)) else 0
 
@@ -117,7 +123,7 @@ def num_bits_to_flip_to_convert_a_to_b(a, b):
     num = 0
     while c > 0:
         num += 1
-        c = c & (c - 1) # Each time the least sig 1 is removed
+        c = c & (c - 1)     # Each time the least sig 1 is removed
     return num
 
 
@@ -125,18 +131,37 @@ def swap_odd_even_bin_bits(num):
     return (logical_right_shift((num & 0xaaaaaaaa), 1)) | ((num & 0x55555555) << 1)
 
 
+# How to format as binary in python
+print(f"{bin(9)}")                          # '0b1001'
+print(f"{bin(-9)}")                         # '-0b1001'
+print('{0:07b}'.format(9))                  # '0001001'
+print('{0:07b}'.format(-9))                 # '-001001'
+n = 7
+print(f"{n:b}".zfill(8))                    # '00000111'
+print(f"{-n:b}".zfill(8))                   # '-0000111'
+
 # How to enter binary in python
 print("Enter integers as binary with the 0b or 0B prefix, i.e., 0B1010 is ", 0B1010)
 print("Enter negative integers as binary with the -0b or -0B prefix, i.e., -0B1010 is ", -0B1010)
 print()
 
-# test get_ith_bit
-print("get_ith_bit(0b1010, 0):", bin(get_ith_bit(0b1010, 0)))
-print()
+# Misc. Binary Stuff
+n = 7
+print("n.bit_length():", n.bit_length())    # Must be a reference (doesn't work on int literal).
+n.to_bytes(4, "big", signed=True)           # Size, "big" (first) | "little" (first) | "sys.byteorder", signed
 
 # test logical_right_shift
 print("logical_right_shift(0b1010, 1):", bin(logical_right_shift(0b1010, 1)))
 print("logical_right_shift(-0b1010, 1):", bin(logical_right_shift(-0b1010, 1)))
+print()
+
+# test get_sign_bit:
+print("get_sign_bit(0b1010):", bin(get_sign_bit(0b1010)))
+print("get_sign_bit(-0b1010):", bin(get_sign_bit(-0b1010)))
+print()
+
+# test get_ith_bit
+print("get_ith_bit(0b1010, 0):", bin(get_ith_bit(0b1010, 0)))
 print()
 
 # test set_ith_bit_to_1

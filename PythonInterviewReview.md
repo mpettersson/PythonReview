@@ -503,7 +503,7 @@ Miscellaneous Python
                                         list(map(lambda x: x * x, range(0,6)))  
 -[ ] Filter  
                                         # Filter returns an iterable filter object.  
-                                        list(filter(lambda x: x % 2 == 0, range(1, 11)))  
+                                        list(filter(lambda x: x % 2 == 0, range(10, 0, -1)))  # Range Counting Down
 -[ ] Reduce  
                                         # Returns value NOT iterable. 
                                         import functools  # Need to import functools!   
