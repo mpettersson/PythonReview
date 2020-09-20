@@ -11,11 +11,9 @@
 
 # Verbose Comparison Key Approach:
 def sort_anagrams_verbose(anagrams):
-    return sorted(anagrams, key=anagram_cmp)
-
-
-def anagram_cmp(s):
-    return sorted(s)
+    def _anagram_cmp(s):
+        return sorted(s)
+    return sorted(anagrams, key=_anagram_cmp)
 
 
 # Pythonic Comparison Key Approach:
@@ -25,15 +23,13 @@ def sort_anagrams(anagrams):
 
 # Enhanced Approach (groups by len() then sorted()):
 def group_anagrams(anagrams):
-    return sorted(list(map(lambda s: s.lower(), anagrams)), key=lambda x: (len(x), sorted(x)))
+    return sorted(map(str.lower, anagrams), key=lambda x: (len(x), sorted(x)))
 
 
 anagrams = ["they", "race", "fights", "care", "listens", "silent", "acre", "funeral", "admirer", "married", "angered",
-            "dog", "enraged", "death", "hated", "elvis", "lives", "creative", "leaf", "flea", "reactive", "god"]
+            "dog", "enraged", "death", "fun", "hated", "elvis", "lives", "creative", "leaf", "flea", "reactive", "god"]
 
-print("anagrams:", anagrams)
-print()
-
+print("anagrams:", anagrams, "\n")
 print("sort_anagrams_verbose(anagrams):", sort_anagrams_verbose(anagrams))
 print("sort_anagrams(anagrams):        ", sort_anagrams(anagrams))
 print("group_anagrams(anagrams):       ", group_anagrams(anagrams))
