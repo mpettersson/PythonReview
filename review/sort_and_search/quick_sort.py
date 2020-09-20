@@ -15,41 +15,61 @@
 """
 
 
-def quick_sort(arr):
-    _quick_sort(arr, 0, len(arr) - 1)
+# Hoare Partition Approach (rewritten to use while, not do while)
+# SEE https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme
+def quick_sort_hoare(l):
+
+    def _quick_sort_hoare(l, left, right):
+        if left < right:
+            p = _hoare_partition(l, left, right)
+            _quick_sort_hoare(l, left, p)
+            _quick_sort_hoare(l, p + 1, right)
+
+    def _hoare_partition(l, left, right):
+        pivot = l[(left + right) // 2]
+        while True:
+            while l[left] < pivot:
+                left += 1
+            while l[right] > pivot:
+                right -= 1
+            if left >= right:
+                return right
+            l[left], l[right] = l[right], l[left]
+            left += 1
+            right -= 1
+
+    if l is not None and len(l) > 1:
+        _quick_sort_hoare(l, 0, len(l) - 1)
 
 
-def _quick_sort(arr, left, right):
-    if left < right:
-        index = _partition(arr, left, right)
-        _quick_sort(arr, left, index - 1)
-        _quick_sort(arr, index + 1, right)
+# Lomuto Partition Approach
+# SEE https://en.wikipedia.org/wiki/Quicksort#Lomuto_partition_scheme
+def quick_sort_lomuto(l):
+
+    def _quick_sort(l, left, right):
+        if left < right:
+            p = _lomuto_partition(l, left, right)
+            _quick_sort(l, left, p - 1)
+            _quick_sort(l, p + 1, right)
+
+    def _lomuto_partition(l, left, right):
+        pivot = l[right]
+        i = left
+        for j in range(left, right):
+            if l[j] < pivot:
+                l[i], l[j] = l[j], l[i]
+                i += 1
+        l[i], l[right] = l[right], l[i]
+        return i
+
+    if l is not None and len(l) > 1:
+        _quick_sort(l, 0, len(l) - 1)
 
 
-def _partition(arr, left, right):
-    # i will be the index of the last item smaller than the pivot.
-    i = left - 1
-    pivot = arr[right]
+l = [44, 77, 59, 39, 41, 69, 72, 72, 41, 37, 11, 72, 16, 22, 33]
 
-    for j in range(left, right):
-        # If current element is smaller than or equal to pivot
-        if arr[j] <= pivot:
-            # Increment index of smaller element
-            i = i + 1
-            arr[i], arr[j] = arr[j], arr[i]
+(lambda y: (print(f"quick_sort_hoare({y}):  ", end=""), quick_sort_hoare(y), print(y, "\n")))((lambda x: x[:])(l))
 
-    arr[i + 1], arr[right] = arr[right], arr[i + 1]
-    return i + 1
+(lambda y: (print(f"quick_sort_lomuto({y}): ", end=""), quick_sort_lomuto(y), print(y, "\n")))((lambda x: x[:])(l))
 
 
-import copy
-orig_list = [44, 77, 59, 39, 41, 69, 68, 10, 72, 99, 72, 11, 41, 37, 11, 72, 16, 22, 10, 33]
-l = copy.deepcopy(orig_list)
-
-sorted_list = copy.deepcopy(orig_list)
-quick_sort(sorted_list)
-
-print(sorted_list)
-
-l.sort()
-print(l)

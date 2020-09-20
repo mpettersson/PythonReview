@@ -54,7 +54,8 @@ def parens_naive(n):
 #   Right Paren: We insert a right paren IFF it won't create a syntax error (aka more right than left parens).
 # NOTE: Because a left and right paren is inserted at each index in the string, and indexes are never repeated,
 # each string is guaranteed to be unique.
-# Time and space complexity is between O(2**n) and O(n!).
+# Time and space complexity is equal to O(catalan(n)), or the nth Catalan Number (basically between O(2**n) and O(n!)).
+# SEE: https://en.wikipedia.org/wiki/Catalan_number)
 def parens(n):
 
     def _parens(values, l_parens, r_parens, char_list, i):

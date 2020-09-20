@@ -15,38 +15,34 @@
 
 # Iterative Approach:
 def binary_search(l, x):
-    if not x or not l or l is []:
-        return
-    low = 0
-    high = len(l) - 1
-    while low <= high:
-        mid = (low + high) // 2
-        if l[mid] < x:
-            low = mid + 1
-        elif l[mid] > x:
-            high = mid - 1
-        else:
-            return mid
-    return
+    if l is not None and x is not None and len(l) > 0:
+        lo = 0
+        hi = len(l) - 1
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            if l[mid] < x:
+                lo = mid + 1
+            elif l[mid] > x:
+                hi = mid - 1
+            else:
+                return mid
 
 
 # Recursive Approach:
 def binary_search_rec(l, x):
-    if not x or not l or l is []:
-        return
 
-    def _binary_search_rec(l, x, low, high):
-        if low > high:
-            return
-        mid = (low + high) // 2
-        if l[mid] < x:
-            return _binary_search_rec(l, x, mid + 1, high)
-        elif l[mid] > x:
-            return _binary_search_rec(l, x, low, mid - 1)
-        else:
-            return mid
+    def _binary_search_rec(l, x, lo, hi):
+        if lo <= hi:
+            mid = (lo + hi) // 2
+            if l[mid] < x:
+                return _binary_search_rec(l, x, mid + 1, hi)
+            elif l[mid] > x:
+                return _binary_search_rec(l, x, lo, mid - 1)
+            else:
+                return mid
 
-    return _binary_search_rec(l, x, 0, len(l) - 1)
+    if l is not None and x is not None and len(l) > 0:
+        return _binary_search_rec(l, x, 0, len(l) - 1)
 
 
 args = [([-95, -79, -75, -62, -59, -29, -28, -28, -28, 10, 21, 27, 41, 45, 49, 52, 75, 80, 92, 99], 10),
@@ -58,10 +54,11 @@ args = [([-95, -79, -75, -62, -59, -29, -28, -28, -28, 10, 21, 27, 41, 45, 49, 5
         (None, None)]
 
 for l, x in args:
-    print(f"x: {x}, l: {l}")
-    print("binary_search(l, x):", binary_search(l, x))
-    print("binary_search_rec(l, x):", binary_search_rec(l, x))
-    print()
+    print(f"binary_search({l}, {x}):", binary_search(l, x))
+print()
 
+for l, x in args:
+    print(f"binary_search_rec({l}, {x}):", binary_search_rec(l, x))
+print()
 
 
