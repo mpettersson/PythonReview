@@ -26,11 +26,11 @@ def quick_sort_hoare(l):
             _quick_sort_hoare(l, p + 1, right)
 
     def _hoare_partition(l, left, right):
-        pivot = l[(left + right) // 2]
+        pivot_val = l[(left + right) // 2]
         while True:
-            while l[left] < pivot:
+            while l[left] < pivot_val:
                 left += 1
-            while l[right] > pivot:
+            while l[right] > pivot_val:
                 right -= 1
             if left >= right:
                 return right
@@ -53,10 +53,10 @@ def quick_sort_lomuto(l):
             _quick_sort(l, p + 1, right)
 
     def _lomuto_partition(l, left, right):
-        pivot = l[right]
+        pivot_val = l[right]
         i = left
         for j in range(left, right):
-            if l[j] < pivot:
+            if l[j] < pivot_val:
                 l[i], l[j] = l[j], l[i]
                 i += 1
         l[i], l[right] = l[right], l[i]

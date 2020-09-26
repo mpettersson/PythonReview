@@ -12,57 +12,40 @@
 
     Select the kth smallest element in an unordered list; pick a random element (convention uses last), then swap the
     elements such that all of the elements smaller than it comes before, and everything larger comes after.
-    Recursively do this on the part with k (different than Quick Sort).
+    Recursively do this on the part with k (the only bit where Quick Select differs from Quick Sort).
 """
 
 
-def quick_select(arr, k):
-    return quick_select_rec(arr, 0, len(arr) - 1, k)
+def quick_select(l, k):
+
+    def _quick_select(l, k, lo, hi):
+        pivot_idx = _partition(l, lo, hi)
+        if pivot_idx - lo is k - 1:
+            return l[pivot_idx]
+        if pivot_idx - lo > k - 1:
+            return _quick_select(l, k, lo, pivot_idx - 1)
+        return _quick_select(l, k - pivot_idx + lo - 1, pivot_idx + 1, hi, )
+
+    def _partition(l, lo, hi):                  # Same as _lomuto_partition() in quick_sort.py
+        pivot_val = l[hi]
+        i = lo
+        for j in range(lo, hi):
+            if l[j] <= pivot_val:
+                l[i], l[j] = l[j], l[i]
+                i += 1
+        l[i], l[hi] = l[hi], l[i]
+        return i
+
+    if l is not None and k is not None and 0 < k <= len(l):
+        return _quick_select(l, k, 0, len(l) - 1)
 
 
-def quick_select_rec(arr, l, r, k):
-    # if k is smaller than number of  elements in array
-    if 0 < k <= r - l + 1:
+l = [44, 77, 59, 39, 41, 69, 68, 10, 72, 33, 99, 72, 11, -1, 41, 37, 11, 72, 16, 22, 10, 33]
+k_vals = [-9, -1, 1, 6, 9, 20, 22, None]
 
-        # Partition the array around last element and get position of pivot element in sorted array
-        index = partition(arr, l, r)
+print(f"l: {l}\n")
 
-        # if position is same as k
-        if index - l == k - 1:
-            return arr[index]
-
-        # If position is more, recur for left subarray
-        if index - l > k - 1:
-            return quick_select_rec(arr, l, index - 1, k)
-        return quick_select_rec(arr, index + 1, r, k - index + l - 1)
-    return None
-
-
-# Partition is the same as Quick Sorts partition.
-def partition(arr, l, r):
-    pivot = arr[r]
-    i = l
-
-    for j in range(l, r):
-        if arr[j] <= pivot:
-            arr[i], arr[j] = arr[j], arr[i]
-            i += 1
-
-    arr[i], arr[r] = arr[r], arr[i]
-    return i
-
-
-k_list = [-1, 0, 6, 9, 20, 22]
-orig_list = [44, 77, 59, 39, 41, 69, 68, 10, 72, 99, 72, 11, 41, 37, 11, 72, 16, 22, 10, 33]
-print("orig_list:", orig_list)
-print("sorted(orig_list):", sorted(orig_list))
-print()
-
-for k in k_list:
-    print("quick_select(orig_list,", k, "):", quick_select(orig_list, k))
-
-
-
-
+for k in k_vals:
+    print(f"quick_select(l, {k}): {quick_select(l[:], k)}")
 
 

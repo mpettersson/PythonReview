@@ -1,34 +1,29 @@
 """
     SORTED MERGE (CCI 10.1)
 
-    You are given two sorted arrays, A and B, where A has a large enough buffer at the end to hold B. Write a method to
-    merge B into A in sorted order.
+    You are given two sorted lists, a and b, where a has a large enough buffer at the end to hold b. Write a function to
+    merge b into a in sorted order.
 
     Example:
         Input = [0, 1, 3, 11, None, None, None], [0, 10, 12]
-        Output = [0, 0, 1, 3, 10, 11, 12]
+        Output = None   # However, a is updated to be: [0, 0, 1, 3, 10, 11, 12]
 """
 
 
-# Complexity:  Runtime is O(N + M) where N and M are the lengths of A and B, Space is O(1).
+# Approach:  Runtime complexity is O(n + m) where n and m are the lengths of a and b.  Space complexity is O(1).
 def sorted_merge(a, b):
-    if not a or not b or b is []:
-        return a
-
-    idx_merged = len(a) - 1
-    idx_a = idx_merged - len(b)
-    idx_b = len(b) - 1
-
-    while idx_b >= 0:
-        if idx_a > 0 and a[idx_a] > b[idx_b]:
-            a[idx_merged] = a[idx_a]
-            idx_a -= 1
-        else:
-            a[idx_merged] = b[idx_b]
-            idx_b -= 1
-        idx_merged -= 1
-
-    return a
+    if a is not None and b is not None and len(b) > 0:
+        insert_index = len(a) - 1
+        last_a = insert_index - len(b)
+        last_b = len(b) - 1
+        while last_b >= 0:
+            if last_a >= 0 and a[last_a] > b[last_b]:
+                a[last_a], a[insert_index] = a[insert_index], a[last_a]
+                last_a -= 1
+            else:
+                b[last_b], a[insert_index] = a[insert_index], b[last_b]
+                last_b -= 1
+            insert_index -= 1
 
 
 lists = [([0, 1, 3, 11, None, None, None], [0, 10, 12]),
@@ -39,7 +34,8 @@ lists = [([0, 1, 3, 11, None, None, None], [0, 10, 12]),
          ([None], [1])]
 
 for a, b in lists:
-    print(f"sorted_merge({a}, {b}):", sorted_merge(a, b))
-
+    print(f"sorted_merge({a}, {b})")
+    sorted_merge(a, b)
+    print(f"a: {a}\n")
 
 
