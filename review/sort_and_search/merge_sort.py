@@ -17,11 +17,11 @@
 """
 
 
-def merge_sort(arr):
-    if len(arr) > 1:
-        mid = len(arr) // 2
-        left = arr[:mid]
-        right = arr[mid:]
+def merge_sort(l):
+    if len(l) > 1:
+        mid = len(l) // 2
+        left = l[:mid]
+        right = l[mid:]
 
         merge_sort(left)
         merge_sort(right)
@@ -31,21 +31,21 @@ def merge_sort(arr):
         # Copy data to temp arrays left[] and right[]
         while i < len(left) and j < len(right):
             if left[i] < right[j]:
-                arr[k] = left[i]
+                l[k] = left[i]
                 i += 1
             else:
-                arr[k] = right[j]
+                l[k] = right[j]
                 j += 1
             k += 1
 
         # Checking if any element was left; only one will ever be True.
         while i < len(left):
-            arr[k] = left[i]
+            l[k] = left[i]
             i += 1
             k += 1
 
         while j < len(right):
-            arr[k] = right[j]
+            l[k] = right[j]
             j += 1
             k += 1
 

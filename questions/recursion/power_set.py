@@ -17,43 +17,25 @@ import itertools
 import time
 
 
-# Reduce/Fold Left & Lambda Approach: Time and space is O(2**n), where n is the number of list items.
+# Itertools Combinations Approach: Time and space is O(2**n), where n is the number of list items.
 # NOTE: This is the FASTEST approach!!!
+def power_set_itertools_combinations(iterable):     # NOTE: This takes an iterable, so works on STRINGS (i.e., "AB")
+    results = []
+    for r in range(len(iterable) + 1):
+        for e in itertools.combinations(iterable, r):
+            results.append(e)
+    return results
+
+
+# Reduce/Fold Left & Lambda Approach: Time and space is O(2**n), where n is the number of list items.
 def power_set_functools_reduce(iterable):           # NOTE: This takes an iterable, so works on STRINGS (i.e., "AB")
     return functools.reduce(lambda t_result, h: t_result + [subset + [h] for subset in t_result], iterable, [[]])
 
 
-# Itertools Combinations Approach: Time and space is O(2**n), where n is the number of list items.
+# (One Liner) Alt. Itertools Combinations Approach: Time and space is O(2**n), where n is the number of list items.
 # NOTE: This is a close second to the fastest approach.
-def power_set_itertools_combinations(iterable):     # NOTE: This takes an iterable, so works on STRINGS (i.e., "AB")
-    return [set(combo) for r in range(len(s) + 1) for combo in itertools.combinations(iterable, r)]
-
-
-# Wrong Recursive Approach:  This doesn't add the empty set, therefore, this DOESN'T produce a power set.  Time and
-# space complexity is O(2**n), where n is the number of set items.
-def power_set_wrong(s):
-    if s is not None:
-        if len(s) is 0:
-            return []
-        h = s.pop()
-        t = power_set_wrong(s)
-        th = copy.deepcopy(t)
-        for i in th:
-            i.add(h)
-        return [{h}] + t + th   # NOTE: Don't use set(h) here, because if h is an int, it will fail.
-
-
-# Recursive Approach:  Time and space complexity is O(2**n), where n is the number of set items.
-def power_set(s):
-    if s is not None:
-        if len(s) is 0:
-            return [set()]
-        h = s.pop()
-        t = power_set(s)
-        th = copy.deepcopy(t)
-        for i in th:
-            i.add(h)
-        return t + th
+def power_set_itertools_combinations_alt(iterable):   # NOTE: Takes an iterable, so works on STRINGS (i.e., "AB")
+    return [set(combo) for r in range(len(iterable) + 1) for combo in itertools.combinations(iterable, r)]
 
 
 # NOTE: The number of subsets is equal to the sum of all subsets, where a subset is a permutation (either including, or
@@ -76,34 +58,60 @@ def power_set_combinatorics(s):
         return res
 
 
-sets = [{'A', 'B', 'C'}, {0, 1, 2, 4}, set()]
-iterables = ["abc", range(3)]
+# Recursive Approach:  Time and space complexity is O(2**n), where n is the number of set items.
+def power_set(s):
+    if s is not None:
+        if len(s) is 0:
+            return [set()]
+        h = s.pop()
+        t = power_set(s)
+        th = copy.deepcopy(t)
+        for i in th:
+            i.add(h)
+        return t + th
 
-for s in sets + iterables:
-    print(f"power_set_itertools_combinations({s}):", power_set_itertools_combinations(s))
-print()
 
-for s in sets + iterables:
-    print(f"power_set_functools_reduce({s}):", power_set_functools_reduce(s))
-print()
+# Wrong Recursive Approach:  This doesn't add the empty set, therefore, this DOESN'T produce a power set.  Time and
+# space complexity is O(2**n), where n is the number of set items.
+def power_set_wrong(s):
+    if s is not None:
+        if len(s) is 0:
+            return []
+        h = s.pop()
+        t = power_set_wrong(s)
+        th = copy.deepcopy(t)
+        for i in th:
+            i.add(h)
+        return [{h}] + t + th   # NOTE: Don't use set(h) here, because if h is an int, it will fail.
 
-for s in sets:
-    print(f"power_set_wrong({s}):", power_set_wrong(s.copy()))
-print()
 
-for s in sets:
-    print(f"power_set({s}):", power_set(s.copy()))
-print()
+iterables = [{'A', 'B', 'C'},
+             [0, 1, 2, 4],
+             "abc",
+             range(5),
+             set(),
+             []]
 
-for s in sets:
-    print(f"power_set_combinatorics({s}):", power_set_combinatorics(s.copy()))
-print()
+for iterable in iterables:
+    print(f"power_set_itertools_combinations({iterable}):", power_set_itertools_combinations(iterable))
+    print(f"power_set_functools_reduce({iterable}):", power_set_functools_reduce(iterable))
+    print(f"power_set_itertools_combinations_alt({iterable}):", power_set_itertools_combinations_alt(iterable))
+    print(f"power_set_combinatorics(set({iterable})):", power_set_combinatorics(set(iterable)))
+    print(f"power_set(set({iterable})):", power_set(set(iterable)))
+    print(f"power_set_wrong(set({iterable})):", power_set_wrong(set(iterable)))
+    print()
 
+fns = [power_set_itertools_combinations,
+       power_set_functools_reduce,
+       power_set_itertools_combinations_alt,
+       power_set_combinatorics,power_set,
+       power_set_wrong]
 s = set(range(18))
-t = time.time(); print(f"power_set_functools_reduce({s})", end=""); power_set_functools_reduce(s.copy()); print(f" took {time.time() - t} seconds")
-t = time.time(); print(f"power_set_itertools_combinations({s})", end=""); power_set_itertools_combinations(s.copy()); print(f" took {time.time() - t} seconds")
-t = time.time(); print(f"power_set_wo_empty_set({s})", end=""); power_set_wrong(s.copy()); print(f" took {time.time() - t} seconds")
-t = time.time(); print(f"power_set({s})", end=""); power_set(s.copy()); print(f" took {time.time() - t} seconds")
-t = time.time(); print(f"power_set_combinatorics({s})", end=""); power_set_combinatorics(s.copy()); print(f" took {time.time() - t} seconds")
+
+print(f"s: {s}")
+for fn in fns:
+    t = time.time(); print(f"{fn.__name__}(s)", end="")
+    fn(set(s))
+    print(f" took {time.time() - t} seconds")
 
 

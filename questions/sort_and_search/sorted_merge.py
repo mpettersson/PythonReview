@@ -1,5 +1,5 @@
 """
-    SORTED MERGE (CCI 10.1)
+    SORTED MERGE (CCI 10.1, EPI 14.2)
 
     You are given two sorted lists, a and b, where a has a large enough buffer at the end to hold b. Write a function to
     merge b into a in sorted order.
