@@ -5,16 +5,36 @@
     the second project).  All of a project's dependencies must be built before the project is.  Find a build order that
     will allow the projects to be built.  If there is no valid build order, return an error.
 
+    Consider the following graph:
+            a       c
+          ↗   ↘   ↙
+        f       d
+          ↘   ↗
+            b       e
+
     Example:
-        Input = {projects:['a', 'b', 'c', 'd', 'e', 'f'],
-                 dependencies:[('d', 'a'), ('b', 'f'), ('d', 'b'), ('a', 'f'), ('c', 'd')]}
+                projects = ['a', 'b', 'c', 'd', 'e', 'f']
+                dependencies = [('d', 'a'), ('b', 'f'), ('d', 'b'), ('a', 'f'), ('c', 'd')]
+        Input = projects, dependencies
         Output = ['e', 'f', 'a', 'b', 'd', 'c']  # or ['f', 'e', 'a', 'b', 'd', 'c'] would also be acceptable.
+
+    Variations:
+        - SEE: deadlock_detection.py
 """
 
 
 # Topological Sort (Adjacency List) Approach:  Takes O(p + d) time, where p is the number of projects and d is the
 # number of dependency pairs.  Takes O(p) space.
 def build_order_adj_list(projects, dependencies):
+
+    def _build_adj_list(projects, dependencies):
+        if projects:
+            adj_list = {p: [] for p in projects}
+            for adj, n in dependencies:
+                adj_list[n].append(adj)
+            return adj_list
+        raise Exception("Should be one or more project.")
+
     g = _build_adj_list(projects, dependencies)
     if g:
         order = []                                      # Use list as ordering queue.
@@ -38,18 +58,18 @@ def build_order_adj_list(projects, dependencies):
     raise Exception("Topological Sort Algorithm Failed")
 
 
-def _build_adj_list(projects, dependencies):
-    if projects:
-        adj_list = {p: [] for p in projects}
-        for adj, n in dependencies:
-            adj_list[n].append(adj)
-        return adj_list
-    raise Exception("Should be one or more project.")
-
-
 # Topological Sort (Adjacency Matrix) Approach:  Takes O(p + d) time, where p is the number of projects and d is the
 # number of dependency pairs.  Takes O(p) space.
 def build_order_adj_matrix(projects, dependencies):
+
+    def _build_adj_matrix(projects, dependencies):
+        if projects:
+            adj_matrix = [[0 for _ in range(len(projects))] for _ in range(len(projects))]
+            for proj, req in dependencies:
+                adj_matrix[projects.index(req)][projects.index(proj)] = 1
+            return adj_matrix
+        raise Exception("Should be one or more project.")
+
     adj_matrix = _build_adj_matrix(projects, dependencies)
     if adj_matrix:
         order = []                                      # Use list as ordering queue.
@@ -71,20 +91,32 @@ def build_order_adj_matrix(projects, dependencies):
     raise Exception("Topological Sort Algorithm Failed")
 
 
-def _build_adj_matrix(projects, dependencies):
-    if projects:
-        adj_matrix = [[0 for _ in range(len(projects))] for _ in range(len(projects))]
-        for proj, req in dependencies:
-            adj_matrix[projects.index(req)][projects.index(proj)] = 1
-        return adj_matrix
-    raise Exception("Should be one or more project.")
-
-
 # DFS/Recursive Approach:  This approach uses state and the recursion stack to ensure build order (that is, you can't
 # add a project to the build order until you've finished/returned from all of it's recursive dependencies/calls).
 # Similar to Topological Sort, this takes O(p + d) time, where p is the number of projects and d is the number of
 # dependency pairs, and O(p) space.
 def build_order_dfs_adj_list(projects, dependencies):
+
+    def _dfs(n, adj_list, order):
+        if adj_list[n][1] is "PARTIAL":
+            return False
+        if adj_list[n][1] is "BLANK":
+            adj_list[n][1] = "PARTIAL"
+            for a in adj_list[n][0]:
+                if not _dfs(a, adj_list, order):
+                    return False
+            adj_list[n][1] = "COMPLETE"
+            order.insert(0, n)
+        return True
+
+    def _build_adj_list(projects, dependencies):
+        if projects:
+            adj_list = {p: [] for p in projects}
+            for adj, n in dependencies:
+                adj_list[n].append(adj)
+            return adj_list
+        raise Exception("Should be one or more project.")
+
     adj_list = _build_adj_list(projects, dependencies)
     for k in adj_list.keys():
         adj_list[k] = [adj_list[k], "BLANK"]        # Add state to graph; "BLANK" -> "PARTIAL" -> "COMPLETE"
@@ -97,23 +129,12 @@ def build_order_dfs_adj_list(projects, dependencies):
         return order
 
 
-def _dfs(n, adj_list, order):
-    if adj_list[n][1] is "PARTIAL":
-        return False
-    if adj_list[n][1] is "BLANK":
-        adj_list[n][1] = "PARTIAL"
-        for a in adj_list[n][0]:
-            if not _dfs(a, adj_list, order):
-                return False
-        adj_list[n][1] = "COMPLETE"
-        order.insert(0, n)
-    return True
-
-
 projects = ['a', 'b', 'c', 'd', 'e', 'f']
 dependencies = [('d', 'a'), ('b', 'f'), ('d', 'b'), ('a', 'f'), ('c', 'd')]
+
 print(f"projects: {projects}")
-print(f"dependencies: {dependencies}")
+print(f"dependencies: {dependencies}\n")
+
 print(f"build_order_adj_list(projects, dependencies): {build_order_adj_list(projects, dependencies)}")
 print(f"build_order_adj_matrix(projects, dependencies): {build_order_adj_matrix(projects, dependencies)}")
 print(f"build_order_dfs_adj_list(projects, dependencies): {build_order_dfs_adj_list(projects, dependencies)}")
