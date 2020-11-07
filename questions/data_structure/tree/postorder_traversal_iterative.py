@@ -1,5 +1,5 @@
 r"""
-    POSTORDER ITERATIVE
+    POSTORDER TRAVERSAL ITERATIVE
 
     Write a function that takes the root of a binary tree and prints the postorder values of the nodes iteratively (that
     is, without recursion).
@@ -23,7 +23,7 @@ r"""
 # the node to the results stack.  Once the first stack is empty, print the nodes in the result stack.
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(n), where n is the number of nodes in the tree.
-def postorder_iterative_naive(root):
+def postorder_traversal_iterative_naive(root):
     if root:
         stack = [root]
         result_stack = []
@@ -41,7 +41,7 @@ def postorder_iterative_naive(root):
 # Iterative Approach:  Use a stack in place of recursion; the stack tracks (node, if went left, if went right).
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(h), where h is the height of the tree.
-def postorder_iterative(root):
+def postorder_traversal_iterative(root):
     if root:
         stack = [(root, False, False)]                  # (node, went_left, went_right)
         while stack:
@@ -60,7 +60,7 @@ def postorder_iterative(root):
 # node (has the same time/space, but less appending/popping).
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(h), where h is the height of the tree.
-def postorder_iterative_alt(root):
+def postorder_traversal_iterative_alt(root):
     if root:
         stack = [[root, False, False]]  # Index Values; 0: node, 1: has gone left, 2: has gone right
         while stack:
@@ -85,35 +85,34 @@ class Node:
         return repr(self.value)
 
 
-def postorder_recursive(root):
+def postorder_traversal_recursive(root):
     if root:
-        postorder_recursive(root.left)
-        postorder_recursive(root.right)
+        postorder_traversal_recursive(root.left)
+        postorder_traversal_recursive(root.right)
         print(f" {root.value}", end="")
 
 
 def display(node):
-    def wrapper(node):
-        """Returns list of strings, width, height, and horizontal coordinate of the root."""
+    def _display(node):
         if node.right is None and node.left is None:                                        # No child.
             return [str(node.value)], len(str(node.value)), 1, len(str(node.value)) // 2
         if node.right is None:                                                              # Only left child.
-            lines, n, p, x = wrapper(node.left)
+            lines, n, p, x = _display(node.left)
             u = len(str(node.value))
             first_line = (x + 1) * ' ' + (n - x - 1) * '_' + str(node.value)
             second_line = x * ' ' + '/' + (n - x - 1 + u) * ' '
             shifted_lines = [line + u * ' ' for line in lines]
             return [first_line, second_line] + shifted_lines, n + u, p + 2, n + u // 2
         if node.left is None:                                                               # Only right child.
-            lines, n, p, x = wrapper(node.right)
+            lines, n, p, x = _display(node.right)
             u = len(str(node.value))
             first_line = str(node.value) + x * '_' + (n - x) * ' '
             second_line = (u + x) * ' ' + '\\' + (n - x - 1) * ' '
             shifted_lines = [u * ' ' + line for line in lines]
             return [first_line, second_line] + shifted_lines, n + u, p + 2, u // 2
         else:                                                                               # Two children.
-            left, n, p, x = wrapper(node.left)
-            right, m, q, y = wrapper(node.right)
+            left, n, p, x = _display(node.left)
+            right, m, q, y = _display(node.right)
             u = len(str(node.value))
             first_line = (x + 1) * ' ' + (n - x - 1) * '_' + str(node.value) + y * '_' + (m - y) * ' '
             second_line = x * ' ' + '/' + (n - x - 1 + u + y) * ' ' + '\\' + (m - y - 1) * ' '
@@ -124,7 +123,7 @@ def display(node):
             lines = [first_line, second_line] + [a + u * ' ' + b for a, b in zip(left, right)]
             return lines, n + m + u, max(p, q) + 2, n + u // 2
     if node:
-        lines, _, _, _ = wrapper(node)
+        lines, _, _, _ = _display(node)
         for line in lines:
             print(line)
 
@@ -144,14 +143,14 @@ trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4))),
          Node(27, Node(2, None, Node(17, Node(11, Node(5)), Node(26, Node(18)))),
               Node(74, Node(41, Node(34, Node(28))),
                    Node(90, Node(88), Node(99, None, Node(105, None, Node(420))))))]
-fns = [postorder_iterative_naive,
-       postorder_iterative]
+fns = [postorder_traversal_iterative_naive,
+       postorder_traversal_iterative]
 
 for i, tree in enumerate(trees):
     print(f"trees[{i}]:")
     display(tree)
-    print(f"(rec postorder traversal:", end="")
-    postorder_recursive(tree)
+    print(f"(recursive postorder traversal:", end="")
+    postorder_traversal_recursive(tree)
     print(")\n")
     for fn in fns:
         print(f"{fn.__name__}(tree):", end="")

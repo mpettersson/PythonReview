@@ -54,35 +54,34 @@ class Node:
         return repr(self.value)
 
 
-def inorder_recursive(root):
+def inorder_traversal_recursive(root):
     if root:
-        inorder_recursive(root.left)
+        inorder_traversal_recursive(root.left)
         print(f" {root.value}", end="")
-        inorder_recursive(root.right)
+        inorder_traversal_recursive(root.right)
 
 
 def display(node):
-    def wrapper(node):
-        """Returns list of strings, width, height, and horizontal coordinate of the root."""
+    def _display(node):
         if node.right is None and node.left is None:                                        # No child.
             return [str(node.value)], len(str(node.value)), 1, len(str(node.value)) // 2
         if node.right is None:                                                              # Only left child.
-            lines, n, p, x = wrapper(node.left)
+            lines, n, p, x = _display(node.left)
             u = len(str(node.value))
             first_line = (x + 1) * ' ' + (n - x - 1) * '_' + str(node.value)
             second_line = x * ' ' + '/' + (n - x - 1 + u) * ' '
             shifted_lines = [line + u * ' ' for line in lines]
             return [first_line, second_line] + shifted_lines, n + u, p + 2, n + u // 2
         if node.left is None:                                                               # Only right child.
-            lines, n, p, x = wrapper(node.right)
+            lines, n, p, x = _display(node.right)
             u = len(str(node.value))
             first_line = str(node.value) + x * '_' + (n - x) * ' '
             second_line = (u + x) * ' ' + '\\' + (n - x - 1) * ' '
             shifted_lines = [u * ' ' + line for line in lines]
             return [first_line, second_line] + shifted_lines, n + u, p + 2, u // 2
         else:                                                                               # Two children.
-            left, n, p, x = wrapper(node.left)
-            right, m, q, y = wrapper(node.right)
+            left, n, p, x = _display(node.left)
+            right, m, q, y = _display(node.right)
             u = len(str(node.value))
             first_line = (x + 1) * ' ' + (n - x - 1) * '_' + str(node.value) + y * '_' + (m - y) * ' '
             second_line = x * ' ' + '/' + (n - x - 1 + u + y) * ' ' + '\\' + (m - y - 1) * ' '
@@ -93,7 +92,7 @@ def display(node):
             lines = [first_line, second_line] + [a + u * ' ' + b for a, b in zip(left, right)]
             return lines, n + m + u, max(p, q) + 2, n + u // 2
     if node:
-        lines, _, _, _ = wrapper(node)
+        lines, _, _, _ = _display(node)
         for line in lines:
             print(line)
 
@@ -128,7 +127,7 @@ for tree, nodes in args:
     print("tree:")
     display(tree)
     print(f"(inorder traversal:", end="")
-    inorder_recursive(tree)
+    inorder_traversal_recursive(tree)
     print(")")
     for fn in fns:
         print()

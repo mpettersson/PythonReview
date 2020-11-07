@@ -1,5 +1,5 @@
 r"""
-    IS BALANCED (CCI 4.4: CHECK BALANCED,
+    IS BALANCED (CCI  4.4: CHECK BALANCED,
                  EPI 10.1: TEST IF A BINARY TREE IS HEIGHT-BALANCED)
 
     Write a function that accepts a binary tree root and returns True if the tree is balanced, False otherwise.  A
@@ -16,12 +16,19 @@ r"""
     Example:
         Input = Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), None))  # or, the tree above
         Output = True
+
+    Variations:
+        - Write a function that returns the size of the largest complete subtree.
+        - Write a function is_k_balanced, that takes a root and a positive integer k, and returns True if the tree is
+          k balanced, False otherwise.  A k balanced tree is a tree such that the heights of the two subtrees of any
+          node never differ by more than k.
 """
 
 
 # Recursive Approach: Recurse down from root, comparing the height of each subtree along the way, if ever unbalanced, a
-# flag value of -1 is passed up.  Runtime is O(n) where n is the number of nodes in the tree and space is O(h) where h
-# is the height of the tree.
+# flag value of -1 is passed up.
+# Time Complexity: O(n), where n is the number of nodes in the tree.
+# Space Complexity: O(h), where h is the height of the tree.
 def is_balanced(root):
 
     def _is_balanced(node):
@@ -38,8 +45,9 @@ def is_balanced(root):
 
 
 # Dual Return Value Approach:  This is similar to the approach above, only returning a boolean indicating balance status
-# and the max height.  Runtime is O(n) where n is the number of nodes in the tree and space is O(h) where h is the
-# height of the tree.
+# and the max height.
+# Time Complexity: O(n), where n is the number of nodes in the tree.
+# Space Complexity: O(h), where h is the height of the tree.
 def is_balanced_alt(root):
 
     def _is_balanced_alt(node):
@@ -78,29 +86,27 @@ class Node:
         return ", ".join(map(str, self))
 
 
-# Helper Function
 def display(node):
-    def wrapper(node):
-        """Returns list of strings, width, height, and horizontal coordinate of the root."""
+    def _display(node):
         if node.right is None and node.left is None:                                        # No child.
             return [str(node.value)], len(str(node.value)), 1, len(str(node.value)) // 2
         if node.right is None:                                                              # Only left child.
-            lines, n, p, x = wrapper(node.left)
+            lines, n, p, x = _display(node.left)
             u = len(str(node.value))
             first_line = (x + 1) * ' ' + (n - x - 1) * '_' + str(node.value)
             second_line = x * ' ' + '/' + (n - x - 1 + u) * ' '
             shifted_lines = [line + u * ' ' for line in lines]
             return [first_line, second_line] + shifted_lines, n + u, p + 2, n + u // 2
         if node.left is None:                                                               # Only right child.
-            lines, n, p, x = wrapper(node.right)
+            lines, n, p, x = _display(node.right)
             u = len(str(node.value))
             first_line = str(node.value) + x * '_' + (n - x) * ' '
             second_line = (u + x) * ' ' + '\\' + (n - x - 1) * ' '
             shifted_lines = [u * ' ' + line for line in lines]
             return [first_line, second_line] + shifted_lines, n + u, p + 2, u // 2
         else:                                                                               # Two children.
-            left, n, p, x = wrapper(node.left)
-            right, m, q, y = wrapper(node.right)
+            left, n, p, x = _display(node.left)
+            right, m, q, y = _display(node.right)
             u = len(str(node.value))
             first_line = (x + 1) * ' ' + (n - x - 1) * '_' + str(node.value) + y * '_' + (m - y) * ' '
             second_line = x * ' ' + '/' + (n - x - 1 + u + y) * ' ' + '\\' + (m - y - 1) * ' '
@@ -111,7 +117,7 @@ def display(node):
             lines = [first_line, second_line] + [a + u * ' ' + b for a, b in zip(left, right)]
             return lines, n + m + u, max(p, q) + 2, n + u // 2
     if node:
-        lines, _, _, _ = wrapper(node)
+        lines, _, _, _ = _display(node)
         for line in lines:
             print(line)
 
@@ -129,11 +135,14 @@ trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), None)),
                            Node(90, Node(88), Node(99, None, Node(105, None, Node(420)))))),
          Node(0),
          None]
+fns = [is_balanced,
+       is_balanced_alt]
 
 for i, t in enumerate(trees):
-    print(f"display(trees[{i}]):");
+    print(f"display(trees[{i}]):")
     display(t)
-    print(f"is_balanced(trees[{i}]): {is_balanced(t)}")
-    print(f"is_balanced_alt(trees[{i}]): {is_balanced_alt(t)}\n")
+    for fn in fns:
+        print(f"{fn.__name__}(trees[{i}]): {fn(t)}")
+    print()
 
 
