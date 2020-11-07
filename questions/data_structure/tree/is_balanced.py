@@ -1,8 +1,9 @@
 r"""
-    CHECK BALANCED (CCI 4.4)
+    IS BALANCED (CCI 4.4: CHECK BALANCED,
+                 EPI 10.1: TEST IF A BINARY TREE IS HEIGHT-BALANCED)
 
-    Implement a function to check if a binary tree is balanced.  For the purposes of this question, a balanced tree is
-    defined to be a tree such that the heights of the two subtrees of any node never differ by more than one.
+    Write a function that accepts a binary tree root and returns True if the tree is balanced, False otherwise.  A
+    balanced tree is a tree such that the heights of the two subtrees of any node never differ by more than one.
 
     Consider the following tree:
 
@@ -21,38 +22,42 @@ r"""
 # Recursive Approach: Recurse down from root, comparing the height of each subtree along the way, if ever unbalanced, a
 # flag value of -1 is passed up.  Runtime is O(n) where n is the number of nodes in the tree and space is O(h) where h
 # is the height of the tree.
-def check_balanced(root):
-    def get_height(node):
+def is_balanced(root):
+
+    def _is_balanced(node):
         if node is None:
             return 0
-        l_h = get_height(node.left)
-        r_h = get_height(node.right)
+        l_h = _is_balanced(node.left)
+        r_h = _is_balanced(node.right)
         if l_h is -1 or r_h is -1 or abs(l_h - r_h) > 1:
             return -1
-        else:
-            return max(l_h, r_h) + 1
-    return False if get_height(root) < 0 else True
+        return max(l_h, r_h) + 1
+
+    if root is not None:
+        return False if _is_balanced(root) is -1 else True
 
 
 # Dual Return Value Approach:  This is similar to the approach above, only returning a boolean indicating balance status
 # and the max height.  Runtime is O(n) where n is the number of nodes in the tree and space is O(h) where h is the
 # height of the tree.
-def check_balanced_alt(root):
-    def wrapper(node):
+def is_balanced_alt(root):
+
+    def _is_balanced_alt(node):
         if node:
             if node.left is None and node.right is None:
                 return True, 1
             if node.right is None:
-                bal, h = wrapper(node.left)
+                bal, h = _is_balanced_alt(node.left)
                 return not(h > 1) and bal, h + 1
             if node.left is None:
-                bal, h = wrapper(node.right)
+                bal, h = _is_balanced_alt(node.right)
                 return not(h > 1) and bal, h + 1
-            l_bal, l_h = wrapper(node.left)
-            r_bal, r_h = wrapper(node.left)
+            l_bal, l_h = _is_balanced_alt(node.left)
+            r_bal, r_h = _is_balanced_alt(node.left)
             return l_bal and r_bal and (abs(l_h - r_h) <= 1), max(l_h, r_h) + 1
-    if root:
-        balanced, height = wrapper(root)
+
+    if root is not None:
+        balanced, height = _is_balanced_alt(root)
         return balanced
 
 
@@ -126,7 +131,9 @@ trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), None)),
          None]
 
 for i, t in enumerate(trees):
-    print(f"display(trees[{i}]):"); display(t)
-    print(f"check_balanced(trees[{i}]):", check_balanced(t), "\n")
+    print(f"display(trees[{i}]):");
+    display(t)
+    print(f"is_balanced(trees[{i}]): {is_balanced(t)}")
+    print(f"is_balanced_alt(trees[{i}]): {is_balanced_alt(t)}\n")
 
 

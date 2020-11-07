@@ -1,9 +1,20 @@
-"""
-    PATHS WITH SUM (CCI 4.12)
+r"""
+    PATHS OF NUMBERS (CCI 4.12: PATHS WITH SUM)
 
     You are given a binary tree in which each node contains an integer value (which might be positive or negative).
     Design an algorithm to count the number of paths that sum to a given value.  The path does not need to start or end
     at the root or a leaf, but it must go downwards (traveling only from parent nodes to child nodes).
+
+    Consider the following binary tree:
+
+               10
+             /    \
+            5     -3
+           /  \     \
+          3    2     7
+         / \    \     \
+        4  -2   -1    11
+
 """
 
 
