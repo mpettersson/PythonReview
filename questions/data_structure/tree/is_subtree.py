@@ -107,7 +107,7 @@ def is_identical(t1, t2):
 
 def get_max_height(n):
     if not n:
-        return 0
+        return -1
     return max(get_max_height(n.left), get_max_height(n.right)) + 1
 
 
