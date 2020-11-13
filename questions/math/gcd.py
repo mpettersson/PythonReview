@@ -7,27 +7,36 @@
     In the name "greatest common divisor", the adjective "greatest" may be replaced by "highest", and the word "divisor"
     may be replaced by "factor", so that other names include greatest common factor (gcf), etc.  Historically, other
     names for the same concept have included greatest common measure.
+
+    SEE: https://en.wikipedia.org/wiki/Euclidean_algorithm
 """
 
 
-# GCD Standard Approach:  Time complexity is O(log(max(a, b)).  Space complexity is O(1).
+# GCD Iterative Approach
+# Time Complexity: O(log(max(a, b)).
+# Space complexity: O(1).
 def gcd(a, b):
     while b:
+        print(a, b)
         a, b = b, a % b
     return abs(a)
 
 
-# GCD Recursive Approach:  Time and space complexity is O(log(max(a, b))).
+# GCD Recursive Approach
+# Time Complexity: O(log(max(a, b))).
+# Space Complexity: O(log(max(a, b))).
 def gcd_rec(a, b):
-    if b is 0:
-        return abs(a)
-    return gcd_rec(b, a % b)
+    return abs(a) if b is 0 else gcd_rec(b, a % b)
 
 
-# Euclid's Original Version for GCD:
+# Euclid's Original (Subtraction-Based) GCD Algorithm
+# Time Complexity: O(n), (if one of the two values were 1).
+# Space complexity: O(1).
 def gcd_euclid(a, b):
-    if a > 0 and b > 0:                 # Positive Integers ONLY
-        while a != b:
+    if a > 0 and b > 0:     # Positive Integers ONLY
+        while a != b:       # Stops when a == b.
+            print(a, b)
+
             if a > b:
                 a = a - b
             else:
@@ -46,8 +55,9 @@ def gcd_euclid(a, b):
 # SEE: https://en.wikipedia.org/wiki/Binary_GCD_algorithm for more information.
 
 
-# Iterative Binary GCD (AKA Stein's Algorithm):  Time complexity is O(2**n), where n is the number of bits in the binary
-# representation of max(a, b).  Space complexity is O(1).
+# Iterative Binary GCD (AKA Stein's Algorithm):
+# Time Complexity: O(2**n), where n is the number of bits in the binary representation of max(a, b).
+# Space Complexity: O(1).
 def gcd_stein(a, b):
     if a >= 0 and b >= 0:               # Zero or Positive Integers ONLY
         if a is 0:
@@ -70,10 +80,11 @@ def gcd_stein(a, b):
         return a << k                   # restore common factors of 2
 
 
-# Recursive Binary GCD (AKA Stein's Algorithm):  Time and space complexity is O(2**n), where n is the number of bits in
-# the binary representation of max(a, b).
+# Recursive Binary GCD (AKA Stein's Algorithm)
+# Time complexity: O(2**n), where n is the number of bits in the binary representation of max(a, b).
+# Space complexity: O(2**n), where n is the number of bits in the binary representation of max(a, b).
 def gcd_stein_rec(a, b):
-    if a >= 0 and b >= 0:               # Zero or Positive Integers ONLY
+    if a >= 0 and b >= 0:                                   # Zero or Positive Integers ONLY
         if a is b:
             return a
         if a is 0:
@@ -92,12 +103,8 @@ def gcd_stein_rec(a, b):
         return gcd_stein_rec((b - a) >> 1, a)
 
 
-def lcm(a, b):
-    return abs(a * b)/gcd(a, b)
-
-
 args = [(200, 310), (10, 275), (468, 279), (120, 390), (480, 430), (33, 69), (-150, 348), (-462, -264), (465, -18),
-        (10, 0), (0, 10), (0, 0)]
+        (19, 82), (13, 499), (1223, 4), (10, 0), (0, 10), (0, 0)]
 fns = [gcd, gcd_rec, gcd_euclid, gcd_stein, gcd_stein_rec]
 
 for fn in fns:
