@@ -1,33 +1,31 @@
 """
-    DELETE MIDDLE NODE (CCI 2.3)
+    DELETE MIDDLE NODE (CCI 2.3: DELETE MIDDLE NODE)
 
-    Implement an algorithm to delete a node in the middle of a singly linked list, given only access to that node.
+    Write a function, which accepts a middle node of a linked list, then deletes the provided node.
+
+    Consider the following linked list:
+
+        a ⟶ b ⟶ c ⟶ d ⟶ e ⟶ None
 
     Example:
-        Input:  c (of the linked list a -> b -> c -> d -> e -> None)
-        Output: None (however, the linked list will be a -> b -> d -> e -> None)
+                linked_list = LinkedList("a", LinkedList("b", LinkedList("c", LinkedList("d", LinkedList("e")))))
+        Input:  linked_list.next.next  # Or, the 'c' node above.
+        Output: None  # However, the linked list will be a ⟶ b ⟶ d ⟶ e ⟶ None
 """
+import copy
 
 
-# Time and space complexity is O(1).
+# Update And Delete Next Approach:  Update the provided node with the next nodes value and 'next' link.
+# Time Complexity: O(1).
+# Space Complexity: O(1).
 def delete_middle_node(node):
     if node:
-        next = node.next
-        if next:
-            node.value = next.value
-            node.next = next.next
+        next_node = node.next
+        if next_node:
+            node.value = next_node.value
+            node.next = next_node.next
         else:
             node.value = None
-
-
-# Helper Function
-def return_middle_node(head):
-    """Given the head of a linked list, returns a reference to a middle node."""
-    runner = head
-    while runner and runner.next:
-        runner = runner.next.next
-        head = head.next
-    return head
 
 
 class LinkedList:
@@ -36,17 +34,27 @@ class LinkedList:
         self.next = next
 
     def __repr__(self):
-        return repr(self.value) + " -> " + (repr(self.next) if self.next else "None")
+        return repr(self.value) + " ⟶ " + (repr(self.next) if self.next else "None")
+
+
+def get_middle_node(head):
+    """Given the head of a linked list, returns a reference to a middle node."""
+    runner = head
+    while runner and runner.next:
+        runner = runner.next.next
+        head = head.next
+    return head
 
 
 linked_lists = [LinkedList("a", LinkedList("b", LinkedList("c", LinkedList("d", LinkedList("e"))))),
-                LinkedList(0, LinkedList(1, LinkedList(2, LinkedList(3, LinkedList(4, LinkedList(5)))))),
-                LinkedList(0)]  # NOTE: Due to the questions constraints the best we can do is update 0 to None....
+                LinkedList(0, LinkedList(1, LinkedList(2, LinkedList(3, LinkedList(4, LinkedList(5))))))]
+fns = [delete_middle_node]
 
-for ll in linked_lists:
-    middle_node = return_middle_node(ll)
-    print(f"Before: {ll}")
-    print(f"delete_middle_node({middle_node.value})"); delete_middle_node(middle_node)
-    print(f"After:  {ll}\n")
+for linked_list in linked_lists:
+    print(f"linked_list: {linked_list}\n")
+    for fn in fns:
+        linked_list_copy = copy.deepcopy(linked_list)
+        print(f"{fn.__name__}(get_middle_node(link_list)): {fn(get_middle_node(linked_list_copy))}", end="")
+        print(f" (linked_list: {linked_list_copy})\n")
 
 

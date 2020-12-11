@@ -1,8 +1,8 @@
 r"""
-    INSERTION AND DELETION IN A BST (EPI 15.10)
+    INSERT AND DELETE BST (EPI 15.10: INSERTION AND DELETION IN A BST)
 
-    Design efficient functions for inserting and removing keys (nodes) in a binary search tree (BST).  Assume that all
-    elements (node values) in the BST are unique, and that your insertion method must preserve this property.
+    Create an insert and delete class method for a binary search tree (BST) node.  In addition to the BST property,
+    the tree should maintain the property that all nodes have distinct values.
 
     Consider the following BSTs, t, u, and v:
 
@@ -28,13 +28,16 @@ r"""
             Output = v      # or, the right graph above
 
     Variations:
-        Elements are not unique.
-        Add the constraint: You can only change links (can't change values).
+        - Same question, however, nodes may have duplicate values.
+        - Same question, with the added constraint; you can only change links (can't change values).
 """
 
 
 # Insert Approach:  Recurse left or right, adhering to the BST property, until either the value is present (and raise a
-# ValueError) or create a node with the value.  Time and space is O(h) where h is the height of the tree.
+# ValueError) or create a node with the value.
+# Time Complexity: O(h) where h is the height of the tree.
+# Space Complexity: O(h) where h is the height of the tree.
+#
 # SEE Node.insert() below.
 
 
@@ -42,8 +45,10 @@ r"""
 # ValueError) or the current nodes value matches the value and return the appropriate value.  If there is no left or
 # right subtree return None, if there is only one subtree return it, or if there are two subtrees find the left most
 # node in the right subtree return it with updated children (and it's previous parent's children updated).
-# Time and space is O(h) where h is the height of the tree.
-# SEE Node.delete() below.
+# Time Complexity: O(h) where h is the height of the tree.
+# Space Complexity: O(h) where h is the height of the tree.
+#
+# SEE: Node.delete() below.
 
 
 class Node:
@@ -105,7 +110,7 @@ class Node:
             self.right = self.right.delete(value)
             return self
         else:
-            raise ValueError(f"{value} is already in tree")
+            raise ValueError(f"{value} is not in the tree.")
 
 
 def display(node):
@@ -142,6 +147,8 @@ def display(node):
         lines, _, _, _ = _display(node)
         for line in lines:
             print(line)
+    else:
+        print(None)
 
 
 tree = Node(19, Node(7, Node(3, Node(2), Node(5)), Node(11, None, Node(17, Node(13)))),
