@@ -1,7 +1,8 @@
 """
-    ZERO MATRIX (CCI 1.8)
+    ZERO MATRIX (CCI 1.8: ZERO MATRIX
+                 50CIQ 6: ZERO MATRIX)
 
-    Write an algorithm such that if an element in an MxN matrix is 0, its entire row and column is set to 0.
+    Write a function that accepts an MxN matrix of 0's and 1's, and sets all values in a row/column containing 0 to 0.
 
     Example:
         Input =  [[1, 1, 1],
@@ -10,124 +11,103 @@
         Output = [[1, 0, 1],
                   [0, 0, 0],
                   [1, 0, 1]]
-
-    NOTE: If you naively try to do this in one iteration it'll all end up zeros, so you have to go over it twice.
-          You can create a duplicate matrix, but that's not the most efficient way. You can make two new list (X, Y) but
-          that's still not the most efficient way; create two flags (row_has_zero and column_has_zero) then store if
-          each row/column needs to be zeroed out in the first row and first column.
 """
+import copy
 
 
-def zero_matrix(m):
-    if not m or len(m) is 0 or not m[0] or len(m[0]) is 0:
-        return None
-    num_row = len(m)
-    num_col = len(m[0])
-    top_has_zero = False
-    left_has_zero = False
-    for c in range(num_col):
-        if m[0][c] == 0:
-            top_has_zero = True
-            break
-    for r in range(num_row):
-        if m[r][0] == 0:
-            left_has_zero = True
-            break
-    for r in range(1, num_row):
-        for c in range(1, num_col):
-            if m[r][c] == 0:
-                m[r][0] = 0
-                m[0][c] = 0
-    for r in range(1, num_row):
-        if m[r][0] == 0:
-            nullify_row(m, r)
-    for c in range(1, num_col):
-        if m[0][c] == 0:
-            nullify_col(m, c)
-    if top_has_zero:
-        nullify_row(m, 0)
-    if left_has_zero:
-        nullify_col(m, 0)
+# NOTE: If you naively try to do this in one iteration it'll all end up zeros, so you have to go over it twice.
+
+
+# Naive Space Approach:  Use two lists to maintain the rows and columns that should be updated.
+# Time Complexity: O(r * c), where r and c are the number of rows and columns in the matrix.
+# Space Complexity: O(r + c), where r and c are the number of rows and columns in the matrix.
+def update_matrix_naive(m):
+    if m and isinstance(m, list) and len(m) > 0 and isinstance(m[0], list) and len(m[0]) > 0:
+        t = type(m[0][0])
+        rows_to_update = []
+        cols_to_update = []
+        for r in range(len(m)):
+            for c in range(len(m[r])):
+                if not m[r][c]:
+                    rows_to_update.append(r)
+                    cols_to_update.append(c)
+        for r in rows_to_update:
+            for c in range(len(m[r])):
+                if m[r][c]:
+                    m[r][c] = t(False)
+        for r in range(len(m)):
+            for c in cols_to_update:
+                if m[r][c]:
+                    m[r][c] = t(False)
     return m
 
 
-def nullify_row(m, row):
-    for c in range(len(m[row])):
-        m[row][c] = 0
-
-
-def nullify_col(m, col):
-    for r in range(len(m)):
-        m[r][col] = 0
+# Optimal Approach:  First create two flags to indicate whether the first row and first column needs to be updated, then
+# use the first row and first column similar to the lists in the first approach.
+# Time Complexity: O(r * c), where r and c are the number of rows and columns in the matrix.
+# Space Complexity: O(1).
+def update_matrix(m):
+    if m and isinstance(m, list) and len(m) > 0 and isinstance(m[0], list) and len(m[0]) > 0:
+        t = type(m[0][0])
+        has_false_in_row_0 = not all(m[0])
+        has_false_in_col_0 = not all([r[0] for r in m])
+        for r in range(1, len(m)):
+            for c in range(1, len(m[r])):
+                if not m[r][c]:
+                    m[0][c] = m[r][0] = t(False)
+        for r in range(1, len(m)):
+            if not m[r][0]:
+                for c in range(1, len(m[r])):
+                    m[r][c] = t(False)
+        for c in range(1, len(m[0])):
+            if not m[0][c]:
+                for r in range(1, len(m)):
+                    m[r][c] = t(False)
+        if has_false_in_row_0:
+            for c in range(len(m[0])):
+                m[0][c] = t(False)
+        if has_false_in_col_0:
+            for r in range(len(m)):
+                m[r][0] = t(False)
+    return m
 
 
 def format_matrix(m):
-    return m if not m else "\n" + '\n'.join([''.join(['{:4}'.format(item) for item in row if len(row) > 0]) for row in m if len(m) > 0])
+    try:
+        w = max([len(str(e)) for r in m for e in r]) + 1
+    except (ValueError, TypeError):
+        return f"\n{None}"
+    return m if not m else "\n" + '\n'.join([''.join([f'{e!r:{w}}' for e in r if len(r) > 0]) for r in m if len(m) > 0])
 
 
-m0 = [[0, 0, 0],
-      [0, 0, 0],
-      [0, 0, 0]]
-print("m0:", format_matrix(m0))
-print("zero_matrix(m0):", format_matrix(zero_matrix(m0)), "\n")
+matrices = [[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+            [[False, False, False], [False, False, False], [False, False, False]],
+            [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
+            [[True, True, True], [True, True, True], [True, True, True]],
+            [[1, 1, 1], [1, 0, 1], [1, 1, 1]],
+            [[True, True, True], [True, False, True], [True, True, True]],
+            [[0, 1, 1], [1, 1, 1], [1, 1, 0]],
+            [[False, True, True], [True, True, True], [True, True, False]],
+            [[1, 1, 1], [1, 0, 1], [1, 1, 0]],
+            [[True, True, True], [True, False, True], [True, True, False]],
+            [[0, 1, 1], [1, 1, 1], [1, 1, 1]],
+            [[False, True, True], [True, True, True], [True, True, True]],
+            [[0, 1, 1]],
+            [[False, True, True]],
+            [[0], [1], [1]],
+            [[False], [True], [True]],
+            [[1]],
+            [[0]],
+            [[]],
+            [],
+            None]
+fns = [update_matrix_naive,
+       update_matrix]
 
-m1 = [[1, 1, 1],
-      [1, 1, 1],
-      [1, 1, 1]]
-print("m1:", format_matrix(m1))
-print("zero_matrix(m1):", format_matrix(zero_matrix(m1)), "\n")
+for i, m in enumerate(matrices):
+    print(f"matrices[{i}]:{format_matrix(m)}\n")
+    for fn in fns:
+        print(f"{fn.__name__}(matrices[{i}]):{format_matrix(fn(copy.deepcopy(m)))}")
+    print()
 
-m2 = [[1, 1, 1],
-      [1, 0, 1],
-      [1, 1, 1]]
-print("m2:", format_matrix(m2))
-print("zero_matrix(m2):", format_matrix(zero_matrix(m2)), "\n")
-
-m3 = [[0, 1, 1],
-      [1, 1, 1],
-      [1, 1, 0]]
-print("m3:", format_matrix(m3))
-print("zero_matrix(m3):", format_matrix(zero_matrix(m3)), "\n")
-
-m4 = [[1, 1, 1],
-      [1, 0, 1],
-      [1, 1, 0]]
-print("m4:", format_matrix(m4))
-print("zero_matrix(m4):", format_matrix(zero_matrix(m4)), "\n")
-
-m5 = [[0, 1, 1],
-      [1, 1, 1],
-      [1, 1, 1]]
-print("m5:", format_matrix(m5))
-print("zero_matrix(m5):", format_matrix(zero_matrix(m5)), "\n")
-
-m6 = [[0, 1, 1]]
-print("m6:", format_matrix(m6))
-print("zero_matrix(m6):", format_matrix(zero_matrix(m6)), "\n")
-
-m7 = [[0],
-      [1],
-      [1]]
-print("m7:", format_matrix(m7))
-print("zero_matrix(m7):", format_matrix(zero_matrix(m7)), "\n")
-
-m8 = [[1]]
-print("m8:", format_matrix(m8))
-print("zero_matrix(m8):", format_matrix(zero_matrix(m8)), "\n")
-
-m9 = [[0]]
-print("m9:", format_matrix(m9))
-print("zero_matrix(m9):", format_matrix(zero_matrix(m9)), "\n")
-
-m10 = [[]]
-print("m10:", format_matrix(m10))
-print("zero_matrix(m10):", format_matrix(zero_matrix(m10)), "\n")
-
-m11 = []
-print("m11:", format_matrix(m11))
-print("zero_matrix(m11):", format_matrix(zero_matrix(m11)), "\n")
-
-m12 = None
-print("m12:", format_matrix(m12))
-print("zero_matrix(m12):", format_matrix(zero_matrix(m12)), "\n")
 
