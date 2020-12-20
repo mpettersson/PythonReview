@@ -1,3 +1,6 @@
+import sys
+
+# NOTE: The BitVector package (pip3 install BitVector) is an OTS solution.
 
 # REMEMBER:
 #   &  - Binary AND	Operator copies a bit to the result if it exists in both operands
@@ -18,6 +21,14 @@ def get_sign_bit(num):
     return -(num >> num.bit_length())   # Have to use .bit_length() bc we don't know the length of num.
     # return -(num >> 31)               # If num is 32 bit.
     # return -(num >> 63)               # If num is 64 bit.
+
+
+def get_bits_as_list(n):
+    if n is 0:
+        return [0]
+    l = [(n >> i) & 1 for i in range(n.bit_length())]   # if n != 0 then n.bit_length() == int(math.log(abs(n), 2)) + 1
+    l.reverse()
+    return [1] + l if n < 0 else [0] + l
 
 
 def get_ith_bit(num, i):
@@ -95,6 +106,16 @@ def add_via_bit_manipulation(a, b):
     return a
 
 
+def kogge_stone_add(a, b):
+    p, g, i = a ^ b, a & b, 1
+    while True:
+        if (g << 1) >> i == 0:
+            return a ^ b ^ (g << 1)
+        if ((p | g) << 2) >> i == ~0:
+            return a ^ b ^ ((p | g) << 1)
+        p, g, i = p & (p << i), (p & (g << i)) | g, i << 1
+
+
 # Given an num, print the next smaller number that have the same number of 1 bits in their bin rep
 def get_next_smaller(num):
     c0 = c1 = 0
@@ -131,28 +152,43 @@ def swap_odd_even_bin_bits(num):
     return (logical_right_shift((num & 0xaaaaaaaa), 1)) | ((num & 0x55555555) << 1)
 
 
-# How to format as binary in python
-print(f"{bin(9)}")                          # '0b1001'
-print(f"{bin(-9)}")                         # '-0b1001'
-print('{0:07b}'.format(9))                  # '0001001'
-print('{0:07b}'.format(-9))                 # '-001001'
-n = 7
-print(f"{n:b}".zfill(8))                    # '00000111'
-print(f"{-n:b}".zfill(8))                   # '-0000111'
-
 # How to enter binary in python
-print("Enter integers as binary with the 0b or 0B prefix, i.e., 0B1010 is ", 0B1010)
-print("Enter negative integers as binary with the -0b or -0B prefix, i.e., -0B1010 is ", -0B1010)
+print("0B1010:  ", 0B1010)
+print("-0B1010:", -0B1010)
+print('"{bin(9)}": ', f" {bin(9)}")                     # '0b1001'
+print('"{bin(-9)}":', f"{bin(-9)}")                     # '-0b1001'
+print('"{0:07b}".format(9): ', "{0:07b}".format(9))     # '0001001'
+print('"{0:07b}".format(-9):', "{0:07b}".format(-9))    # '-001001'
+print('"{7:b}".zfill(8): ', f"{7:b}".zfill(8))          # '00000111'
+print('"{-7:b}".zfill(8):', f"{-7:b}".zfill(8))         # '-0000111'
 print()
 
 # Misc. Binary Stuff
-n = 7
-print("n.bit_length():", n.bit_length())    # Must be a reference (doesn't work on int literal).
-n.to_bytes(4, "big", signed=True)           # Size, "big" (first) | "little" (first) | "sys.byteorder", signed
+print("sys.byteorder:", sys.byteorder)
+zero = 0; print("zero:", zero)
+pos_n = 8; print("pos_n:", pos_n)
+neg_n = -8; print("neg_n:", neg_n)
+print("zero.bit_length():", zero.bit_length())          # NOTE: This should be 1, not 0!!
+print("pos_n.bit_length():", pos_n.bit_length())
+print("neg_n.bit_length():", neg_n.bit_length())
+print('pos_n.to_bytes(4, "big", signed=True):', pos_n.to_bytes(4, "big", signed=True))
+print('neg_n.to_bytes(4, "big", signed=True):', neg_n.to_bytes(4, "big", signed=True))
+print('pos_n.to_bytes(4, "little", signed=True):', pos_n.to_bytes(4, "little", signed=True))
+print('neg_n.to_bytes(4, "little", signed=True):', neg_n.to_bytes(4, "little", signed=True))
+steak = int.from_bytes(b'\xde\xad\xbe\xef', byteorder='big')
+joe = int.from_bytes(b'\xc0\xff\xee', 'little')
+hw = int.from_bytes(b"Hello World!!!", 'big')
+int.to_bytes(hw, (hw.bit_length() // 8)+1, 'big')
+print()
 
 # test logical_right_shift
 print("logical_right_shift(0b1010, 1):", bin(logical_right_shift(0b1010, 1)))
 print("logical_right_shift(-0b1010, 1):", bin(logical_right_shift(-0b1010, 1)))
+print()
+
+# test get_bit
+for n in [-0x15, 0x15, 0b1001, -0b1001, -2, 2, 128, 255, 256, -256]:
+    print(f"get_bits_as_list({n}): {get_bits_as_list(n)}")
 print()
 
 # test get_sign_bit:
@@ -202,6 +238,11 @@ print()
 # test add_via_bit_manipulation
 print("add_via_bit_manipulation(0b1010, 0b1011):", add_via_bit_manipulation(0b1010, 0b1011))
 print("add_via_bit_manipulation(0b10, 0b1111):", add_via_bit_manipulation(0b10, 0b1111))
+print()
+
+# test add_via_bit_manipulation
+print("kogge_stone_add(0b1010, 0b1011):", kogge_stone_add(0b1010, 0b1011))
+print("kogge_stone_add(0b10, 0b1111):", kogge_stone_add(0b10, 0b1111))
 print()
 
 # test get_next_larger
