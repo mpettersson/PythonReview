@@ -1,5 +1,5 @@
 r"""
-    INSERT AND DELETE BST (EPI 15.10: INSERTION AND DELETION IN A BST)
+    INSERT AND DELETE NODE BST (EPI 15.10: INSERTION AND DELETION IN A BST)
 
     Create an insert and delete class method for a binary search tree (BST) node.  In addition to the BST property,
     the tree should maintain the property that all nodes have distinct values.

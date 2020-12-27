@@ -1,5 +1,6 @@
 """
-    INT SWAP (50CIQ 34: SWAP VARIABLES)
+    SWAP (CCI 16.1: NUMBER SWAPPER,
+          50CIQ 34: SWAP VARIABLES)
 
     How do you swap two variables containing booleans, or integers, without using additional variables?
 """

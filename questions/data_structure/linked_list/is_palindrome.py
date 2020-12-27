@@ -28,18 +28,18 @@ def is_palindrome_naive(l):
         return True
 
 
-# Recursive Approach:
+# Recursive Approach:  This approach makes use of the call stack to store the values to compare.  Note that this version
+# stores HALF the list in the call stack at the cost of first finding the length of the list.
 # Time Complexity: O(n), where n is the number of nodes in the linked list.
 # Space Complexity: O(n), where n is the number of nodes in the linked list.
 def is_palindrome_rec(l):
 
-    def _get_length(l):
-        if l:
-            size = 0
-            while l:
-                size += 1
-                l = l.next
-            return size
+    def _get_length(l):                                 # Find length so only half the list is stored.
+        size = 0
+        while l:
+            size += 1
+            l = l.next
+        return size
 
     def _is_palindrome_rec(head, length):
         if not head or length <= 0:
@@ -55,7 +55,8 @@ def is_palindrome_rec(l):
 
 
 # Improved (Half) Stack Solution:  Use a fast/slow pointer to find half the list, then just add half of the list to a
-# stack to compare.  Although this has the same Big O complexities as above, the space is half of the above approaches.
+# stack to compare.  Although this has the same Big O complexities as above, the space is half of the first approach,
+# and the length is not needed (like the second approach).
 # Time Complexity: O(n), where n is the number of nodes in the linked list.
 # Space Complexity: O(n/2), which reduces to O(n), where n is the number of nodes in the linked list.
 def is_palindrome(l):
@@ -66,7 +67,7 @@ def is_palindrome(l):
             s.append(slow.value)
             slow = slow.next
             fast = fast.next.next
-        if fast:    # NOTE: This handles the case when l has an odd length!
+        if fast:                        # NOTE: This handles the case when l has an odd length!
             slow = slow.next
         while slow:
             if s.pop() != slow.value:
@@ -75,7 +76,7 @@ def is_palindrome(l):
         return True
 
 
-class LinkedList:
+class Node:
     def __init__(self, value, next=None):
         self.value = value
         self.next = next
@@ -84,11 +85,11 @@ class LinkedList:
         return repr(self.value) + " ⟶ " + (repr(self.next) if self.next else "None")
 
 
-linked_lists = [LinkedList("t", LinkedList("a", LinkedList("c", LinkedList("o", LinkedList("c", LinkedList("a", LinkedList("t"))))))),
-                LinkedList(0, LinkedList(1, LinkedList(2, LinkedList(3, LinkedList(4, LinkedList(5)))))),
-                LinkedList(0, LinkedList(1, LinkedList(2, LinkedList(2, LinkedList(1, LinkedList(0)))))),
-                LinkedList(0, LinkedList(1, LinkedList(2, LinkedList(1, LinkedList(0))))),
-                LinkedList(0),
+linked_lists = [Node("t", Node("a", Node("c", Node("o", Node("c", Node("a", Node("t"))))))),
+                Node(0, Node(1, Node(2, Node(3, Node(4, Node(5)))))),
+                Node(0, Node(1, Node(2, Node(2, Node(1, Node(0)))))),
+                Node(0, Node(1, Node(2, Node(1, Node(0))))),
+                Node(0),
                 None]
 fns = [is_palindrome_naive,
        is_palindrome_rec,

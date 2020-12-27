@@ -1,21 +1,22 @@
 """
-    ADD VIA BIT MANIPULATION (CCI 17.1: ADD WITHOUT PLUS
+    ADD VIA BIT MANIPULATION (CCI 17.1: ADD WITHOUT PLUS,
+                              leetcode.com/problems/sum-of-two-integers)
 
-    Write a function that adds two numbers.  You should not use + or any other arithmetic operators.
+    Write a function which accepts two integers, then returns their sum via bit manipulation (no arithmetic operators).
 
     Example:
-        Input =
-        Output =
+        Input = 1, 1
+        Output = 2
 """
 
 
-# Basic/Limited Approach:
-# Time Complexity:
-# Space Complexity:
+# Basic/Limited Approach: TODO
+# Time Complexity: TODO
+# Space Complexity: O(1).
 #
-# NOTE: This ONLY works when both a AND b have the same sign.
+# NOTE: This DOESN'T work for some combinations of positive and negative values.
 def add_via_bit_manipulation(a, b):
-    while b is not 0:
+    while b != 0:
         sum = a ^ b
         carry = (a & b) << 1
         a = sum
@@ -23,10 +24,10 @@ def add_via_bit_manipulation(a, b):
     return a
 
 
-# Optimal/Correct Kogge  Approach:
-# Time Complexity:
-# Space Complexity:
-#
+# Optimal (Correct) Kogge Stone Adder Approach:  This is based on the Kogge-Stone (KSA/KS) look-ahead adder.
+# SEE: en.wikipedia.org/wiki/Kogge-Stone_adder
+# Time Complexity: TODO
+# Space Complexity: O(1).
 def kogge_stone_add(a, b):
     p, g, i = a ^ b, a & b, 1
     while True:
@@ -37,7 +38,8 @@ def kogge_stone_add(a, b):
         p, g, i = p & (p << i), (p & (g << i)) | g, i << 1
 
 
-args = [                # XOR, AND, SUM, +-
+                        # XOR, AND, SUM, +-
+args = [(1, 1),
         (10, 10),       #   0,  10,  20,
         # (10, -10),    #  -4,   2,   0, -b
         # (-10, 10),    #  -4,   2,   0, -a
@@ -52,11 +54,10 @@ args = [                # XOR, AND, SUM, +-
         ]
 fns = [add_via_bit_manipulation,
        kogge_stone_add]
-# import operator
 
-# fns = [operator.xor, operator.and_]
 for fn in fns:
     for a, b in args:
         print(f"{fn.__name__}({a}, {b}): {fn(a, b)}")
     print()
+
 
