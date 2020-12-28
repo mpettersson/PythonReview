@@ -6,13 +6,19 @@
     Remember:
         The factorial of a positive integer n, denoted by n!, is the product of all positive integers <= n.
         The value of 0! is 1.
+
+    NOTE: We will emulate Google's result for -n!, where n is an int; we will return -(n!).
+
+    Example:
+        Input = 5
+        Output = 120
 """
+import time
 
 
-# NOTE: Google's result for -n!, where n is an int, is -(n!), soo, we will do that too...
-
-
-# Recursive Approach: Time and space complexity is O(n).
+# Recursive Approach:
+# Time Complexity: O(n).
+# Space Complexity: O(n).
 def factorial_rec(n):
 
     def _factorial_rec(n):
@@ -26,12 +32,34 @@ def factorial_rec(n):
         return _factorial_rec(abs(n)) * (-1 if neg_flag else 1)
 
 
-# Top Down Dynamic Programming Approach:  Time and space complexity is O(n).
+# Tail Recursion Approach:  This is similar to above, however, the recursive call is a tail call or tail recursive,
+# (the final action of the function).
+# Time Complexity: O(n).
+# Space Complexity: O(n).
+#
+# NOTE: Stock Python implementations DO NOT perform tail-call optimization, though a third-party module is available to
+# do this (SEE: https://github.com/baruchel/tco).  Language inventor Guido van Rossum contends that stack traces are
+# altered by tail call elimination making debugging harder, and prefers that programmers use explicit iteration instead.
+def factorial_tail_rec(n):
+
+    def _go(n, a=1):                # In tail recursion, accumulator value(s) (a) is/are used.
+        if n is 0 or n is 1:
+            return a
+        return _go(n - 1, a * n)    # In tail recursion, the recursive call must be LAST.
+
+    if n is not None:
+        neg_flag = True if n < 0 else False
+        return _go(abs(n)) * (-1 if neg_flag else 1)
+
+
+# Top Down Dynamic Programming Approach:
+# Time Complexity: O(n).
+# Space Complexity: O(n).
 def factorial_top_down(n):
 
-    def _factorial_top_down(memo, n):
+    def _factorial_top_down(n, memo):
         if memo[n] is None:
-            memo[n] = n * _factorial_top_down(memo, n - 1)
+            memo[n] = n * _factorial_top_down(n - 1, memo)
         return memo[n]
 
     if n is not None:
@@ -39,10 +67,12 @@ def factorial_top_down(n):
         n = abs(n)
         memo = [None] * (n + 1)
         memo[0] = 1
-        return _factorial_top_down(memo,n) * (-1 if neg_flag else 1)
+        return _factorial_top_down(n, memo) * (-1 if neg_flag else 1)
 
 
-# Bottom Up With Memoization Dynamic Programming (Tabulation) Approach:  Time and space complexity is O(n).
+# Bottom Up With Memoization Dynamic Programming (Tabulation) Approach:
+# Time Complexity: O(n).
+# Space Complexity: O(n).
 def factorial_bottom_up_memo(n):
     if n is not None:
         neg_flag = True if n < 0 else False
@@ -55,7 +85,9 @@ def factorial_bottom_up_memo(n):
         return memo[n] * (-1 if neg_flag else 1)
 
 
-# Bottom Up Dynamic Programming Approach:  Time complexity is O(n), space complexity is O(1).
+# Bottom Up Dynamic Programming Approach:
+# Time Complexity: O(n).
+# Space Complexity: O(1).
 def factorial_bottom_up(n):
     if n is not None:
         neg_flag = True if n < 0 else False
@@ -70,12 +102,19 @@ def factorial_bottom_up(n):
         return t * (-1 if neg_flag else 1)
 
 
-fns = [factorial_rec, factorial_top_down, factorial_bottom_up_memo, factorial_bottom_up]
+fns = [factorial_rec, factorial_tail_rec, factorial_top_down, factorial_bottom_up_memo, factorial_bottom_up]
 l = [-20, -10, -5, -3, -2, -1, 0, 1, 2, 3, 5, 10, 20, None]
 
 for fn in fns:
     for n in l:
         print(f"{fn.__name__}({n}): {fn(n)}")
     print()
+
+n = 400
+for fn in fns:
+    t = time.time()
+    print(f"{fn.__name__}({n}) took ", end="")
+    fn(n)
+    print(f"{time.time() - t} seconds.")
 
 
