@@ -1,7 +1,11 @@
 """
-    THREE IN ONE (CCI 3.1)
+    STACKS VIA LIST (CCI 3.1: THREE IN ONE,
+                     50CIQ 13: N STACKS)
 
-    (Implement or) Describe how you could use a single array to implement three stacks.
+    Write a class, which accepts a size s and a number n, then creates n stacks out of a single list of size s.  All
+    values pushed (to any stack) must be stored in the list, however, other data structures/lists may used for other
+    purposes.  A stack is full only when the entire list (of size s) is full.
+
 """
 
 

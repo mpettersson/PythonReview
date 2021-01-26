@@ -11,6 +11,16 @@
     result fits in the integer word size.
 """
 
+# NOTE: Python has the following ways to compute binomial coefficients:
+#   - scipy:
+#       import scipy.special                                            # Have to 'pip3 install scipy'
+#       scipy.special.binom(n, r)
+#       scipy.special.comb(n, r)
+#       scipy.special.comb(n, r, exact=True)                            # NO scientific notation if very long.
+#   - math:
+#       math.comb(n, r)                                                 # Only in python >= 3.8!!!
+#       math.factorial(n) / (math.factorial(k) * math.factorial(n - k))
+
 
 # Naive Approach: Time complexity is O(n).  Space complexity is O(1).
 #

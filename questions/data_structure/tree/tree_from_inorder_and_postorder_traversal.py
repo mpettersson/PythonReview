@@ -22,7 +22,7 @@ r"""
         Input = inorder_values, postorder_values
         Output = Node(8, Node(2, Node(6), Node(5, Node(1))), Node(3, None, Node(4, None, Node(7, Node(9)))))
 
-    Variation:
+    Variations:
         - Given l, a list of n distinct ints where the index of the max element of l is m, write a function max_tree(l)
           that builds and returns a binary tree on the elements of l in which the root contains the max element of l,
           the left child is the max_tree(l[:m]) and the right child is max_tree(l[m+1:n]).
