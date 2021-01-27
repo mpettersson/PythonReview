@@ -19,8 +19,8 @@ r"""
 
 
 # Recursive Approach: Recursively append nodes, or None if an empty child, to a result list.
-# Time Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
-# Space Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
+# Time Complexity: O(n), where n are the number of nodes in the tree.
+# Space Complexity: O(n), where n are the number of nodes in the tree.
 def get_postorder_serialization_rec_verbose(root):
 
     def _get_postorder_serialization_rec_verbose(root, result):
@@ -38,18 +38,23 @@ def get_postorder_serialization_rec_verbose(root):
 
 
 # Recursive Approach: Recursively build a result list of nodes, or None to represent empty children.
-# Time Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
-# Space Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
+# Time Complexity: O(n), where n are the number of nodes in the tree.
+# Space Complexity: O(n), where n are the number of nodes in the tree.
 def get_postorder_serialization_rec(root):
+
+    def _get_postorder_serialization_rec(n):
+        if n:
+            return _get_postorder_serialization_rec(n.left) + _get_postorder_serialization_rec(n.right) + [n.value]
+        return [None]
+
     if root:
-        return get_postorder_serialization_rec(root.left) + get_postorder_serialization_rec(root.right) + [root.value]
-    return [None]
+        return _get_postorder_serialization_rec(root)
 
 
 # Iterative Approach: Using a stack in place of a recursion stack; build and return the preorder nodes, using None as a
 # marker for empty children..
-# Time Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
-# Space Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
+# Time Complexity: O(n), where n are the number of nodes in the tree.
+# Space Complexity: O(n), where n are the number of nodes in the tree.
 def get_postorder_serialization_iter(root):
     if root:
         result = []
@@ -114,9 +119,13 @@ def display(node):
         lines, _, _, _ = _display(node)
         for line in lines:
             print(line)
+    else:
+        print(None)
 
 
 trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4))),
+         None,
+         Node(0),
          Node(1, Node(3, Node(4), Node(6, Node(5), Node(0))), Node(2)),
          Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), Node(6))),
          Node(3, Node(1, Node(0), Node(3)), Node(5, Node(3), Node(6))),

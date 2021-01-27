@@ -24,7 +24,7 @@ def quick_select(l, k):
             return l[pivot_idx]
         if pivot_idx - lo > k - 1:
             return _quick_select(l, k, lo, pivot_idx - 1)
-        return _quick_select(l, k - pivot_idx + lo - 1, pivot_idx + 1, hi, )
+        return _quick_select(l, k - pivot_idx + lo - 1, pivot_idx + 1, hi)
 
     def _partition(l, lo, hi):                  # Same as _lomuto_partition() in quick_sort.py
         pivot_val = l[hi]

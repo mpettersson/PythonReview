@@ -19,8 +19,8 @@ r"""
 
 
 # Recursive Approach: Recursively append node values, or None if no Node, to a result list.
-# Time Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
-# Space Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
+# Time Complexity: O(n), where n are the number of nodes in the tree.
+# Space Complexity: O(n), where n are the number of nodes in the tree.
 def get_preorder_serialization_rec_verbose(root):
 
     def _get_preorder_serialization_rec_verbose(root, result):
@@ -38,8 +38,8 @@ def get_preorder_serialization_rec_verbose(root):
 
 
 # Recursive Approach: Recursively build a result list of node values, or None if no Node.
-# Time Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
-# Space Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
+# Time Complexity: O(n), where n are the number of nodes in the tree.
+# Space Complexity: O(n), where n are the number of nodes in the tree.
 def get_preorder_serialization_rec(root):
 
     def _get_preorder_serialization_rec(n):
@@ -53,8 +53,8 @@ def get_preorder_serialization_rec(root):
 
 # Iterative Approach: Using a stack (initialized with only the root) in place of recursion; pop a value and push
 # whatever its children links point to (left first, to maintain normal order).
-# Time Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
-# Space Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
+# Time Complexity: O(n), where n are the number of nodes in the tree.
+# Space Complexity: O(n), where n are the number of nodes in the tree.
 def get_preorder_serialization_iter(root):
     if root:
         stack = [root]
@@ -124,22 +124,28 @@ def display(node):
 
 
 trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4))),
+         Node(1, None, Node(2, None, Node(3))),
+         Node(1, None, Node(3, Node(2))),
+         Node(2, Node(1), Node(3)),
+         Node(3, Node(1, None, Node(2))),
+         Node(3, Node(2, Node(1))),
          None,
          Node(0),
+         Node(6, Node(5, Node(4, Node(3, Node(2, Node(1, Node(0))))))),
          Node(1, Node(3, Node(4), Node(6, Node(5), Node(0))), Node(2)),
          Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), Node(6))),
-         Node(3, Node(1, Node(0), Node(3)), Node(5, Node(3), Node(6))),
+         Node(3, Node(1, Node(0)), Node(5, None, Node(6))),
          Node(4, Node(1, Node(0), Node(3)), Node(2)),
          Node(4, Node(1, Node(0), Node(2)), Node(5, Node(3), Node(6))),
          Node(0, Node(1, Node(2))),
          Node(0, Node(1), Node(3, Node(2), Node(4))),
+         Node(27, Node(2, None, Node(17, Node(11, Node(5)), Node(26, Node(18)))),
+              Node(74, Node(41, Node(34, Node(28))),
+                   Node(90, Node(88), Node(99, None, Node(105, None, Node(420)))))),
          Node(26, Node(5, Node(-37, Node(-74, Node(-86), Node(-51)), Node(-7, Node(-17))),
                        Node(17, Node(11, Node(5)), Node(26, Node(18)))),
               Node(74, Node(41, Node(34, Node(28)), Node(52, Node(47))),
-                   Node(90, Node(88, Node(86)), Node(99, Node(95))))),
-         Node(27, Node(2, None, Node(17, Node(11, Node(5)), Node(26, Node(18)))),
-              Node(74, Node(41, Node(34, Node(28))),
-                   Node(90, Node(88), Node(99, None, Node(105, None, Node(420))))))]
+                   Node(90, Node(88, Node(86)), Node(99, Node(95)))))]
 fns = [get_preorder_serialization_rec_verbose,
        get_preorder_serialization_rec,
        get_preorder_serialization_iter]

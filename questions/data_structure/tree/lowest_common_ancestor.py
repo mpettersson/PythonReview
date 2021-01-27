@@ -1,6 +1,7 @@
 r"""
     LOWEST COMMON ANCESTOR (CCI 4.8: FIRST COMMON ANCESTOR,
-                            EPI 10.3: COMPUTE THE LOWEST COMMON ANCESTOR IN A BINARY TREE))
+                            EPI 10.3: COMPUTE THE LOWEST COMMON ANCESTOR IN A BINARY TREE
+                            EPI 13.4: COMPUTE THE LCA, OPTIMIZING FOR CLOSE ANCESTORS)
 
     Create a function takes the root of a binary tree and two nodes, then returns the lowest common ancestor of the two
     nodes, None otherwise.
@@ -26,7 +27,8 @@ r"""
 
     Variations:
         - SEE: lowest_common_ancestor_bst.py
-        - Same question, however, nodes also have links to parent nodes.
+        - Same question, however, nodes also have a link to parent node.
+        - Same question, however, nodes have a link to parent and a time/space complexity of O(max_dist_to_lca).
 """
 
 
@@ -104,13 +106,13 @@ def lowest_common_ancestor_alt(root, n_1, n_2):
     def _lowest_common_ancestor_alt(root, n_1, n_2):
         if root is not None:
             left_res = _lowest_common_ancestor_alt(root.left, n_1, n_2)
-            if left_res[0] is 2:
+            if left_res[0] == 2:
                 return left_res
             right_res = _lowest_common_ancestor_alt(root.right, n_1, n_2)
-            if right_res[0] is 2:
+            if right_res[0] == 2:
                 return right_res
             num_n_found = left_res[0] + right_res[0] + int(root is n_1) + int(root is n_2)
-            return num_n_found, root if num_n_found is 2 else None
+            return num_n_found, root if num_n_found == 2 else None
         return 0, None
 
     if root and n_1 and n_2:
@@ -118,13 +120,13 @@ def lowest_common_ancestor_alt(root, n_1, n_2):
         return lca
 
 
-# VARIATION: Same question, however, nodes also have links to parent nodes.
+# VARIATION: Same question, however, nodes also have a link to parent node.
 
 
 # Variation Parent Link Naive Approach:  Check each of the n_1 and n_2 ancestor combinations, returning when matched.
 # Time Complexity: O(h_1 * h_2), where h_1 and h_2 are the heights of the nodes in their trees.
 # Space Complexity: O(1)
-def lowest_common_ancestor_parent_link_naive(root, n_1, n_2):
+def lowest_common_ancestor_parent_link_naive(n_1, n_2):
     while n_1:
         n = n_2
         while n:
@@ -137,7 +139,7 @@ def lowest_common_ancestor_parent_link_naive(root, n_1, n_2):
 # Variation Parent Link Approach:  Check each of n_1's ancestors to n_2's ancestors, returning once a match is found.
 # Time complexity: O(max(h_1, h_2)) where h_1 and h_2 are the heights of the nodes in their trees.
 # Space complexity: O(n), where n is the number of nodes in the n_1 and n_2 tree(s).
-def lowest_common_ancestor_parent_link_set(root, n_1, n_2):
+def lowest_common_ancestor_parent_link_set(n_1, n_2):
     s = set()   # Set containing visited nodes.
     while n_1:
         s.add(n_1)
@@ -153,7 +155,7 @@ def lowest_common_ancestor_parent_link_set(root, n_1, n_2):
 # Time complexity: O(t) time, where t is the size of the subtree for the first common ancestor, with a worst case time
 # of O(n), where n is the number of nodes in n_1's tree.
 # Space complexity: O(1).
-def lowest_common_ancestor_parent_link(root, n_1, n_2):
+def lowest_common_ancestor_parent_link(n_1, n_2):
 
     def _is_descendant(root, node):
         if root:
@@ -167,7 +169,7 @@ def lowest_common_ancestor_parent_link(root, n_1, n_2):
         if node and node.parent:
             return node.parent.left if node.parent.left != node else node.parent.right
 
-    if root and n_1 and n_2:
+    if n_1 and n_2:
         if _is_descendant(n_1, n_2):
             return n_1
         if _is_descendant(n_2, n_1):
@@ -184,7 +186,7 @@ def lowest_common_ancestor_parent_link(root, n_1, n_2):
 # the same height, then compare nodes until they are the same or are None, at which point the result is returned.
 # Time complexity: O(max(h_1, h_2)), where h_1 and h_2 are the heights of the nodes in their trees.
 # Space complexity: O(1).
-def lowest_common_ancestor_parent_link_alt(root, n_1, n_2):
+def lowest_common_ancestor_parent_link_alt(n_1, n_2):
 
     def _get_depth(node):
         i = 0
@@ -193,7 +195,7 @@ def lowest_common_ancestor_parent_link_alt(root, n_1, n_2):
             i += 1
         return node, i
 
-    if root and n_1 and n_2:
+    if n_1 and n_2:
         root_1, depth_1 = _get_depth(n_1)
         root_2, depth_2 = _get_depth(n_2)
         if root_1 is root_2:
@@ -207,6 +209,31 @@ def lowest_common_ancestor_parent_link_alt(root, n_1, n_2):
                 n_1 = n_1.parent
                 n_2 = n_2.parent
             return n_1
+
+
+# VARIATION: Same question, however, nodes have a link to parent and a time/space complexity of O(max_dist_to_lca).
+
+
+# Variation Parent Link W/ Distance To LCA Space/Time Complexity: Using a set/dict to maintain visited nodes and an
+# alternating movement (from one node to the other) upwards until the first (lowest) common ancestor is reached.
+# Time Complexity: O(max(n_1_dist_to_lca, n_2_dist_to_lca)), with a worst case of O(h), where h is the tree height.
+# Space Complexity: O(max(n_1_dist_to_lca, n_2_dist_to_lca)), with a worst case of O(h), where h is the tree height.
+def lowest_common_ancestor_with_lca_dist_complexity(n_1, n_2):
+    if n_1 and n_2:
+        if n_1 is n_2:
+            return n_1
+        s = {n_1, n_2}
+        while n_1 or n_2:
+            if n_1:
+                n_1 = n_1.parent
+                if n_1 in s:
+                    return n_1
+                s.add(n_1)
+            if n_2:
+                n_2 = n_2.parent
+                if n_2 in s:
+                    return n_2
+                s.add(n_2)
 
 
 class Node:
@@ -275,11 +302,12 @@ args = [(tree.left.left, tree.left.right.left),                     # (4, 5)
         (None, None)]                                               # (None, None)
 fns = [lowest_common_ancestor_naive,
        lowest_common_ancestor,
-       lowest_common_ancestor_alt,
-       lowest_common_ancestor_parent_link_naive,                    # Parent Link Variation
-       lowest_common_ancestor_parent_link_set,                      # Parent Link Variation
-       lowest_common_ancestor_parent_link,                          # Parent Link Variation
-       lowest_common_ancestor_parent_link_alt]                      # Parent Link Variation
+       lowest_common_ancestor_alt]
+alt_fns = [lowest_common_ancestor_parent_link_naive,                # Variation: Parent Link
+           lowest_common_ancestor_parent_link_set,                  # Variation: Parent Link
+           lowest_common_ancestor_parent_link,                      # Variation: Parent Link
+           lowest_common_ancestor_parent_link_alt,                  # Variation: Parent Link
+           lowest_common_ancestor_with_lca_dist_complexity]         # Variation: Parent Link W/ O(max_dist_to_lca)
 
 print(f"display(tree):")
 display(tree)
@@ -288,6 +316,11 @@ print()
 for fn in fns:
     for n_1, n_2 in args:
         print(f"{fn.__name__}(tree, {n_1}, {n_2}):", fn(tree, n_1, n_2))
+    print()
+
+for alt_fn in alt_fns:
+    for n_1, n_2 in args:
+        print(f"{alt_fn.__name__}({n_1}, {n_2}):", alt_fn(n_1, n_2))
     print()
 
 
