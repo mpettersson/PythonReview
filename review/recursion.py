@@ -28,22 +28,28 @@
 import time
 
 
-# Recursive Approach:  Plain vanilla recursion; return the result of recursive n-1 and n-2 calls.
+# APPROACH: Recursive
+#
+# Plain vanilla recursion; return the result of recursive n-1 and n-2 calls.
+#
 # Time Complexity: O(2 ** n), (technically, the time complexity is closer to O(1.6 ** n)).
 # Space Complexity: O(n).
 #
 # NOTE: At around n=40, this becomes very slow.
 def fibonacci_rec(n):
     if n is not None and n >= 0:
-        if n is 0:
+        if n == 0:
             return 0
-        if n is 1:
+        if n == 1:
             return 1
         return fibonacci_rec(n - 1) + fibonacci_rec(n - 2)
 
 
-# Tail Recursion Approach:  Using accumulator values to reduce the number of recursive calls to one (so that the tail
-# recursion property can be maintained), which is the final action of the function.
+# APPROACH: Tail Recursion
+#
+# Using accumulator values to reduce the number of recursive calls to one (so that the tail recursion property can be
+# maintained), which is the final action of the function.
+#
 # Time Complexity: O(n).
 # Space Complexity: O(n).
 #
@@ -54,9 +60,9 @@ def fibonacci_rec(n):
 def fibonacci_tail_rec(n):
 
     def _go(n, a=0, b=1):           # In tail recursion, accumulator value(s) (a, b) is/are used.
-        if n is 0:
+        if n == 0:
             return a
-        if n is 1:
+        if n == 1:
             return b
         return _go(n-1, b, a + b)   # In tail recursion, the recursive call must be LAST.
 
@@ -64,7 +70,10 @@ def fibonacci_tail_rec(n):
         return _go(n)
 
 
-# Tail Recursion As Loop Approach:  This is essentially the same as the bottom up dynamic programming approach (below).
+# APPROACH: Tail Recursion As Loop
+#
+# This is essentially the same as the bottom up dynamic programming approach (below).
+#
 # Time Complexity: O(n).
 # Space Complexity: O(1).
 def fibonacci_tail_loop(n):
@@ -72,24 +81,26 @@ def fibonacci_tail_loop(n):
         a = 0
         b = 1
         while True:
-            if n is 0:
+            if n == 0:
                 return a
-            if n is 1:
+            if n == 1:
                 return b
             n, a, b, = n - 1, b, a + b
 
 
-# Top Down Dynamic Programming/Memoization Approach:  This approach is essentially the recursive approach (above) with a
-# list used as a memoization cache; this guarantees that for any (non-base case) value of n, the result must only be
-# computed once (then cached).
+# APPROACH: Top Down Dynamic Programming/Memoization
+#
+# This approach is essentially the recursive approach (above) with a list used as a memoization cache; this guarantees
+# that for any (non-base case) value of n, the result must only be computed once (then cached).
+#
 # Time Complexity: O(n).
 # Space Complexity: O(n).
 def fibonacci_top_down(n):
 
     def _fibonacci_top_down(n, memo):
-        if n is 0:
+        if n == 0:
             return 0
-        if n is 1:
+        if n == 1:
             return 1
         if memo[n] is None:
             memo[n] = _fibonacci_top_down(n - 1, memo) + _fibonacci_top_down(n - 2, memo)
@@ -100,15 +111,17 @@ def fibonacci_top_down(n):
         return _fibonacci_top_down(n, memo)
 
 
-# Bottom Up Dynamic Programming/Tabulation With Memoization Approach: This iterative (looping) approach simply works in
-# a reversed direction to the top down (recursive) approach above.
+# APPROACH: Bottom Up Dynamic Programming/Tabulation With Memoization
+#
+# This iterative (looping) approach simply works in a reversed direction to the top down (recursive) approach above.
+#
 # Time Complexity: O(n).
 # Space Complexity: O(n).
 def fibonacci_bottom_up_memo(n):
     if n is not None and n >= 0:
-        if n is 0:
+        if n == 0:
             return 0
-        if n is 1:
+        if n == 1:
             return 1
         memo = [None] * n
         memo[0] = 0
@@ -120,15 +133,18 @@ def fibonacci_bottom_up_memo(n):
         return memo[n - 1] + memo[n - 2]
 
 
-# Bottom Up Dynamic Programming/Tabulation Approach:  This is a space optimized version of the bottom up memoization
-# approach above; the cache has been replaced with three variables thus reducing the space complexity to O(1).
+# APPROACH: Bottom Up Dynamic Programming/Tabulation
+#
+# This is a space optimized version of the bottom up memoization approach above; the cache has been replaced with three
+# variables thus reducing the space complexity to O(1).
+#
 # Time Complexity: O(n).
 # Space Complexity: O(1).
 #
 # NOTE: Tabulation/Bottom Up Dynamic Programming is generally the best performing solution.
 def fibonacci_bottom_up(n):
     if n is not None and n >= 0:
-        if n is 0:
+        if n == 0:
             return 0
         a = 0
         b = 1
@@ -149,8 +165,8 @@ fns = [fibonacci_rec,
        fibonacci_bottom_up_memo,
        fibonacci_bottom_up]
 
-for fn in fns:
-    for n in nums:
+for n in nums:
+    for fn in fns:
         print(f"{fn.__name__}({n}): {fn(n)}")
     print()
 
