@@ -1,8 +1,8 @@
 """
-    MISSING INT (CCI 10.7)
+    FIND MISSING ELEMENT LIMITED MEMORY (CCI 10.7: MISSING INT)
 
-    Given an input file with four billion non-negative integers, provide an algorithm to generate an integer that is not
-    contained in the file.  Assume you have 1 GB of memory available for this task.
+    Given a file with four billion non-negative ints, write a function to find the missing element using only 1 GB of
+    memory.
 
     Variation:
         What if you have only 10 MB of memory?  Assume that all the values are distinct and we now have no more than one
@@ -21,8 +21,12 @@ import os
 #   We can use 1GB memory, or 8,589,934,592b, so we have enough bits to enumerate each of the values.
 
 
-# Wrong Approach: REMEMBER, if you use ints as bit vectors, DIVIDE by 32!!!  The bit_vector below uses 2.5 GB of memory.
-# Time and space complexity of this approach is O(n) where n is the length of the file.
+# APPROACH: WRONG
+#
+# REMEMBER, if you use ints as bit vectors, DIVIDE by 32!!!  The bit_vector below uses 2.5 GB of memory.
+#
+# Time Complexity: O(n) where n is the length of the file.
+# Space Complexity: O(n) where n is the length of the file.
 def missing_int_wrong(file_name):
     if file_name is not None and os.path.isfile(file_name):
         num_32_bit_positive_ints = 2 ** 31
@@ -37,8 +41,12 @@ def missing_int_wrong(file_name):
                 return i
 
 
-# Int Bit Vector Approach:  Better, however, the byte_array below uses 512 MB of memory.  Time and space complexity of
-# this approach is O(n) where n is the length of the file.
+# APPROACH: Int Bit Vector
+#
+# Better, however, the byte_array below uses 512 MB of memory.
+#
+# Time Complexity: O(n) where n is the length of the file.
+# Space Complexity: O(n) where n is the length of the file.
 def missing_int_via_int_bit_vector(file_name):
     if file_name is not None and os.path.isfile(file_name):
         num_32_bit_positive_ints = 2 ** 31
@@ -55,9 +63,13 @@ def missing_int_via_int_bit_vector(file_name):
                     return i * 32 + j
 
 
-# Bytearray Approach:  Unlike many other types in python, each element of a bytearray takes exactly one byte; therefore
-# the byte_array below uses 256 MB of memory.  Time and space complexity of this approach is O(n) where n is the length
-# of the file.
+# APPROACH: Bytearray
+#
+# Unlike many other types in python, each element of a bytearray takes exactly one byte; therefore the byte_array below
+# uses 256 MB of memory.
+#
+# Time Complexity: O(n) where n is the length of the file.
+# Space Complexity: O(n) where n is the length of the file.
 def missing_int(file_name):
     if file_name is not None and os.path.isfile(file_name):
         num_32_bit_positive_ints = 2 ** 31
@@ -74,9 +86,13 @@ def missing_int(file_name):
                     return i * 8 + j
 
 
-# Variation (With Limit) Bytearray Approach:
+# (LIMIT VARIATION) APPROACH: Bytearray
+#
 # The constraint of 10MB is equivalent to 2**23B.  That means the bytearray can hold max 2**21 items (because each
-# element is an int and takes up 4B).  The number of bytearray items/partitions
+# element is an int and takes up 4B).
+#
+# Time Complexity: O(n) where n is the length of the file.
+# Space Complexity: 10MB.
 def missing_int_w_limit(file_name, byte_limit=2 ** 23):
     if file_name is not None and os.path.isfile(file_name):
         num_lines = 0
