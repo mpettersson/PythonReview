@@ -12,7 +12,15 @@
 import copy
 
 
-# Naive/Brute Force Approach:  Check for the most consecutive sequences starting at each value in the list.
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - What is your definition of consecutive?
+
+
+# APPROACH: Naive/Brute Force
+#
+# Check for the most consecutive sequences starting at each value in the list.
+#
 # Time Complexity: O(n**3), where n is the number of elements in the list.
 # Space Complexity: O(r), where r is the length of the longest consecutive sequence in the list.
 def find_longest_consecutive_sequence_naive(l):
@@ -32,8 +40,11 @@ def find_longest_consecutive_sequence_naive(l):
     return list(range(start, max_len + start))
 
 
-# Naive Sort Approach:  Sort the provided list, then starting at each index, build a list of consecutive values,
-# returning the longest of the consecutive values lists.
+# APPROACH: Naive Sort
+#
+# Sort the provided list, then starting at each index, build a list of consecutive values, returning the longest of the
+# consecutive values lists.
+#
 # Time Complexity: O(n * log(n)), where n is the number of elements in the list.
 # Space Complexity: O(r), where r is the length of the longest consecutive sequence in the list.
 def find_longest_consecutive_sequence_via_sort(l):
@@ -54,34 +65,12 @@ def find_longest_consecutive_sequence_via_sort(l):
     return list(range(start, max_len + start))
 
 
-# Optimal Set Approach:  Construct a set from the provided list, then, for each number in the set, if it is the first
-# number in a consecutive sequence, construct a temporary candidate list.  If the candidate list is longer than the
-# current result list, update the result with the candidate list.
-# Time Complexity: O(n), where n is the number of elements in the list.
-# Space Complexity: O(u), where u are the number of unique elements in the list.
+# APPROACH: Dictionary (Same time/space as optimal solution below, but slightly more complicated)
 #
-# NOTE: This appears to have O(n**2) time (because of the nested while loop), however, the while loop will ONLY RUN n
-# times.  Therefore, the time is O(n + n), or O(n), NOT O(n * n).  Furthermore, this can only be achieved via the set's
-# O(1) time 'in' lookup operation.
-def find_longest_consecutive_sequence_via_set(l):
-    if l is not None:
-        s = set(l)                                  # Need to use set for O(1) 'in' lookup time.
-        result = []
-        for n in s:
-            if n - 1 not in s:                      # ONLY if n is the FIRST value in a sequence...
-                candidate = [n]
-                m = n + 1
-                while m in s:                       # Build candidate list from consecutive values.
-                    candidate.append(m)             # This ONLY happens n times!
-                    m += 1
-                if len(candidate) > len(result):
-                    result = candidate
-        return result
-
-
-# Optimal Dictionary Approach: Use a dictionary to record the size of the consecutive subset for which the element is a
-# member. Whenever a new element is found (is not in the dictionary), check if one plus/minus the element is in the
-# dictionary; if it is, then update the size for the FIRST and LAST element in the consecutive sequence.
+# Use a dictionary to record the size of the consecutive subset for which the element is a member. Whenever a new
+# element is found (is not in the dictionary), check if one plus/minus the element is in the dictionary; if it is, then
+# update the size for the FIRST and LAST element in the consecutive sequence.
+#
 # Time Complexity: O(n), where n is the number of elements in the list.
 # Space Complexity: O(u), where u are the number of unique elements in the list.
 def find_longest_consecutive_sequence_via_dict(l):
@@ -105,6 +94,35 @@ def find_longest_consecutive_sequence_via_dict(l):
         return []
 
 
+# APPROACH: Optimal Set
+#
+# Construct a set (the O(1) lookup times are KEY here) from the provided list, then, for each number in the set, if it
+# is the FIRST number (ELSE it'd already been seen/used in a sequence) in a consecutive sequence, use it to construct a
+# temporary candidate list.  Then, if the candidate list is longer than the current result list, update the result with
+# the candidate list.
+#
+# Time Complexity: O(n), where n is the number of elements in the list (SEE note below).
+# Space Complexity: O(s), where s is the size of the set.
+#
+# NOTE: This appears to have O(n**2) time (because of the nested while loop), however, the while loop will ONLY RUN n
+# times.  Therefore, the time is O(n + n), or O(n), NOT O(n * n).  Furthermore, this can only be achieved via the set's
+# O(1) time 'in' lookup operation.
+def find_longest_consecutive_sequence_via_set(l):
+    if l is not None:
+        s = set(l)                                  # Need to use set for O(1) 'in' lookup time.
+        result = []
+        for n in s:
+            if n - 1 not in s:                      # ONLY if n is the FIRST val in a seq (ELSE it'd already be seen).
+                candidate = [n]
+                m = n + 1
+                while m in s:                       # Build candidate list from consecutive values.
+                    candidate.append(m)             # This ONLY happens n times!
+                    m += 1
+                if len(candidate) > len(result):
+                    result = candidate
+        return result
+
+
 lists = [[1, 2, 3, 4, 5, 6],
          [4, 2, 1, 6, 5],
          [5, 5, 3, 1],
@@ -116,8 +134,8 @@ lists = [[1, 2, 3, 4, 5, 6],
          None]
 fns = [find_longest_consecutive_sequence_naive,
        find_longest_consecutive_sequence_via_sort,
-       find_longest_consecutive_sequence_via_set,
-       find_longest_consecutive_sequence_via_dict]
+       find_longest_consecutive_sequence_via_dict,
+       find_longest_consecutive_sequence_via_set]
 
 for l in lists:
     for fn in fns:

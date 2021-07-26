@@ -15,10 +15,23 @@
 import copy
 
 
-# NOTE: If you naively try to do this in one iteration it'll all end up zeros, so you have to go over it twice.
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - Modify the given matrix, or return a new matrix?
+#   - What dimensions will the matrix be?
+#   - Will the matrix consist of ragged or jagged lists?
 
 
-# Naive Space Approach:  Use two lists to maintain the rows and columns that should be updated.
+# NOTE: If you naively try to update values in a single iteration (without tracking changes for a second iteration) then
+# the matrix will end up all zeros if a single zero originally existed.
+
+
+# APPROACH: Naive Two Lists
+#
+# Use two lists to indicate the rows and columns that will be zeroed, iterate over over each row and column of the
+# provided matrix updating the lists, then iterate over the provided matrix zeroing rows and columns according to the
+# two lists.
+#
 # Time Complexity: O(r * c), where r and c are the number of rows and columns in the matrix.
 # Space Complexity: O(r + c), where r and c are the number of rows and columns in the matrix.
 def update_matrix_naive(m):
@@ -42,8 +55,15 @@ def update_matrix_naive(m):
     return m
 
 
-# Optimal Approach:  First create two flags to indicate whether the first row and first column needs to be updated, then
-# use the first row and first column similar to the lists in the first approach.
+# APPROACH: Optimal Two Flags
+#
+# This approach is very similar to that above, however, the first row and column of the matrix will act as the lists,
+# and a flag variable for the first row and first column will track if they need to be zeroed:  First create two flags
+# and iterate over the first row and column, zeroing their corresponding flag if a zero exists, then use the first row
+# and first column (as the lists in the first approach) to track what rows and columns need to be zeroed.  Then, iterate
+# over the first row and column zeroing the respective columns and rows.  Finally, zero the first row and column
+# according to the flag variables.
+#
 # Time Complexity: O(r * c), where r and c are the number of rows and columns in the matrix.
 # Space Complexity: O(1).
 def update_matrix(m):
