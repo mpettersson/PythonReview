@@ -1,5 +1,6 @@
 """
-    BUILD ORDER (CCI 4.7: BUILD ORDER)
+    BUILD ORDER (CCI 4.7: BUILD ORDER,
+                 50CIQ 15: BUILD ORDER)
 
     Write a function which accepts a list of projects and a list of dependencies tuples (the first element is a project
     dependent on the second element, or project), then returns a list of projects representing a valid build order.  If
@@ -21,9 +22,18 @@
 """
 
 
-# Topological Sort (Adjacency List) Approach:  Construct an adjacency list, then execute a topological sort.
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - Ask clarification questions about the INPUT (cycles, types, adj list/matrix, etc.).
+#   - Input Validation?
+
+
+# APPROACH: Topological Sort Via Adjacency List
+#
+# Construct an adjacency list, then execute a topological sort.
+#
 # Time Complexity: O(p + d), where p is the number of projects and d is the number of dependency pairs.
-# Space Complexity: O(p), where p is the number of projects.
+# Space Complexity: O(p + d), where p and d are the number of projects and dependency pairs (BC we constructed a graph).
 def build_order_adj_list(projects, dependencies):
 
     def _build_adj_list(projects, dependencies):
@@ -36,7 +46,7 @@ def build_order_adj_list(projects, dependencies):
 
     g = _build_adj_list(projects, dependencies)
     if g:
-        order = []                                      # Use list as ordering queue.
+        result = []                                     # The build list/results.
         proc_next = []                                  # Use list as queue for next node to process.
         num_inbound_edges = {k: 0 for k in g.keys()}    # Most adj lists only store outgoing edges, not incoming.
         for k, v in g.items():                          # Calculate number of incoming edges for each node.
@@ -51,15 +61,18 @@ def build_order_adj_list(projects, dependencies):
                 num_inbound_edges[v] -= 1
                 if num_inbound_edges[v] == 0:
                     proc_next.append(v)
-            order.append(n)
-        if sorted(list(g.keys())) == sorted(order):     # If order contains all nodes, then topological sort succeeded.
-            return order
+            result.append(n)
+        if len(g) == len(set(result)):    # If order contains all nodes, then topological sort succeeded.
+            return result
     raise Exception("Topological Sort Algorithm Failed")
 
 
-# Topological Sort (Adjacency Matrix) Approach:  Construct an adjacency matrix, then execute a topological sort.
-# Time Complexity: O(p + d), where p is the number of projects and d is the number of dependency pairs.
-# Space Complexity: O(p), where p is the number of projects.
+# APPROACH: Topological Sort Via Adjacency Matrix
+#
+# Construct an adjacency matrix, then execute a topological sort.
+#
+# Time Complexity: O(p + d), where p and d are the number of projects and dependency pairs.
+# Space Complexity: O(p**2), where p is the number of projects (BC we constructed a graph).
 def build_order_adj_matrix(projects, dependencies):
 
     def _build_adj_matrix(projects, dependencies):
@@ -72,7 +85,7 @@ def build_order_adj_matrix(projects, dependencies):
 
     adj_matrix = _build_adj_matrix(projects, dependencies)
     if adj_matrix:
-        order = []                                      # Use list as ordering queue.
+        result = []                                     # Use list as ordering queue.
         proc_next = []                                  # Use list as queue for next node to process.
         num_inbound_edges = [sum([r[c] for r in adj_matrix]) for c in range(len(adj_matrix))]
         for i, v in enumerate(num_inbound_edges):
@@ -85,29 +98,33 @@ def build_order_adj_matrix(projects, dependencies):
                     num_inbound_edges[c] -= 1
                     if num_inbound_edges[c] == 0:
                         proc_next.append(c)
-            order.append(projects[r])
-        if sorted(projects) == sorted(order):
-            return order
+            result.append(projects[r])
+        if len(projects) == len(set(result)):
+            return result
     raise Exception("Topological Sort Algorithm Failed")
 
 
-# DFS/Recursive Approach:  This approach uses state and the recursion stack to ensure build order (that is, you can't
-# add a project to the build order until you've finished/returned from all of it's recursive dependencies/calls).
+# APPROACH: DFS/Recursive
+#
+# This approach performs a depth first search using additional states (either; 'Blank', 'Partial', or 'Complete') to
+# ensure that a loop does NOT exist, and thus, a valid build order does exist.  If during any of the DFS calls, a node
+# is encountered in the 'Partial' state, the search exits (return False).
+#
 # Time Complexity: O(p + d), where p is the number of projects and d is the number of dependency pairs.
-# Space Complexity: O(p), where p is the number of projects.
+# Space Complexity: O(p + d), where p and d are the number of projects and dependency pairs (BC we constructed a graph).
 def build_order_dfs_adj_list(projects, dependencies):
 
-    def _dfs(n, adj_list, order):
-        if adj_list[n][1] == "PARTIAL":
+    def _dfs(n, adj_list, result):
+        if adj_list[n][1] == "PARTIAL":             # If any node is found in the "PARTIAL" state, a loop exists; fail.
             return False
         if adj_list[n][1] == "BLANK":
             adj_list[n][1] = "PARTIAL"
             for a in adj_list[n][0]:
-                if not _dfs(a, adj_list, order):
+                if not _dfs(a, adj_list, result):
                     return False
             adj_list[n][1] = "COMPLETE"
-            order.insert(0, n)
-        return True
+            result.insert(0, n)                     # Add the node to the build order/results.
+        return True                                 # Note: A node in the "COMPLETE" state just returns True.
 
     def _build_adj_list(projects, dependencies):
         if projects:
@@ -121,12 +138,12 @@ def build_order_dfs_adj_list(projects, dependencies):
     for k in adj_list.keys():
         adj_list[k] = [adj_list[k], "BLANK"]        # Add state to graph; "BLANK" -> "PARTIAL" -> "COMPLETE"
     if adj_list:
-        order = []
+        result = []
         for n in adj_list.keys():
             if adj_list[n][1] == "BLANK":
-                if not _dfs(n, adj_list, order):
+                if not _dfs(n, adj_list, result):
                     return
-        return order
+        return result
 
 
 projects = ['a', 'b', 'c', 'd', 'e', 'f']
