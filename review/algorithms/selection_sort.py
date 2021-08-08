@@ -10,12 +10,13 @@
     Stable:             No      (default does change the relative order of elements with equal keys)
     Online:             No      (can't sort a list as it receives it)
 
-    Think of a childs algorithm...
+    Think of a child's algorithm...
     Put the smallest in first index...
 
     Given a list, take the current element (starting at 0) and exchange it with the smallest element on the right hand
     side of the current element. Continue doing this, incrementing the index of current element by 1 until it's sorted.
 """
+import copy
 
 
 def selection_sort(arr):
@@ -28,7 +29,6 @@ def selection_sort(arr):
             arr[i], arr[min_i] = arr[min_i], arr[i]
 
 
-import copy
 orig_list = [44, 77, 59, 39, 41, 69, 68, 10, 72, 99, 72, 11, 41, 37, 11, 72, 16, 22, 10, 33]
 l = copy.deepcopy(orig_list)
 l.sort()
