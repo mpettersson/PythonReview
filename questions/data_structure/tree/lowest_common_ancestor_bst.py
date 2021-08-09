@@ -1,8 +1,10 @@
 r"""
-    LOWEST COMMON ANCESTOR BST
+    LOWEST COMMON ANCESTOR BST (CCI 4.8: FIRST COMMON ANCESTOR,
+                                EPI 10.3: COMPUTE THE LOWEST COMMON ANCESTOR IN A BINARY TREE
+                                50CIQ 18: LOWEST COMMON ANCESTOR)
 
     Create a function takes the root of a binary search tree and two nodes, then returns the lowest common ancestor of
-    the two nodes, None otherwise.  A tree is considered a BST, if for each node in the tree, the property
+    the two nodes, None otherwise.  A tree is considered a BST, if for each node in the tree, the property;
     "all left descendants <= node < all right descendants" is true.
 
     Consider the following BST:
@@ -28,12 +30,25 @@ r"""
 """
 
 
-# Naive Two Path Approach:  This may, or may not, fulfil the interviewers space requirements, ask them.
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - What type of tree (BST, n-ary, complete, full, etc.) (if any confusion exists)?
+#   - Implement the tree data structure or just the function?
+#   - Will the nodes be in the same tree (and other input validation questions?
+#   - What type of data will the nodes contain (this may affect some languages more than others)?
+
+
+# APPROACH: Naive Compare Paths To Root
+#
+# This may, or may not, fulfil the interviewers space requirements; ask them. Find each of the paths from root to the
+# supplied nodes.  Starting at the root (of each list) pop off the nodes one at time, maintaining the previous node
+# (as the lca), until the two popped nodes are not the same.  Then return the lca.
+#
 # Time Complexity: O(n), where n is the number of nodes in n_1 and n_2's tree(s).
 # Space Complexity: O(max(h_1, h_2)), where h_1 and h_2 are the heights of n_1 and n_2 (O(log(n)) in the worst case).
 #
 # NOTE: Although this has the same time/space complexity as the other approaches, this approach visits each node in the
-# paths to n_1 and n_2 TWICE, in the worst case.
+#       paths to n_1 and n_2 TWICE, in the worst case.
 def least_common_ancestor_bst_naive(root, n_1, n_2):
 
     def _get_path_to_node_bst_rec(root, n):
@@ -62,14 +77,17 @@ def least_common_ancestor_bst_naive(root, n_1, n_2):
         return lca
 
 
-# Recursive Approach: First verify that both nodes are descendants of the root (if not, return None), then, using the
-# BST property, recurse down until either: one of the two nodes is reached, OR one node's value is on the root's left
-# and the other node's value is on root's right.
+# APPROACH: Recursive
+#
+# First verify that both nodes are descendants of the root (if not, return None), then, using the BST property, recurse
+# down until either: one of the two nodes is reached, OR one node's value is on the root's left and the other node's
+# value is on root's right.
+#
 # Time Complexity: O(n) where n is the number of nodes in the tree.
 # Space Complexity: O(max(h_1, h_2)), where h_1 and h_2 are the heights of n_1 and n_2 (O(log(n)) in the worst case).
 #
 # NOTE: Although this has the same time/space complexity as the other approaches, this approach visits each node in the
-# paths to n_1 and n_2 TWICE, in the worst case.
+#       paths to n_1 and n_2 TWICE, in the worst case.
 def lowest_common_ancestor_bst_rec(root, n_1, n_2):
 
     def _is_descendant_bst_rec(root, n):
@@ -94,14 +112,19 @@ def lowest_common_ancestor_bst_rec(root, n_1, n_2):
         return _lowest_common_ancestor_bst_rec(root, n_1, n_2)
 
 
-# Optimal Recursive Approach: Tracking which nodes have been found in a tuple (lca_applicant, has_n_1, has_n_2), recurse
-# from root, only on children that may lead to the nodes, then collate results  and return.
+# APPROACH: Optimal Recursive 3-Tuple (Node, Flag, Flag)
+#
+# Starting at the root of the tree, recurse ONLY on children with values that maintain the stated BST property w.r.t.
+# n_1 and n_2 values.  Each recursive call returns a 3-tuple indicating that sides status (lca, has_n_1, has_n_2).
+# When the (children with values maintaining the BST property w.r.t. the nodes) result(s) are returned, the result(s)
+# are updated and returned upd the stack.
+#
 # Time Complexity: O(n) where n is the number of nodes in the tree.
 # Space Complexity: O(max(h_1, h_2)), where h_1 and h_2 are the heights of n_1 and n_2 (with a worst case of O(n) if n_1
-# or n_2 is not a node in the tree).
+#                   or n_2 is not a node in the tree).
 #
 # NOTE: Although this has the same time/space complexity as the other approaches, this approach visits each node in the
-# paths to n_1 and n_2 only ONCE.
+#       paths to n_1 and n_2 only ONCE.
 def lowest_common_ancestor_bst(root, n_1, n_2):
 
     def _lowest_common_ancestor_bst(root, n_1, n_2):
@@ -117,25 +140,21 @@ def lowest_common_ancestor_bst(root, n_1, n_2):
         return root, root == n_1 or l_res[1] or r_res[1], root == n_2 or l_res[2] or r_res[2]
 
     if root and n_1 and n_2:
-        lca_applicant, has_n_1, has_n_2 = _lowest_common_ancestor_bst(root, n_1, n_2)
-        return lca_applicant if has_n_1 and has_n_2 else None
+        lca, has_n_1, has_n_2 = _lowest_common_ancestor_bst(root, n_1, n_2)
+        return lca if has_n_1 and has_n_2 else None
 
 
 # VARIATION: Same question, however, the BST property is now: "all left descendants <= node <= all right descendants".
+
+
+# NOTE: Could now have full BSTs (all nodes have two children, except leaves) with the same value.
+
+
+# VARIATION APPROACH: BST Property Naive/Two Path
 #
-# Observations:
-#   - General:
-#       - Could have a full bst (all nodes have two children, except leaves) with all one value.
-#   - The two path approach:
-#       - Same time/space complexity.
-#       - Only change is in the function to build the path.
-#   - The recursive case:
-#       - A duplicate value is no longer guaranteed to be on the left, therefore, must check two paths.
-
-
-# Alternate BST Property Naive/Two Path Approach:  Only difference from above is while path construction; the decision
-# to go left or right is no longer mutually exclusive. This may, or may not, fulfil the interviewers space requirements,
-# ask them.
+# Only difference from above is during path construction; the decision to go left or right is NO LONGER mutually
+# exclusive.  Again, this may, or may not, fulfil the interviewers space requirements; ask them.
+#
 # Time Complexity: O(n), where n is the number of nodes in n_1 and n_2's trees.
 # Space Complexity: O(max(h_1, h_2)), where h_1 and h_2 are the heights of n_1 and n_2 (O(n) worst case).
 def least_common_ancestor_alt_bst_property_naive(root, n_1, n_2):
@@ -165,7 +184,11 @@ def least_common_ancestor_alt_bst_property_naive(root, n_1, n_2):
         return lca
 
 
-# Alternate BST Property Recursive Find Approach: Using the BST property, recurse down from root,
+# VARIATION APPROACH: Optimal Recursive 3-Tuple (Node, Flag, Flag)
+#
+# With this new BST property, a duplicate value is no longer guaranteed to be on the left (it may also be on the right),
+# therefore, both the left and right paths.
+#
 # Time Complexity: O(n) where n is the number of nodes in the tree.
 # Space Complexity: O(h), where h is the height of the tree ((however, the worst case space could be O(n)).
 def lowest_common_ancestor_alt_bst_property(root, n_1, n_2):
@@ -183,8 +206,8 @@ def lowest_common_ancestor_alt_bst_property(root, n_1, n_2):
         return root, root == n_1 or l_res[1] or r_res[1], root == n_2 or l_res[2] or r_res[2]
 
     if root and n_1 and n_2:
-        lca_applicant, has_n_1, has_n_2 = _lowest_common_ancestor_alt_bst_property(root, n_1, n_2)
-        return lca_applicant if has_n_1 and has_n_2 else None
+        lca, has_n_1, has_n_2 = _lowest_common_ancestor_alt_bst_property(root, n_1, n_2)
+        return lca if has_n_1 and has_n_2 else None
 
 
 class Node:
@@ -270,17 +293,17 @@ alt_args = [(alt_tree.left.left, alt_tree.right.right),
 alt_fns = [least_common_ancestor_alt_bst_property_naive,
            lowest_common_ancestor_alt_bst_property]
 
-print(f"display(tree):")
+print(f"tree:")
 display(tree)
-for fn in fns:
-    for n_1, n_2 in args:
+for n_1, n_2 in args:
+    for fn in fns:
         print(f"{fn.__name__}(tree, {n_1}, {n_2}):", fn(tree, n_1, n_2))
     print()
 
-print(f"display(alt_tree):")
+print(f"alt_tree:")
 display(alt_tree)
-for fn in alt_fns:
-    for n_1, n_2 in alt_args:
+for n_1, n_2 in alt_args:
+    for fn in alt_fns:
         print(f"{fn.__name__}(alt_tree, {n_1}, {n_2}): {fn(alt_tree, n_1, n_2)}")
     print()
 

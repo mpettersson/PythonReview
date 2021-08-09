@@ -1,40 +1,91 @@
 """
-    RANDOM NODE (CCI 4.11)
+    RANDOM NODE (CCI 4.11: RANDOM NODE,
+                 50CIQ 17: RANDOM BINARY TREE)
 
-    You are implementing a binary tree class from scratch which, in addition to insert, find and delete, has a method
-    get_random_node() which returns a random node from the tree.  All nodes should be equally likely to be chosen.
-    Design and implement the rest of the methods.
+    Implementing a binary tree class with the methods; insert, find, delete, and get_random_node.  The get_random_node
+    method should return a random node from the tree, where all nodes have the same probability of being chosen.
 """
 import random
 
 
-# Convert to List Approach:  When a random node is desired, traverse the tree and add all of the nodes to a list, then
-# return a random node, this however, is slow and probably not what the interviewer wants.  Time and space complexity is
-# O(n), where n is the number of nodes in the tree.
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - Implement the tree data structure or just the method (maybe the provided question is ambiguous)?
+#   - What time/space complexity are you looking for?
+#   - What type of data will the nodes contain (this may affect some languages more than others)?
+
+
+# APPROACH: Convert to List
+#
+# When the method is called, perform an inorder DFS traversal of the tree, adding each of the nodes to a list.  When the
+# list is composed, return a random node.  This, however, is slow and probably not what the interviewer wants...
+#
+# Time Complexity: O(n), where n is the number of nodes in the tree.
+# Space Complexity: O(n), where n is the number of nodes in the tree.
+#
 # SEE:  Node.values() and BTree.get_random_node_from_list() below.
 
 
-# Maintain List Approach (Not Implemented):  An alternate to converting a tree to a list is, in addition to the tree, to
-# maintain a list of all of the nodes, then randomly selecting one when needed.  Aside from the extra space requirement,
-# deleting from the list would be O(n) time.
+# APPROACH: Maintain List (NOT Implemented)
+#
+# Akin to the above approach, (as an alternate to converting a tree to a list) maintain a list of all of the nodes (as
+# well as the actual tree), then when the method is called, return a random node from the maintained list.
+#
+# Get Time Complexity: O(1).
+# Delete Time Complexity: O(n), where n is the number of nodes in the tree.
+# Space Complexity: O(n), where n is the number of nodes in the tree.
 
 
-# Random Tree Traversal Approach:  At each level, select left traversal, current node, or right traversal, with EVENLY
-# distributed probabilities.  As a reminder, the following are some probability properties of a binary tree:
+# APPROACH: Random Tree Traversal
+#
+# At each level, select left traversal, current node, or right traversal, with EVENLY distributed probabilities.
+# As a reminder, the following are some probability properties of a binary tree:
 #   - The probability of of selecting a node from a tree is 1/n.
 #   - The probability of selecting a node from a left subtree, tree.left, is 1/n * tree.left.size.
 #   - The probability of selecting a node from a right subtree, tree.right, is 1/n * tree.right.size.
 # Therefore, at any node n in the tree generate a random value r, recurse left if r is less than the size of the left
 # tree, return node if r is the same as the size of the left tree, or recurse right.
-# This approach has a runtime of O(log(n)), where n is the number of nodes in the tree.
+#
+# Time Complexity: O(log(n)), where n is the number of nodes in the tree (or, O(h), where h is the max tree height).
+# Space Complexity: O(log(n)), where n is the number of nodes in the tree (or, O(h), where h is the max tree height).
+#
 # SEE:  Node.get_random_node() and BTree.get_random_node() below.
 
 
-# Random Node (Optimal) Approach:  Randomly select a random value r in the range of the size of the tree, then recurse
-# to the node (subtracting the left size, or node.left.size, from the value r IF recursing down the right side, or
-# tree.right).  The runtime is also O(log(n)) (or O(h) where h is the max height of the tree), however, there are fewer
-# (costly) random calls.
-# SEE:  Node.get_ith_node(i) and BTree.get_random_ith_node() below.
+# APPROACH: Random Node (Optimal)
+#
+# Randomly select a random value r in the range of the size of the tree, then recurse to the node (subtracting the left
+# size, or node.left.size, from the value r IF recursing down the right side, or tree.right).
+#
+# Time Complexity: O(log(n)), where n is the number of nodes in the tree (or, O(h), where h is the max tree height).
+# Space Complexity: O(log(n)), where n is the number of nodes in the tree (or, O(h), where h is the max tree height).
+#
+# NOTE: Although the time/space complexities are the same as the approach above, there are fewer costly random calls!!!
+#
+# SEE:  Node.get_ith_node(i) and BTree.get_random_ith_node(), and BNodeMin.get_random_node() below.
+class BNodeMin:     # Minimized Solution.
+    def __init__(self, value, left=None, right=None):
+        self.value = value
+        self.left = left
+        self.right = right
+
+    def __len__(self):
+        num_left = 0 if self.left is None else len(self.left)
+        num_right = 0 if self.right is None else len(self.right)
+        return num_left + num_right + 1
+
+    def __repr__(self):
+        return f"({self.value}, {self.left}, {self.right})"
+
+    def _get_ith_node(self, i):
+        left_size = 0 if self.left is None else len(self.left)
+        if i < left_size:
+            return self.left._get_ith_node(i)
+        if i == left_size:
+            return self
+        return self.right._get_ith_node(i - (left_size + 1))
+
+    def get_random_node(self):
+        return self._get_ith_node(random.randrange(0, len(self)))
 
 
 class Node:
@@ -128,7 +179,7 @@ class Node:
             return node.size
         self.size = update_size(self)
 
-    # Convert to List Approach
+    # APPROACH: Convert to List
     def values(self):
         def in_order_add_to_list(n, l):
             if n:
@@ -141,7 +192,7 @@ class Node:
         in_order_add_to_list(self, l)
         return l
 
-    # Random Tree Traversal Approach
+    # APPROACH: Random Tree Traversal
     def get_random_node(self):
         left_size = 0 if self.left is None else self.left.size
         index = random.randint(0, self.size - 1)
@@ -152,7 +203,7 @@ class Node:
         else:
             return self.right.get_random_node()
 
-    # Random Node (Optimal) Approach
+    # APPROACH: Random Node (Optimal)
     def get_ith_node(self, i):
         left_size = 0 if self.left is None else self.left.size
         if i < left_size:
@@ -207,18 +258,18 @@ class BTree:
         else:
             self.root = self.root.delete(value)
 
-    # Convert to List Approach
+    # APPROACH: Convert to List
     def get_random_node_from_list(self):
         if self.root:
             l = self.root.values()
             return random.choice(l)
 
-    # Randomly Tree Traversal Approach
+    # APPROACH: Random Tree Traversal
     def get_random_node(self):
         if self.root:
             return self.root.get_random_node()
 
-    # Random Node (Optimal) Approach
+    # APPROACH: Random Node (Optimal)
     def get_random_ith_node(self):
         if self.root:
             return self.root.get_ith_node(random.randint(0, self.root.size - 1))
@@ -268,21 +319,20 @@ def display(node):
 
 
 tree = BTree()
-tree.populate_tree_from_list(list(range(100)))
+n = 100
+tree.populate_tree_from_list(list(range(n)))
+fns = [tree.get_random_node_from_list,
+       tree.get_random_node,
+       tree.get_random_ith_node]
 
-print("display(tree.root)")
+print("\ntree:")
 display(tree.root)
-print("len(tree):", len(tree), "\n")
+print(f"n: {n}\n")
 
-for _ in range(5):
-    print("tree.get_random_node_from_list().value", tree.get_random_node_from_list().value)
-print()
 
-for _ in range(5):
-    print("tree.get_random_node().value", tree.get_random_node().value)
-print()
-
-for _ in range(5):
-    print("tree.get_random_ith_node().value:", tree.get_random_ith_node().value)
+for fn in fns:
+    for _ in range(5):
+        print(f"{fn.__name__}().value", fn().value)
+    print()
 
 
