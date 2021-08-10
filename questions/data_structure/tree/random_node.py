@@ -9,8 +9,10 @@ import random
 
 
 # Questions you should ask the interviewer (if not explicitly stated):
-#   - Implement the tree data structure or just the method (maybe the provided question is ambiguous)?
 #   - What time/space complexity are you looking for?
+#   - What type of tree (BST, n-ary, complete, full, etc.) (if any confusion exists)?
+#   - Implement the tree data structure or just the function?
+#   - Will the nodes be in the same tree (and other input validation questions?
 #   - What type of data will the nodes contain (this may affect some languages more than others)?
 
 
