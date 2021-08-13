@@ -14,6 +14,7 @@ import time
 
 # Questions you should ask the interviewer (if not explicitly stated):
 #   - What is the argument type?  (This may affect some languages more than others.)
+#   - Are there duplicate elements?
 
 
 # APPROACH: Via Itertools Permutations
