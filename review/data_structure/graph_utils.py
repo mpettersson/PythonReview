@@ -1,3 +1,9 @@
+"""
+    TODO:
+        - ADD EXAMPLE GRAPHS (USED IN PROBLEMS)
+        - ADD VISUAL EXAMPLES OF EACH ADJ LIST/MATRIX
+        - ADD CODE COMMENTS
+"""
 
 
 def adj_list_to_adj_mat(graph_as_adj_list):
@@ -18,35 +24,28 @@ def adj_mat_to_adj_list(graph_as_adj_mat):
     return graph_as_adj_list
 
 
-# Tarjan's Strongly Connected Components Algorithm: Finds strongly connected components of a graph, that is, finds sets
-# of nodes in which all nodes in the set can reach all other nodes (in the set).
-# Runtime is O(V + E) and Space is
-def tarjan(graph):
-    pass
-
-
-graph = [[0, 3, float('inf'), 5],
-         [2, 0, float('inf'), 4],
-         [float('inf'), 1, 0, float('inf')],
-         [float('inf'), float('inf'), 2, 0]];
-
 graphs = [{1: {2: 7, 6: 14, 3: 9},
            2: {1: 7, 3: 10, 4: 15},
            3: {1: 9, 6: 2, 4: 11, 2: 10},
            4: {5: 6, 3: 11, 2: 15},
            5: {4: 6, 6: 9},
            6: {1: 14, 3: 2, 5: 9}},
-          {'A': {'B': 1, 'C': 4},
+          {'A': {'B': -1, 'C': 4},              # Graph with arbitrary weights.
            'B': {'C': 3, 'D': 2, 'E': 2},
            'C': {},
            'D': {'B': 1, 'C': 5},
-           'E': {'D': 3}}]
+           'E': {'D': -3}},
+          {'A': {'B': 1, 'C': 4},               # Graph with only positive weights.
+           'B': {'C': 3, 'D': 2, 'E': 2},
+           'C': {},
+           'D': {'B': 1, 'C': 5},
+           'E': {'D': 3}},
+          {'A': {'B': -1, 'C': 4},              # Graph with a negative weight cycle.
+           'B': {'C': 3, 'D': 2, 'E': 2},
+           'C': {},
+           'D': {'B': 1, 'C': 5, 'E': 1},
+           'E': {'D': -3}}]
 
-print(adj_list_to_adj_mat(graphs[0]))
 
 
-dist = list(map(lambda i: list(map(lambda j: j, i)), graph))
-
-
-print(dist)
 

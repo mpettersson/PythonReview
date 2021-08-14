@@ -1,5 +1,7 @@
 r"""
-    IS BST  (CCI 4.5: VALIDATE BST)
+    IS BST  (CCI 4.5: VALIDATE BST,
+             leetcode.com/problems/validate-binary-search-tree,
+             50CIQ 25: BINARY SEARCH TREE VERIFICATION)
 
     Write a function, that when given the root of a binary tree, returns True if the tree is a Binary Search Tree (BST),
     false otherwise.  For a binary tree to be a BST, the property 'all left descendants <= node < all right descendants'
@@ -23,69 +25,87 @@ r"""
 """
 
 
-# Verbose Max/Min Approach: Track max/min values at each level; min is used to check the right child and max is used
-# to check the left child.
-# Time Complexity: O(n), where n is the number of nodes in the tree.
-# Space Complexity: O(h) where h is the height of the tree (or, O(log(n)) where n is the number of nodes in the tree).
-def is_bst_verbose(root):
-    def _is_bst_verbose(node):
-        if node is None:
-            return None, None, None
-        if node.left is None and node.right is None:
-            return True, node.value, node.value
-        if node.left and node.right is None:
-            b, max_l, min_l = _is_bst_verbose(node.left)
-            return b and (max_l <= node.value), max(max_l, node.value), min(min_l, node.value)
-        if node.right and node.left is None:
-            b, max_r, min_r = _is_bst_verbose(node.right)
-            return b and (node.value < min_r), max(max_r, node.value), min(min_r, node.value)
-        b_l, max_l, min_l = _is_bst_verbose(node.left)
-        b_r, max_r, min_r = _is_bst_verbose(node.right)
-        return b_l and b_r and max_l <= node.value < min_r, max(max_l, max_r, node.value), min(min_l, min_r, node.value)
-
-    res, _, _ = _is_bst_verbose(root)
-    return res
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - Clarify the BST definition (there are several variations)?
+#   - What data types will the tree contain (if, for example strings, then how would the be compared)?
 
 
-# Optimal Max/Min Approach:  Track max/min values at each level; min is used to check the right child and max is used
-# to check the left child.
+# APPROACH: Recursive Max/Min
+#
+# Recursively check the (current) nodes value with the supplied max/min value.  If at any time the current nodes value
+# is greater than the max or less than or equal to the minimum value, return False.  Recurse and return the logical and
+# for both children.  The base case is that the node is None; True is returned.
+#
+# NOTE: The key with this question is passing down a max and and min value, where the max is used for the left children
+#       and the min is used for the right children.
+#
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(h) where h is the height of the tree (or, O(log(n)) where n is the number of nodes in the tree).
 def is_bst(root):
 
-    def _is_bst(node, _min=None, _max=None):
-        if node:
-            if _min is not None and node.value <= _min or _max is not None and _max < node.value:
-                return False
-            if not _is_bst(node.left, _min, node.value) or not _is_bst(node.right, node.value, _max):
-                return False
-        return True
+    def _is_bst(n, max_val=None, min_val=None):
+        if n is None:
+            return True
+        if max_val and n.value > max_val:
+            return False
+        if min_val and n.value <= min_val:
+            return False
+        l_res = _is_bst(n.left, n.value, min_val)
+        r_res = _is_bst(n.right, max_val, n.value)
+        return l_res and r_res
 
     if root:
         return _is_bst(root)
 
 
+# APPROACH: Optimized & Minimized Recursive Max/Min
+#
+# This is the same approach as above, however, it has been very slightly optimized and minimized...
+#
+# Time Complexity: O(n), where n is the number of nodes in the tree.
+# Space Complexity: O(h) where h is the height of the tree (or, O(log(n)) where n is the number of nodes in the tree).
+def is_bst_min(root):
+
+    def _is_bst_min(n, _min=None, _max=None):
+        if n:
+            if _min is not None and n.value <= _min or _max is not None and _max < n.value:
+                return False
+            if not _is_bst_min(n.left, _min, n.value) or not _is_bst_min(n.right, n.value, _max):
+                return False
+        return True
+
+    if root:
+        return _is_bst_min(root)
+
+
 # VARIATION: Alternate BST Property: 'all left descendants <= node <= all right descendants'.
 
 
-# Alternate BST Property In-Order Traversal Approach:  Compare current value to previous value along the traversal.
+# VARIATION APPROACH: Alternate BST Property In-Order Traversal
+#
+# This approach simply executes an in-order traversal of the tree comparing values along the way, if a smaller value is
+# ever encountered then a False is returned, True otherwise.
+#
+# NOTE: This approach DOESN'T work for the 'standard' def: "all left descendants <= node < all right descendants"!
+#
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(h) where h is the height of the tree (or, O(log(n)) where n is the number of nodes in the tree).
 def is_alt_prop_bst_via_gen(root):
 
-    def gen_inorder_values(node):
-        if node.left:
-            yield from gen_inorder_values(node.left)
-        yield node.value
-        if node.right:
-            yield from gen_inorder_values(node.right)
+    def gen_inorder_values(n):
+        if n.left:
+            yield from gen_inorder_values(n.left)
+        yield n.value
+        if n.right:
+            yield from gen_inorder_values(n.right)
 
     if root:
         vals = gen_inorder_values(root)
         prev = next(vals)
         while True:
             curr = next(vals, None)
-            if not curr:
+            if curr is None:
                 break
             if prev > curr:
                 return False
@@ -93,13 +113,16 @@ def is_alt_prop_bst_via_gen(root):
         return True
 
 
-# Alternate BST Property Max/Min Approach:  Track max/min values at each level; min is used to check the right child and
-# max is used to check the left child.
+# VARIATION APPROACH: BST Property Max/Min
+#
+# This approach is almost exactly the same as for the original question, with the exception of the nodes value to the
+# supplied _min value.
+#
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(h) where h is the height of the tree (or, O(log(n)) where n is the number of nodes in the tree).
 def is_alt_prop_bst(node, _min=None, _max=None):
     if node:
-        if _min and node.value < _min:
+        if _min and node.value < _min:          # This is the only difference (original question would use  <=).
             return False
         if _max and _max < node.value:
             return False
@@ -172,6 +195,9 @@ trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), Node(6))),
          Node(3, Node(1, None, Node(2)), Node(5, Node(4))),
          Node(3, Node(1, None, Node(2)), Node(5)),
          Node(3, Node(1, None, Node(2))),
+         Node(3, Node(3)),
+         Node(3, None, Node(3)),
+         Node(3, Node(1, Node(0, None, Node(1, Node(0, None, Node(3)))))),
          Node(26, Node(5, Node(-37, Node(-74, Node(-86), Node(-51)), Node(-7, Node(-17))),
                           Node( 17, Node(11, Node(5)), Node(26, Node(18)))),
                   Node(74, Node(41, Node(34, Node(28)), Node(52, Node(47))),
@@ -185,13 +211,13 @@ trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), Node(6))),
          Node(4, Node(1, Node(0), Node(2)), Node(5, Node(3), Node(6))),
          Node(0),
          None]
-fns = [is_bst_verbose,              # BST Prop: 'all left descendants <= node < all right descendants'
-       is_bst,                      # BST Prop: 'all left descendants <= node < all right descendants'
+fns = [is_bst,                      # BST Prop: 'all left descendants <= node < all right descendants'
+       is_bst_min,                  # BST Prop: 'all left descendants <= node < all right descendants'
        is_alt_prop_bst_via_gen,     # Alt. BST Prop: 'all left descendants <= node <= all right descendants'
        is_alt_prop_bst]             # Alt. BST Prop: 'all left descendants <= node <= all right descendants'
 
 for i, tree in enumerate(trees):
-    print(f"trees[{i}]:")
+    print(f"\ntrees[{i}]:")
     display(tree)
     for fn in fns:
         print(f"{fn.__name__}(tree[{i}]): {fn(tree)}")
