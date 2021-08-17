@@ -3,7 +3,7 @@ r"""
 
     A meaningful inorder serialization, or a serialization which can be used to reconstruct a unique binary tree,
     requires MORE THAN the node values and marked empty children.  That is, if only the node values and empty children
-    were used then all permutations of a tree with the same set of node values would have the same serialization.
+    were used then ALL PERMUTATIONS of a tree with the SAME SET OF NODE VALUES would have the SAME SERIALIZATION.
 
     Consider the following binary trees:
 
@@ -16,7 +16,7 @@ r"""
     If only node values and None (for empty children) are used for serialization, then each of the above would have the
     serialization of: [None, 1, None, 2, None, 3, None]
 
-    Write a function which takes the root of a binary tree and returns a non-unique inorder serialization of the binary
+    Write a function which takes the root of a binary tree and returns a NON-UNIQUE inorder serialization of the binary
     tree.  Use None to denote, or mark, an empty child node.
 
     Consider the following binary tree:
@@ -32,8 +32,19 @@ r"""
         Output = [None, 0, None, 1, None, 2, None, 3, None, 4, None, 5, None]
 """
 
+# NOTE:  You shouldn't get this as a real interview question, if you did, find the real task by asking questions!!!
 
-# Recursive Approach: Recursively append node values, or None if no Node, to a result list.
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - What properties does the tree have (value data types, is it balanced, is it a BST, etc.)?
+#   - Implement a node class, or assume one is created (if created what names were used)?
+#   - What EXTRA information is there to generate unique trees?
+
+
+# APPROACH: Verbose Recursive
+#
+# Recursively append node values, or None if no Node, to a result list.
+#
 # Time Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
 # Space Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
 def get_inorder_serialization_rec_verbose(root):
@@ -52,7 +63,10 @@ def get_inorder_serialization_rec_verbose(root):
         return result
 
 
-# Recursive Approach: Recursively build a result list of node values, or None if no Node.
+# APPROACH: Recursive
+#
+# Recursively build a result list of node values, or None if no Node.
+#
 # Time Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
 # Space Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
 def get_inorder_serialization_rec(root):
@@ -66,12 +80,16 @@ def get_inorder_serialization_rec(root):
         return _get_inorder_serialization_rec(root)
 
 
-# Iterative Approach: Using a stack in place of a recursion stack; build and return the preorder nodes, using None as a
-# marker for empty children.
+# APPROACH: Iterative
+#
+# Using a stack in place of a recursion stack; build and return the preorder nodes, using None as a marker for empty
+# children.
+#
 # Time Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
 # Space Complexity: O(n) best case, O(2**(h+1)) worst case, where n & h are the number of nodes & height of the tree.
 #
-# NOTE: There are 3 DIFFERENCES in this iterative inorder traversal due to the None for empty children.
+# NOTE: There are 3 DIFFERENCES in this iterative inorder traversal compared to a 'normal' iterative inorder traversal.
+#       This is due to the None, or demarcation, of empty children.
 def get_inorder_serialization_iter(root):
     if root:
         result = []

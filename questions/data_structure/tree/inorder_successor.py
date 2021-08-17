@@ -19,24 +19,34 @@ r"""
         Output = 2  # that is, the node with value 2
 """
 
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - What properties does the tree have (is it balanced, is it a BST, data types, etc.)?
+#   - Implement a node class, or assume one is created (if created what names were used)?
+#   - Clarify the definition of a "successor" (links, in-order, pre-order, or post-order, etc...)?
 
-# Iterative Parent Link Approach: The successor can be ONE of three possible values:
-#   (1) IF node has left child; the leftmost node on right subtree.
-#   (2) The first ancestor for which node is a left descendant.
-#   (3) None.
+
+# APPROACH: Iterative Parent Link
+#
+# The successor can be ONE of three possible values:
+#   (1) IF node has a right child; the leftmost node on right subtree.
+#   (2) ELSE the first ancestor for which node is a left descendant.
+#   (3) ELSE None.
+#
 # Time Complexity: O(h), where h is the height of the tree.
 # Space Complexity: O(1).
 def get_inorder_successor(node):
     if node:
-        if node.right:
+        if node.right:                      # (1) IF node has a right child; the leftmost node on right subtree.
             node = node.right
             while node.left:
                 node = node.left
             return node
-        while node.parent:
+        while node.parent:                  # (2) ELSE the first ancestor for which node is a left descendant.
             if node.parent.left is node:
                 return node.parent
             node = node.parent
+    return                                  # (3) ELSE None.
 
 
 class Node:

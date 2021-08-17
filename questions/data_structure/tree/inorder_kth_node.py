@@ -19,24 +19,62 @@ r"""
 """
 
 
-# Recursive Approach: There are three cases:
+# NOTE: Without additional information, the kth node is TRIVIAL IN O(N) TIME; if the SIZE field wasn't expressly
+#       mentioned, ask about it!!!
+
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - What properties does the tree have (value data types, is it balanced, is it a BST, etc.)?
+#   - Are sizes, or number of children, known?
+#   - Implement a node class, or assume one is created (if created what names were used)?
+
+
+# APPROACH: Recursive
+#
+# Recursively navigate to the node the tree using the size of each of the nodes along the way. If a valid k was
+# provided, there are three cases to find it:
 #   (1) Recurse left if k <= left.size,
 #   (2) Return root if k - left.size == 1 and,
 #   (3) Recurse right if k > left.size + 1.
+#
 # Time Complexity: O(h), where h is the height of the tree.
 # Space Complexity: O(h), where h is the height of the tree.
-def get_kth_inorder_node(root, k):
+def get_kth_inorder_node_rec(root, k):
 
-    def _get_kth_inorder_node(root, k):
-        left_size = root.left.size if root.left else 0
+    def _rec(root, k):
+        left_size = root.left.size if root.left else 0                  # (this'll make things easier)
         if root.left and k <= left_size:                                # (1)  k <= left.size
-            return _get_kth_inorder_node(root.left, k)
-        if k - left_size is 1:                                          # (2)  k - left.size == 1
+            return _rec(root.left, k)
+        if k - left_size == 1:                                          # (2)  k - left.size == 1
             return root
-        return _get_kth_inorder_node(root.right, k - left_size - 1)    # (3)  k > left.size + 1
+        return _rec(root.right, k - left_size - 1)                      # (3)  k > left.size + 1
 
     if root and k is not None and 0 < k <= root.size:
-        return _get_kth_inorder_node(root, k)
+        return _rec(root, k)
+
+
+# APPROACH: Iterative
+#
+# Iteratively navigate to the node the tree using the size of each of the nodes along the way. If a valid k was
+# provided, there are three cases to find it:
+#   (1) Go left if k <= left.size,
+#   (2) Return root if k - left.size == 1 and,
+#   (3) Go right if k > left.size + 1.
+#
+# Time Complexity: O(h), where h is the height of the tree.
+# Space Complexity: O(h), where h is the height of the tree.
+def get_kth_inorder_node_iter(root, k):
+    if root and k is not None and 0 < k <= root.size:
+        curr = root
+        while curr:
+            left_size = curr.left.size if curr.left else 0              # (this'll make things easier)
+            if curr.left and k <= left_size:                            # (1)  k <= left.size
+                curr = curr.left
+            elif k - left_size == 1:                                    # (2)  k - left.size == 1
+                return curr
+            else:                                                       # (3)  k > left.size + 1
+                curr = curr.right
+                k = k - left_size - 1
 
 
 class Node:
@@ -108,7 +146,8 @@ trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4))),
               Node(74, Node(41, Node(34, Node(28))),
                    Node(90, Node(88), Node(99, None, Node(105, None, Node(420))))))]
 ks = [-1, 1, 3, 4, 5, 10]
-fns = [get_kth_inorder_node]
+fns = [get_kth_inorder_node_rec,
+       get_kth_inorder_node_iter]
 
 for i, tree in enumerate(trees):
     print("tree:")

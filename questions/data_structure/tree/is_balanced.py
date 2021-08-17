@@ -29,7 +29,8 @@ r"""
 
 # Questions you should ask the interviewer (if not explicitly stated):
 #   - What time/space complexity are you looking for?
-#   - Clarify the definition of a "balanced tree" (the definition could ask for ANY branches differing in lenght by more
+#   - Implement a node class, or assume one is created (if created what names were used)?
+#   - Clarify the definition of a "balanced tree" (the definition could ask for ANY branches differing in length by more
 #     than one)?
 
 

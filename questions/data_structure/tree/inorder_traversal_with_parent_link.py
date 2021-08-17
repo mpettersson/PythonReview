@@ -1,5 +1,5 @@
 r"""
-    INORDER TRAVERSAL WITH PARENT LINK   (EPI 10.11: IMPLEMENT AN INORDER TRAVERSAL WITH O(1) SPACE)
+    INORDER TRAVERSAL WITH PARENT LINK (EPI 10.11: IMPLEMENT AN INORDER TRAVERSAL WITH O(1) SPACE)
 
     Given the root to a binary tree, where nodes have a link to value, left, right, and parent, write a function that
     prints an inorder traversal with O(1) space complexity.  Without a link to the parent node, inorder traversal
@@ -19,10 +19,25 @@ r"""
 """
 
 
-# NOTE: O(1) space rules out all recursive solutions.
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What properties does the tree have (is it balanced, is it a BST, etc.)?
+#   - What data types will the tree contain?
+#   - Implement a node class, or assume one is created (if created what names were used)?
 
 
-# Iterative EPI (Verbose) Approach:  Similar to below, maybe easier to follow...
+# NOTE: O(1) space rules out all RECURSIVE solutions!!!
+
+
+# APPROACH: Verbose Iterative
+#
+# Using two pointers, one to the previous node, and one to the current node, determine from whence current came, then
+# go left, right, or up:
+#   If coming from the parent, go left.
+#   If coming from the right, go up.
+#   Else, print and go right (if possible), or up.
+#
+# NOTE: This is a translation of the EPI solution into Python, see the next approach for simpler code.
+#
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(1).
 def inorder_traversal_w_parent_link_epi_sol_iter(root):
@@ -47,8 +62,11 @@ def inorder_traversal_w_parent_link_epi_sol_iter(root):
                 curr = curr.parent
 
 
-# Iterative (Succinct) Approach:  If coming from right child, go to parent.  If coming from parent and can go left, go
-# left.  Else, print and go right if possible, or go up.
+# APPROACH: Succinct Iterative
+#
+# If coming from right child, go to parent.  If coming from parent and can go left, go left.  Else, print and go right
+# if possible, or go up.
+#
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(1).
 def inorder_traversal_with_parent_link_iterative(root):
@@ -62,7 +80,7 @@ def inorder_traversal_with_parent_link_iterative(root):
             elif curr.left and prev is curr.parent:                 # If coming from parent and can go left, go left.
                 prev = curr
                 curr = curr.left
-            else:                                                   # Print and go right if or go up.
+            else:                                                   # Print, and go right if right exists else go up.
                 print(f" {curr.value}", end="")
                 prev = curr
                 curr = curr.right if curr.right else curr.parent
