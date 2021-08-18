@@ -1,17 +1,54 @@
 """
-    SORT STACK (CCI 3.5)
+    SORT STACK (CCI 3.5: SORT STACK,
+                50CIQ 21: SORT STACKS)
 
-    Write a program to sort a stack such that the smallest items are on the top.  You can use an additional temporary
-    stack, but you may not copy the elements into any other data structure (such as a list).  The stack supports the
-    following operations: push, pop, peek, is_empty.
+    Write a function, which accepts a stack, and sorts the stack.  An additional temporary stack is allowed, however,
+    the elements may not be put into any other data structure (such as a list).
 
     Variations:
         - Same question, however, temporary stacks are NO longer allowed.
 """
+import random
 
 
-# Sort with Two Stacks Approach:  Use a second stack that always maintains a reverse sorted order.
-# Time Complexity: See below.
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - What data types will the stack contain?
+#   - Implement a node class, or assume one is created (if created what names were used)?
+#   - What is the sorted order (smallest or largest on top)?
+#   - Verify assumption that a temporary variable be used.
+
+
+# APPROACH: Sort Via 2nd Stack (List As Stack)
+#
+# Use a temporary variable and a second stack, which maintains the property that all values are in reverse sorted order,
+# to sort the provided stack.
+#
+# Time Complexity: O(n**2), where n is the number of elements in the stack.
+# Space Complexity: O(n), where n is the number of elements in the stack.
+def sort_list_as_stack(s):
+    if s:
+        temp_s = []
+        while True:
+            while s and (not temp_s or temp_s[-1] < s[-1]):
+                temp_s.append(s.pop())
+            if s:
+                temp_value = s.pop()
+                while temp_s and temp_s[-1] > temp_value:
+                    s.append(temp_s.pop())
+                temp_s.append(temp_value)
+            else:
+                while temp_s:
+                    s.append(temp_s.pop())
+                return
+
+
+# APPROACH: Sort Via 2nd Stack (Stack Class)
+#
+# Use a temporary variable and a second stack, which maintains the property that all values are in reverse sorted order,
+# to sort the provided stack.
+#
+# Time Complexity: See method for time.
 # Space Complexity: O(n), where n is the number of elements in the stack.
 class Stack:
     # Time Complexity: O(a), where a are the number of elements in args.
@@ -63,7 +100,7 @@ class Stack:
 
     # Time Complexity: O(n), where n is the number of elements in the stack.
     def __repr__(self):
-        return f"[{', '.join(map(repr, self))}]"
+        return f"(Bottom)[{', '.join(reversed(list(map(repr, self))))}](Top)"
 
 
 class Node:
@@ -75,17 +112,16 @@ class Node:
         return repr(self.value)
 
 
-my_stack = Stack(3, 2, 1, 0, 10, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19)
-print(f"my_stack: {my_stack}")
-print(f"my_stack.push(99): {my_stack.push(-99)}")
-print(f"my_stack.push(99): {my_stack.push(99)}")
-print(f"my_stack.push(99): {my_stack.push(-1)}")
-print(f"my_stack: {my_stack}")
-print(f"my_stack.sort(): {my_stack.sort()}")
-print(f"my_stack: {my_stack}")
-print(f"my_stack.pop(): {my_stack.pop()}")
-print(f"my_stack.pop(): {my_stack.pop()}")
-print(f"my_stack.pop(): {my_stack.pop()}")
-print(f"my_stack: {my_stack}")
+values = [random.randrange(-10, 10) for _ in range(11)]
+
+list_as_stack = values[:]
+print(f"\nlist_as_stack: {list_as_stack}")
+print(f"sort_list_as_stack(list_as_stack): {sort_list_as_stack(list_as_stack)}")
+print(f"list_as_stack: {list_as_stack}")
+
+stack = Stack(*values)
+print(f"\nstack: {stack}")
+print(f"stack.sort(): {stack.sort()}")
+print(f"stack: {stack}")
 
 
