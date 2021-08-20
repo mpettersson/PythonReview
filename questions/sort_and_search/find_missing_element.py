@@ -16,6 +16,13 @@ import math
 import random
 
 
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - Clarify the question (is zero included, is n included, etc...)?
+#   - What will the data type be (floats, ints)?
+#   - Can the list be modified?
+
+
 # Wrong Approaches:
 #   Sorting:  O(n log(n)) time, O(1) space.
 #   Dictionary/Bytearray: O(n) time, O(n) space.
@@ -44,7 +51,7 @@ def find_missing_element_via_product(l):        # For the range 0 to n-1.
         else:
             return 0
 
-# NOTE: The following could be used for the range 1 to N (not the specified 0 to 1-N):
+# NOTE: The following could be used for the range 1 to N (not the specified 0 to N-1):
 # def find_missing_element_via_product_1_to_n(l):
 #     n = len(l) + 1
 #     list_product = functools.reduce((lambda x, y: x * y), l)
@@ -61,7 +68,7 @@ def find_missing_element_via_product(l):        # For the range 0 to n-1.
 # Space complexity: O(1).
 #
 # NOTE: These values don't get as big as the products above!
-def find_missing_element_via_summed_squares(l):             # for 0 to 1-N
+def find_missing_element_via_summed_squares(l):             # for 0 to N-1
     if l:
         n = len(l)
         list_sqr_sum = sqr_sum_to_n = 0
@@ -75,7 +82,7 @@ def find_missing_element_via_summed_squares(l):             # for 0 to 1-N
         else:
             return 0
 
-# NOTE: The following could be used for the range 1 to N (not the specified 0 to 1-N):
+# NOTE: The following could be used for the range 1 to N (not the specified 0 to N-1):
 # def find_missing_element_via_summed_squares_1_to_n(l):
 #     n = len(l) + 1
 #     sqr_sum_to_n = sum(list(map((lambda x: x**2), [x for x in range(1, n + 1)])))
@@ -123,7 +130,7 @@ for n in nums:
     l = [i for i in range(n)]
     random.shuffle(l)
     missing = l.pop()
-    print(f"List l (n is {n}): {l}\nMissing element: {missing}")
+    print(f"\nList l (n:{n}, missing element:{missing}): {l}\n")
     for fn in fns:
         print(f"{fn.__name__}(l): {fn(l[:])}")
     print()

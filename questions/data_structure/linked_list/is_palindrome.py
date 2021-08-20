@@ -11,12 +11,24 @@
 """
 
 
-# Naive (Whole) Stack Solution: Reverse the WHOLE list, via a stack, then compare.
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - What data types will the stack contain?
+#   - Singly or doubly linked list?
+#   - Verify the definition of a palindrome.
+
+
+# APPROACH: Naive Via Stack
+#
+# Traverse the list once, pushing each of the values (of the WHOLE list) in a stack, then traverse the list once more
+# comparing the values along the way.  If the values do not match, return False, else if all the values matched, return
+# True.
+#
 # Time Complexity: O(n), where n is the number of nodes in the linked list.
 # Space Complexity: O(n), where n is the number of nodes in the linked list.
 def is_palindrome_naive(l):
     if l:
-        s = []
+        s = []                          # List as a stack.
         n = l
         while n:
             s.append(n.value)
@@ -28,8 +40,11 @@ def is_palindrome_naive(l):
         return True
 
 
-# Recursive Approach:  This approach makes use of the call stack to store the values to compare.  Note that this version
-# stores HALF the list in the call stack at the cost of first finding the length of the list.
+# APPROACH: Via Recursion Stack
+#
+# This approach makes use of the call stack to store the values to compare.  Note that this version stores HALF the list
+# in the call stack at the cost of first finding the length of the list.
+#
 # Time Complexity: O(n), where n is the number of nodes in the linked list.
 # Space Complexity: O(n), where n is the number of nodes in the linked list.
 def is_palindrome_rec(l):
@@ -54,15 +69,18 @@ def is_palindrome_rec(l):
     return _is_palindrome_rec(l, _get_length(l))[1] if l else None
 
 
-# Improved (Half) Stack Solution:  Use a fast/slow pointer to find half the list, then just add half of the list to a
-# stack to compare.  Although this has the same Big O complexities as above, the space is half of the first approach,
-# and the length is not needed (like the second approach).
+# APPROACH: Via (Half) Stack Optimal
+#
+# Use a fast/slow pointer to find half the list, then just add half of the list to a stack to compare. Although this has
+# the same Big O complexities as above the space is half of the first approach, and unlike the second approach, the
+# length is not needed.
+#
 # Time Complexity: O(n), where n is the number of nodes in the linked list.
 # Space Complexity: O(n/2), which reduces to O(n), where n is the number of nodes in the linked list.
 def is_palindrome(l):
     if l:
         fast = slow = l
-        s = []
+        s = []                          # List as a stack.
         while fast and fast.next:
             s.append(slow.value)
             slow = slow.next
@@ -95,8 +113,8 @@ fns = [is_palindrome_naive,
        is_palindrome_rec,
        is_palindrome]
 
-for fn in fns:
-    for l in linked_lists:
+for l in linked_lists:
+    for fn in fns:
         print(f"{fn.__name__}({l}): {fn(l)}")
     print()
 

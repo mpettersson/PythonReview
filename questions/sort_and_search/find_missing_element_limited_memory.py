@@ -11,6 +11,13 @@
 import os
 
 
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - Clarify the question (is zero included, is n included, etc...)?
+#   - What will the data type be (floats, ints)?
+#   - Can the list be modified?
+
+
 # Observations:
 #   The file size is 16 GB (4,000,000,000 * 4B = 16GB), so can't read it all into memory.
 #
@@ -37,7 +44,7 @@ def missing_int_wrong(file_name):
                 bit_vector[int(line)] = 1
                 line = f.readline()
         for i in range(num_32_bit_positive_ints):
-            if bit_vector[i] is 0:
+            if bit_vector[i] == 0:
                 return i
 
 
