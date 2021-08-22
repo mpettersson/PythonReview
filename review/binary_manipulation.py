@@ -13,8 +13,23 @@ import sys
 
 # NOTE: Python doesn't have the >>> binary op, so this method simulates it.
 #       >>> shifts right but will replace the most significant bit with 0 (EVEN if the number was negative)
-def logical_right_shift(num, i):
+def logical_right_shift(num, i, num_bits=32):
     return (num % 0x100000000) >> i
+
+
+def is_power_two(n):
+    if n == 0:
+        return False
+    n = abs(n)                  # I want to include negative powers of two, if you don't, remove this line.
+    return n & (n - 1) == 0
+
+
+# SEE: https://stackoverflow.com/questions/21871829/twos-complement-of-numbers-in-python
+def bin_twos_complement(num, num_bits=32):
+    if num < 0:
+        num = (1 << num_bits) + num
+    formatstring = '{:0%ib}' % num_bits
+    return formatstring.format(num)
 
 
 def get_sign_bit(num):
@@ -120,19 +135,15 @@ def kogge_stone_add(a, b):
 def get_next_smaller(num):
     c0 = c1 = 0
     temp = num
-    # find number of trailing ones
-    while (temp & 1) is 1:
+    while (temp & 1) is 1:                          # find number of trailing ones
         temp = temp >> 1
         c1 += 1
-    # if the number was all ones then there is no next smallest...
-    if temp is 0:
+    if temp is 0:                                   # if the number was all ones then there is no next smallest...
         return None
-    # find number of zeros after trailing ones
-    while (temp & 1) is 0 and temp is not 0:
+    while (temp & 1) is 0 and temp is not 0:        # find number of zeros after trailing ones
         temp = temp >> 1
         c0 += 1
-    # the bit we need to flip to a one
-    p = c0 + c1
+    p = c0 + c1                                     # the bit we need to flip to a one
     num = num & ((~0) << (p + 1))
     mask = (1 << (c1 + 1)) - 1
     num |= mask << (c0 - 1)
