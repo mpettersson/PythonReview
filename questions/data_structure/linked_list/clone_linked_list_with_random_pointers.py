@@ -22,49 +22,77 @@ r"""
 """
 
 
-# Mapping/Dictionary Approach: Use a dictionary to store the mapping of old nodes to new nodes since random links are
-# not uniform/the same for all nodes (can go back/forwards any number, including 0).
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - Clarify the question (previous link, what can random point to, what can't random point to, can nodes be marked,
+#     duplicate values, is a repeated, what are the values data type)?
+
+
+# APPROACH: Mapping/Dictionary
+#
+# Observations:
+#   - Create all nodes first to prevent a link from referencing a non-existing node (if attempted in one pass).
+#   - There needs to be a way to correlate random links from the original list to the cloned list; the relation, or
+#     order, must exist, or be maintained.
+#
+# This approach uses a dictionary to be able to maintain the correlation, or the mapping, from a node to its linked
+# random node.  T
+# nodes (can go back/forwards any number, including 0).
+#
 # Time Complexity: O(n), where n is the number of nodes in the linked list.
-# Space Complexity: O(n) BUT uses O(n) for dict.
-def clone_linked_list_with_rand_link_dict(ll):
-    if ll:
+# Space Complexity: O(n), where n is the number of nodes in the linked list.
+#
+# NOTE: These two approaches have a time/space tradeoff; this approach uses one less iteration over the nodes, but uses
+#       an additional data structure (dict) to store a reference to all of the nodes.  Discuss this difference with the
+#       interviewer, asking if they have a preference.
+def clone_linked_list_with_rand_link_dict(head):
+    if head:
         mapping = {}
-        copy = Node(ll.value)
+        copy = Node(head.value)
         result = copy
-        node = ll
+        node = head
         mapping[node] = copy
-        while node.nxt:
+        while node.nxt:                         # First iteration; clone a new list using only the next pointers.
             copy.nxt = Node(node.nxt.value)
             node = node.nxt
             copy = copy.nxt
-            mapping[node] = copy
-        node = ll
+            mapping[node] = copy                    # However, add the relation of node to cloned node in a dictionary.
+        node = head
         copy = result
-        while node:
-            copy.rand = mapping[node.rand]
+        while node:                             # Second iteration across the nodes:
+            copy.rand = mapping[node.rand]          # This time, use the dictionary to assign the random links.
             node = node.nxt
             copy = copy.nxt
         return result
 
 
-# Copy list without using extra space. Interleave the nodes from the new with the nodes from the original list. Then
-# separate the new list from the old.
-# Time Complexity:
-# Space Complexity: O(n)
-def clone_linked_list_with_rand_link(ll):
-    if ll:
-        node = ll
-        while node:
-            temp = Node(node.value, node.nxt)
+# APPROACH: Interleave Then Separate Cloned Nodes
+#
+# This approach duplicates the cloned nodes in the original list, thus lowering additional overhead (O(n) dict): simply
+# iterate over the nodes, interleaving new/cloned nodes after each original node in the list. This allows for the second
+# iteration to be able to correctly reference the random nodes.  Then, one last iteration over the nodes separates the
+# new/cloned nodes from the original nodes to a new list.  Return the head of the new/cloned list.
+#
+# Time Complexity: O(n), where n is the number of nodes in the linked list.
+# Space Complexity: O(n) (DOESN'T uses a dict), where n is the number of nodes in the linked list.
+#
+# NOTE: These two approaches have a time/space tradeoff; this approach uses one additional iteration over the nodes,
+#       however, it does NOT use an additional data structure (dict) to store the nodes.  Discuss this difference with
+#       the interviewer, asking if they have a preference.
+def clone_linked_list_with_rand_link(head):
+    if head:
+        node = head
+        while node:                             # 1st Iteration: Create new/cloned nodes after each node in the original
+            temp = Node(node.value, node.nxt)   # list w/o links to their respective random nodes.
             node.nxt = temp
             node = node.nxt.nxt
-        node = ll
-        while node:
+        node = head
+        while node:                             # 2nd Iteration: Traverse the list adding the respective random links.
             node.nxt.rand = node.rand.nxt
             node = node.nxt.nxt
-        result = ll.nxt
-        node = ll
-        while node.nxt:
+        result = head.nxt
+        node = head
+        while node.nxt:                         # 3rd Iteration: Separate the cloned and original lists.
             tmp = node.nxt
             node.nxt = node.nxt.nxt
             node = tmp
@@ -90,11 +118,11 @@ class Node:
         return "\n".join(result)
 
 
-linked_list = Node(1, Node(2, Node(3, Node(4))))
-linked_list.rand = linked_list.nxt.nxt
-linked_list.nxt.rand = linked_list
-linked_list.nxt.nxt.rand = linked_list.nxt.nxt
-linked_list.nxt.nxt.nxt.rand = linked_list.nxt
+linked_list = Node(1, Node(2, Node(3, Node(4))))    # Linked list (See Example Above): 1 -> 2 -> 3 -> 4 -> None
+linked_list.rand = linked_list.nxt.nxt              # 1.rand -> 3
+linked_list.nxt.rand = linked_list                  # 2.rand -> 1
+linked_list.nxt.nxt.rand = linked_list.nxt.nxt      # 3.rand -> 3
+linked_list.nxt.nxt.nxt.rand = linked_list.nxt      # 4.rand -> 2
 fns = [clone_linked_list_with_rand_link_dict,
        clone_linked_list_with_rand_link]
 

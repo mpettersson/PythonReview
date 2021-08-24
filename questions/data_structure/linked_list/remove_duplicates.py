@@ -16,10 +16,13 @@
 import copy
 
 
-# Iterative Approach:  Iterate over the nodes comparing each node to all following nodes, removing duplicates.
+# APPROACH: Naive/Brute Force
+#
+# Iterate over the nodes comparing each node to all following nodes, removing duplicates.
+#
 # Time Complexity: O(n**2), where n is the number of nodes in the linked list.
 # Space Complexity: O(1).
-def remove_duplicates(head):
+def remove_duplicates_naive(head):
     node = head
     while node:
         runner = node
@@ -32,29 +35,39 @@ def remove_duplicates(head):
     return head
 
 
-# Set Approach:  Traverse the linked list with a set to maintain previously seen values, when a duplicate is found
-# update links to bypass the node with the duplicate value.
+# APPROACH: Via Previous Pointer & Set
+#
+# Traverse the linked list with a set to maintain previously seen values. Each time a new value is encountered, add the
+# value to the set, update previous.next to point to the (current) node, and set previous to the (current) node.  At the
+# end of each iteration, the (current) node is assigned to its next value.  Finally, (when node is None), assign
+# previous.next to None and return.
+#
 # Time Complexity: O(n), where n is the number of nodes in the linked list.
 # Space Complexity: O(u), where u is the number of unique values in the linked list.
 def remove_duplicates_via_set(head):
-    node = head
-    s = set()
-    prev = None
-    while node:
-        if node.value in s:
-            prev.next = node.next
-        else:
-            s.add(node.value)
-            prev = node
-        node = node.next
-    return head
+    if head:
+        prev = head
+        node = head.next
+        s = {head.value}
+        while node:
+            if node.value not in s:
+                s.add(node.value)
+                prev.next = node
+                prev = node
+            node = node.next
+        prev.next = None
+        return head
 
 
-# Alt. Set Approach:  Traverse the linked list with a set to maintain previously seen values, when a duplicate is found
-# update links to bypass the node with the duplicate value.
+# APPROACH: Via Set
+#
+# Using a set to maintain previously seen values, traverse the linked list.  While the next node has a previously seen
+# value, update the (current) nodes pointer to be next.next.  When a next value has not been seen, (current) node is
+# assigned to next node, and if node is not None, the value is added to the set.
+#
 # Time Complexity: O(n), where n is the number of nodes in the linked list.
 # Space Complexity: O(u), where u is the number of unique values in the linked list.
-def remove_duplicates_via_set_alt(head):
+def remove_duplicates(head):
     node = head
     if node:
         s = {node.value}
@@ -84,16 +97,19 @@ class Node:
 linked_lists = [Node(0, Node(0, Node(0, Node(1, Node(2, Node(0, Node(1, Node(4, Node(5))))))))),
                 Node(0, Node(1, Node(2, Node(3, Node(4, Node(5)))))),
                 Node(0, Node(1, Node(0, Node(1, Node(3, Node(0)))))),
+                Node(0, Node(1, Node(0, Node(1, Node(0, Node(0, Node(1, Node(1, Node(2))))))))),
+                Node(6, Node(6, Node(6, Node(6, Node(6, Node(6, Node(6, Node(6, Node(6))))))))),
+                Node(0, Node(1, Node(2, Node(3, Node(2, Node(1, Node(0))))))),
                 Node(1, Node(1)),
                 Node(1, Node(2)),
                 Node(0),
                 None]
-fns = [remove_duplicates,
+fns = [remove_duplicates_naive,
        remove_duplicates_via_set,
-       remove_duplicates_via_set_alt]
+       remove_duplicates]
 
-for fn in fns:
-    for head in linked_lists:
+for head in linked_lists:
+    for fn in fns:
         print(f"{fn.__name__}({head}): {fn(copy.deepcopy(head))}")
     print()
 
