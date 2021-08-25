@@ -17,8 +17,15 @@
 import copy
 
 
-# Fast/Slow Runner Approach:  Use two pointers, one moving at twice the speed of the other, to determine where the
-# linked list needs to be split.
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - Clarify the question (what to do when ODD length list, SINGLE/DOUBLY linked list, data type, etc...)?
+
+
+# APPROACH: Fast/Slow Runner
+#
+# Use two pointers, one moving at twice the speed of the other, to determine where the linked list needs to be split.
+#
 # Time Complexity: O(n), where n is the number of nodes in the linked list.
 # Space Complexity: O(1).
 def split_linked_list(head):
@@ -45,7 +52,7 @@ class Node:
             yield from self.next
 
     def __repr__(self):
-        return ' ⟶ '.join(map(repr, self))
+        return f"{self.value} ⟶ {'None' if self.next is None else repr(self.next)}"
 
 
 linked_lists = [Node(0, Node(0, Node(0, Node(1, Node(2, Node(0, Node(1, Node(4, Node(5))))))))),
@@ -56,9 +63,9 @@ linked_lists = [Node(0, Node(0, Node(0, Node(1, Node(2, Node(0, Node(1, Node(4, 
                 None]
 fns = [split_linked_list]
 
-for fn in fns:
-    for head in linked_lists:
-        print(f"{fn.__name__}({head}): {fn(copy.deepcopy(head))}")
+for l in linked_lists:
+    for fn in fns:
+        print(f"{fn.__name__}({l}): {fn(copy.deepcopy(l))}")
     print()
 
 
