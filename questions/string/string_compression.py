@@ -13,13 +13,23 @@
 """
 
 
-# String Concatenation Approach:  First check if a compressed string would actually be shorter than the original string,
-# if so, build a compressed return string via string concatenation operand, else, return the original string.
-# Runtime Complexity: O(n + k^2), where n is the length of s, and k is the num of char seq.
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - What type of characters will there be?
+#   - What if there is just one character (will it be 'a' or '1a')?
+#   - What about upper and lower case characters?
+
+
+# APPROACH: String Concatenation
+#
+# First check if a compressed string would actually be shorter than the original string, if so, build a compressed
+# return string via string concatenation operand, else, return the original string.
+#
+# Runtime Complexity: O(n + k**2), where n is the length of s, and k is the num of char seq.
 # Space Complexity: O(n), where n is the length of s.
 #
 # NOTE:  The quadratic time is due to the inefficiency of the string concatenation (string += string) operand.  IF using
-# string concat, it's more efficient to determine IF a new string would be SHORTER before actually building it.
+#        string concat, it's more efficient to determine IF a new string would be SHORTER before actually building it.
 def string_compression_concat(s):
 
     def _get_compressed_len(s):
@@ -47,7 +57,12 @@ def string_compression_concat(s):
         return s
 
 
-# Optimal/Direct Approach:
+# APPROACH: Optimal/Direct
+#
+# This approach constructs a list of strings (as opposed to concatenating a string) which is then joined to a single
+# string.  If the resultant string is shorter than the original string, the new string is returned, else, the provided
+# string is returned.
+#
 # Time Complexity: O(n), where n is the length of the string.
 # Space Complexity: O(n), where n is the length of the string.
 #
@@ -71,8 +86,8 @@ string_list = [None, "", "a", "aa", "AAA", "aaaBBB", "aaabccc", "abcdefggaa", "a
 fns = [string_compression_concat,
        string_compression]
 
-for fn in fns:
-    for s in string_list:
+for s in string_list:
+    for fn in fns:
         print(f"{fn.__name__}({s!r}): {fn(s)!r}")
     print()
 
