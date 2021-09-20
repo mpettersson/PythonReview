@@ -74,6 +74,7 @@
 # MINIMUM BINARY HEAP EXAMPLE
 # Root is at index 1.
 # Flexible size/capacity.
+# SEE: https://runestone.academy/runestone/books/published/pythonds/Trees/BinaryHeapImplementation.html
 class BinMinHeap:
     def __init__(self):
         self.heap = [0]
