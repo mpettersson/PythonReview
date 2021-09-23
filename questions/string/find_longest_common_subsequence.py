@@ -9,6 +9,12 @@
     Example:
         Input = "ABAB", "BABA"
         Output = "ABA"
+
+    TODO:
+        - Add (a copied but refactored DP solution) to build subsequence from a dp memoization table (as opposed to
+          maintaining the built result in the dp memoization table).
+        - Check space complexities (was copied from len_longest_common_subsequence, need to consider that the result is
+          being built in memo so might be larger).
 """
 import functools
 
@@ -87,20 +93,44 @@ def find_longest_common_subsequence_lru(a, b):
 #
 #            0       1       2       3       4       5       6       7
 #                    M       Z       J       A       W       X       U
-#     0  [['',      '',     '',     '',     '',     '',     '',     ''],
-#     1 X ['',      '',     '',     '',     '',     '',    'X',    'X'],
-#     2 M ['',     'M',    'M',    'M',    'M',    'M',    'M',    'M'],
-#     3 J ['',     'M',    'M',   'MJ',   'MJ',   'MJ',   'MJ',   'MJ'],
-#     4 Y ['',     'M',    'M',   'MJ',   'MJ',   'MJ',   'MJ',   'MJ'],
-#     5 A ['',     'M',    'M',   'MJ',  'MJA',  'MJA',  'MJA',  'MJA'],
-#     6 U ['',     'M',    'M',   'MJ',  'MJA',  'MJA',  'MJA',  'MJA'],
-#     7 Z ['',     'M',   'MZ',   'MZ',  'MJA',  'MJA',  'MJA', 'MJAU']]
-#
-# NOTE: The second table show how one could find the LCS, working backwards from the memoization table.
+#       0  [[0,      0,      0,      0,      0,      0,      0,      0],
+#       1 X [0,      0,      0,      0,      0,      0,      1,      1],
+#       2 M [0,      1,      1,      1,      1,      1,      1,      1],
+#       3 J [0,      1,      1,      2,      2,      2,      2,      2],
+#       4 Y [0,      1,      1,      2,      2,      2,      2,      2],
+#       5 A [0,      1,      1,      2,      3,      3,      3,      3],
+#       6 U [0,      1,      1,      2,      3,      3,      3,      4],
+#       7 Z [0,      1,      2,      2,      3,      3,      3,      4]]
 #
 # The value at memo[r][c] is:
 #       1 + memo[r-1][c-1] if the characters match, else:
 #       max(memo[r-1][c], memo[r][c-1]))
+#
+# The following table shows how one could build the LCS, working backwards from the memoization table.
+#
+#            0       1       2       3       4       5       6       7
+#                    M       Z       J       A       W       X       U
+#     0  [['',      '',     '',     '',     '',     '',     '',     ''],
+#     1 X ['',      '',     '',     '',     '',     '',    'X',    'X'],
+#     2 M ['',     "M",    'M',    'M',    'M',    'M',    'M',    'M'],
+#     3 J ['',     'M',    'M',   "MJ",   'MJ',   'MJ',   'MJ',   'MJ'],
+#     4 Y ['',     'M',    'M',   'MJ',   'MJ',   'MJ',   'MJ',   'MJ'],
+#     5 A ['',     'M',    'M',   'MJ',  "MJA",  'MJA',  'MJA',  'MJA'],
+#     6 U ['',     'M',    'M',   'MJ',  'MJA',  'MJA',  'MJA', "MJAU"],
+#     7 Z ['',     'M',   'MZ',   'MZ',  'MJA',  'MJA',  'MJA', 'MJAU']]
+#
+# Alternatively, this can be seen as:
+#
+#          0  1  2  3  4  5  6  7                    0  1  2  3  4  5  6  7
+#             M  Z  J  A  W  X  U                       M  Z  J  A  W  X  U
+#     0  [[0, 0, 0, 0, 0, 0, 0, 0],             0  [[                      ],
+#     1 X [0, 0, 0, 0, 0, 0, 1, 1],             1 X [                1(X)  ],
+#     2 M [0, 1, 1, 1, 1, 1, 1, 1],             2 M [   1(M)               ],
+#     3 J [0, 1, 1, 2, 2, 2, 2, 2],             3 J [         2(MJ)        ],
+#     4 Y [0, 1, 1, 2, 2, 2, 2, 2],             4 Y [                      ],
+#     5 A [0, 1, 1, 2, 3, 3, 3, 3],             5 A [             3(MJA)   ],
+#     6 U [0, 1, 1, 2, 3, 3, 3, 4],             6 U [                     4(MJAU)],
+#     7 Z [0, 1, 2, 2, 3, 3, 3, 4]]             7 Z [   2(MZ)              ]]
 #
 # Time Complexity: O(m * n), where n and m are the lengths of the strings.
 # Space Complexity: O(m * n), where n and m are the lengths of the strings.
@@ -113,6 +143,7 @@ def find_longest_common_subsequence_memo(a, b):
                     dp[r+1][c+1] = dp[r][c] + char_in_a
                 else:
                     dp[r+1][c+1] = max(dp[r][c+1], dp[r+1][c], key=len)
+        print_matrix(dp)
         return dp[-1][-1]
 
 
@@ -142,8 +173,14 @@ def find_longest_common_subsequence(a, b):
         return curr[-1]
 
 
+def print_matrix(m):
+    max_len = max([max(map(len, r)) for r in m]) + 1
+    print('\n'.join([''.join([f'{i:{max_len}}' for i in r if len(r) > 0]) for r in m if len(m) > 0]))
+
+
 args = [('ABAB', 'BABA'),
         ('creative', 'reactive'),
+        ('aaaaaaaa', 'aaaaaaaa'),
         ('race', 'acre'),
         ('10101', '1001'),
         ('aabcccccaaa', 'caabccccccaaab'),

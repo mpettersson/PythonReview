@@ -86,6 +86,36 @@ def len_longest_common_subsequence_lru(a, b):
 #   Let string 'a' be "XMJYAUZ" and string 'b' be "MZJAWXU" (with the longest common subsequence of a and b is "MJAU").
 #   Then the (completed) memoization table will be as follows:
 #
+#            0       1       2       3       4       5       6       7
+#                    M       Z       J       A       W       X       U
+#       0  [[0,      0,      0,      0,      0,      0,      0,      0],
+#       1 X [0,      0,      0,      0,      0,      0,      1,      1],
+#       2 M [0,      1,      1,      1,      1,      1,      1,      1],
+#       3 J [0,      1,      1,      2,      2,      2,      2,      2],
+#       4 Y [0,      1,      1,      2,      2,      2,      2,      2],
+#       5 A [0,      1,      1,      2,      3,      3,      3,      3],
+#       6 U [0,      1,      1,      2,      3,      3,      3,      4],
+#       7 Z [0,      1,      2,      2,      3,      3,      3,      4]]
+#
+# The value at memo[r][c] is:
+#       1 + memo[r-1][c-1] if the characters match, else:
+#       max(memo[r-1][c], memo[r][c-1]))
+#
+# The following table shows how one could build the LCS, working backwards from the memoization table.
+#
+#            0       1       2       3       4       5       6       7
+#                    M       Z       J       A       W       X       U
+#     0  [['',      '',     '',     '',     '',     '',     '',     ''],
+#     1 X ['',      '',     '',     '',     '',     '',    'X',    'X'],
+#     2 M ['',     "M",    'M',    'M',    'M',    'M',    'M',    'M'],
+#     3 J ['',     'M',    'M',   "MJ",   'MJ',   'MJ',   'MJ',   'MJ'],
+#     4 Y ['',     'M',    'M',   'MJ',   'MJ',   'MJ',   'MJ',   'MJ'],
+#     5 A ['',     'M',    'M',   'MJ',  "MJA",  'MJA',  'MJA',  'MJA'],
+#     6 U ['',     'M',    'M',   'MJ',  'MJA',  'MJA',  'MJA', "MJAU"],
+#     7 Z ['',     'M',   'MZ',   'MZ',  'MJA',  'MJA',  'MJA', 'MJAU']]
+#
+# Alternatively, this can be seen as:
+#
 #          0  1  2  3  4  5  6  7                    0  1  2  3  4  5  6  7
 #             M  Z  J  A  W  X  U                       M  Z  J  A  W  X  U
 #     0  [[0, 0, 0, 0, 0, 0, 0, 0],             0  [[                      ],
@@ -96,12 +126,6 @@ def len_longest_common_subsequence_lru(a, b):
 #     5 A [0, 1, 1, 2, 3, 3, 3, 3],             5 A [             3(MJA)   ],
 #     6 U [0, 1, 1, 2, 3, 3, 3, 4],             6 U [                     4(MJAU)],
 #     7 Z [0, 1, 2, 2, 3, 3, 3, 4]]             7 Z [   2(MZ)              ]]
-#
-# The second table shows matches; NOTE that there are multiple matches, with only one possible match of length 4.
-#
-# The value at memo[r][c] is:
-#       1 + memo[r-1][c-1] if the characters match, else:
-#       max(memo[r-1][c], memo[r][c-1]))
 #
 # Time Complexity: O(m * n), where n and m are the lengths of the strings.
 # Space Complexity: O(m * n), where n and m are the lengths of the strings.

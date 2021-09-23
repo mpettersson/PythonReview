@@ -1,5 +1,7 @@
 """
-    SEARCH SORTED MATRIX (CCI 10.9: SORTED MATRIX SEARCH)
+    SEARCH SORTED MATRIX (CCI 10.9: SORTED MATRIX SEARCH,
+                          leetcode.com/problems/search-a-2d-matrix,
+                          leetcode.com/problems/search-a-2d-matrix-ii)
 
     Given an MxN matrix in which each row and each column is sorted in ascending order, write a function to find an
     element.
@@ -16,7 +18,16 @@
 """
 
 
-# Brute Force Approach:  Iterate over all elements, looking for the provided value.
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - Does the matrix consist of ragged or jagged lists?
+
+
+# APPROACH: Brute Force
+#
+# Iterate over each column of each row, returning the row and column when the value is found (or None if the value is
+# not present).
+#
 # Time Complexity: O(rc), where r and c are the number of rows and columns in m.
 # Space Complexity: O(1).
 def search_sorted_matrix_bf(mat, val):
@@ -26,7 +37,10 @@ def search_sorted_matrix_bf(mat, val):
                 return r, c
 
 
-# Naive/Binary Search Each Row Approach:  Iteratively execute binary search on each row in the matrix.
+# APPROACH: Naive/Binary Search Each Row
+#
+# Iteratively execute binary search on each row in the matrix.
+#
 # Time Complexity: O(r * log(c)), where r and c are the number of rows and columns in m.
 # Space Complexity: O(log(c)), where c is the number of columns in m.
 def search_sorted_matrix_naive(mat, val):
@@ -51,14 +65,19 @@ def search_sorted_matrix_naive(mat, val):
                 return r, c
 
 
+# APPROACH: Saddleback Algorithm
+#
+# Using observations 1 and 4 below, and starting at the top right of the matrix, strategicly traverse the matrix
+# comparing the given value to the current value (going left if the value is less than current, down if the value is
+# more than the current) until either the value is found in the matrix, or, the current row index is greater than the
+# number of row, or the current column index is less than 0.
+#
 # Observations:
 #   1) If the start of a col is greater than x; x is to the left.
 #   2) If the end of a col is less than x; then x is to the right.
 #   3) If the start of a row is greater than x; x is above.
 #   4) If the end of a row is less than x; x is below.
-
-# Saddleback Algorithm Solution:  Using observations 1 and 4 above, and starting at the top right of the matrix, iterate
-# across the matrix looking for the element.
+#
 # Time Complexity: O(r + c), where r and c are the number of rows and columns in the matrix.
 # Space Complexity: O(1).
 def sorted_matrix_search_saddleback(mat, val):
@@ -74,13 +93,9 @@ def sorted_matrix_search_saddleback(mat, val):
                 row += 1
 
 
+# APPROACH: Recursive Binary Matrix Search (With Coordinate Class)
+#
 # Binary Search Observations:
-#
-# NOTE: The performance for binary matrix search is NOT O(log(n*m)), it is O(s * log(l/s)) where s and l are the smaller
-# and the larger of the two sides (m and n).
-#
-# SEE: https://stackoverflow.com/questions/2457792/how-do-i-search-for-a-number-in-a-2d-array-sorted-left-to-right-and-top-to-botto/2458113#answer-2458113
-#
 # Similar to binary search on a list, we can perform a binary search on a sorted matrix.  However, be VERY careful,
 # and it is suggested to break the code into smaller functions and even classes (see last solution).
 # Like binary search, you will need to partition the matrix, HOWEVER, while the matrix has two dimensions, you will need
@@ -108,10 +123,9 @@ def sorted_matrix_search_saddleback(mat, val):
 # TLDR: Get a high ((2,2) or 95) and a low ((1,1) or 35) middle value then compare the search element to them.  If the
 # search element is greater than the middle high value, it's in the high matrix, if it's lower than the middle low, it's
 # in the low matrix.  Else, recurse on BOTH the other two matrices.
-
-
-# Recursive Binary Matrix Search With Coordinate Class Approach:
-# Time Complexity: O(s * log(l/s)) where s and l are the smaller and the larger of the two sides (m and n).
+#
+# Recurrence Relation: T(x) = 3T(x/4) + O(1).
+# Time Complexity: O((rc)log4(3)) (via case 3 of the Master Theorem), where r & c are the size of the rows and columns.
 # Space Complexity: O(s * log(l/s)) where s and l are the smaller and the larger of the two sides (m and n).
 def sorted_matrix_search_w_coordinates(m, e):
 
@@ -169,10 +183,12 @@ class Coordinate:
         self.c = (coordinate_a.c + coordinate_b.c) // 2
 
 
-# VARIATION:  Same question, however, the first value of each row is greater than the last value on the previous row.
+# VARIATION 1:  Same question, however, the first value of each row is greater than the last value on the previous row.
 
 
-# Variation Observations:
+# VARIATION 1 APPROACH: Iterative Binary Matrix Search Approach
+#
+# Observation:
 # This variation has an additional property (the first value of each row is greater than the last value of the previous
 # row), thus allowing for a simple two way mapping of matrix <=> list.
 #
@@ -181,10 +197,10 @@ class Coordinate:
 #
 # List to NxM Matrix Mapping:
 #       l[x] => mat[x / m][x % m], where m is the number of columns in the matrix.
-
-
-# Iterative Binary Matrix Search Approach:  Using the mappings from Matrix <==> List from above, execute a binary search
-# returning the row and column indices or None.
+#
+# This approach will apply the observation above and (using the map as outlined above) will simply execute a binary
+# search on the list, returning the row and column of a matching value (or None).
+#
 # Time Complexity: O(log(r * c)), where r and c are the number of rows and columns in the matrix.
 # Space Complexity: O(log(r * c)), where r and c are the number of rows and columns in the matrix.
 def bin_search_sorted_matrix_alt(mat, val):
@@ -206,43 +222,33 @@ def format_matrix(m):
     return "\n" + '\n'.join([''.join(['{:4}'.format(item) for item in row]) for row in m])
 
 
-matrices = [[[15, 20,  40,  85],
-             [20, 35,  80,  95],
-             [30, 50,  95, 105],
-             [40, 55, 100, 120]],
-            [[ 1,  4,  7, 11, 15],
-             [ 2,  5,  8, 12, 19],
-             [ 3,  6,  9, 16, 22],
-             [10, 13, 14, 17, 24],
-             [18, 20, 23, 26, 30]]]
-alt_matrices = [[[10, 20, 40]],
-                [[10],
-                [20],
-                [40]],
-               [[ 1,  3,  5,  7],
-                [10, 11, 16, 20],
-                [23, 30, 34, 60]]]
-vals = [-10, 10, 20, 40, 94, 95, None]
+matrix = [[1,  4,  7, 11, 15],
+          [2, 15, 20, 40, 85],
+          [3, 20, 35, 80, 95],
+          [10, 30, 50, 95, 105],
+          [18, 40, 55, 100, 120]]
+variation_matrix = [[1,  3,  5,  7],
+                    [10, 11, 16, 20],
+                    [23, 30, 34, 60]]
+vals = [-10, 10, 15, 20, 40, 55, 80, 85, 94, 95, 105, None]
+variation_vals = [-1, 1, 7, 15, 20, 60, 101, None]
+
 fns = [search_sorted_matrix_bf,
        search_sorted_matrix_naive,
        sorted_matrix_search_saddleback,
        sorted_matrix_search_w_coordinates]
-alt_fns = [bin_search_sorted_matrix_alt]
+variation_fns = [bin_search_sorted_matrix_alt]
 
-for i, m in enumerate(matrices + alt_matrices):
-    print(f"m{i}:", format_matrix(m))
-    print()
+print(f"\nmatrix:", format_matrix(matrix), "\n")
+for v in vals:
     for fn in fns:
-        for v in vals:
-            print(f"{fn.__name__}(m{i}, {v}): {fn(m, v)}")
-        print()
-
-for i, m in enumerate(alt_matrices):
-    print(f"m{i}:", format_matrix(m))
+        print(f"{fn.__name__}(matrix, {v}): {fn(matrix, v)}")
     print()
-    for fn in alt_fns:
-        for v in vals:
-            print(f"{fn.__name__}(m{i}, {v}): {fn(m, v)}")
-        print()
+
+print(f"\nvariation_matrix:", format_matrix(variation_matrix), '\n')
+for v in variation_vals:
+    for fn in variation_fns:
+        print(f"{fn.__name__}(variation_matrix, {v}): {fn(variation_matrix, v)}")
+    print()
 
 
