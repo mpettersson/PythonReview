@@ -891,6 +891,13 @@ def apply_op(left, op, right):
 # SORTED()
 # Works on ANY ITERABLE (strings, tuples, dicts, and generators), returns a list. A sorted dict returns the KEYS.
 
+# Sort/Sorted by default produce an ascending sort (low to high); to reverse this (high to low), just do the following:
+l0 = [51, 31, 64, -18, -1, -42, -8, -62, 23, 60, 6, -57, 35, -46, -51, 1, 3, -98, 5, 12]
+print(f"l0: {l0}")
+print(f"sorted(l0, reverse=True): {sorted(l0, reverse=True)}.")
+print(f"l0.sort(reverse=True): {l0.sort(reverse=True)} (REMEMBER: sort doesn't return anything, it sorts in place!).")
+
+# NOTE: importing operator allows for referencing operators; like + (operator.add) or * (operator.mul).
 import operator
 
 tup_list = [(65, "s", 100), (70, "d", 150), (56, "l", 90), (70, "f", 190), (60, "k", 95), (68, "j", 110)]
