@@ -64,6 +64,8 @@
 
     Variations:
         - find_max_score_popped_balloons.py (leetcode.com/problems/burst-balloons/)
+        - Minimum weight convex polygon triangulation (just has a different cost function).
+        - Concatenating singly linked lists.
 
     References:
         - youtube.com/watch?v=JMql7zF87aE
@@ -265,16 +267,16 @@ def matrix_chain_multiplication_tab(l):
         n = len(l)
         memo = [[0] * n for _ in range(n)]                  # NOTE: 1 extra row & column for simplified implementation.
         back = [[0] * n for _ in range(n)]                  # NOTE: 1 extra row & column for simplified implementation.
-        for length in range(2, n):
-            for i in range(1, n - length + 1):              # i is the starting index.
-                j = i + length - 1                          # j is the ending index.
+        for length in range(2, n):                          # The number of matrices being multiplied (chain length).
+            for i in range(1, n - length + 1):              # i is the (chain's) starting index.
+                j = i + length - 1                          # j is the (chain's) ending index.
                 memo[i][j] = float('inf')
                 for k in range(i, j):                       # k is the split point (the parens go between k and k+1).
                     cost = memo[i][k] + memo[k+1][j] + l[i-1] * l[k] * l[j]
                     if cost < memo[i][j]:
                         memo[i][j] = cost
                         back[i][j] = k                      # Update the backtracking info for parenthesization.
-        print("memo:\n", format_matrix(memo), "\nback:\n", format_matrix(back))
+        # print("memo:\n", format_matrix(memo), "\nback:\n", format_matrix(back))
         return memo[1][-1], _parenthesize_result(l, back, 1, n-1)
 
 
@@ -371,11 +373,10 @@ fns = [matrix_chain_multiplication_cost_only_rec,
        matrix_chain_multiplication_tab,
        matrix_chain_multiplication_tab_via_mxcost]
 
-padding = max([len(f"{fn.__name__}") for fn in fns])
 for l in lists:
     print(f"l: {l}")
     for fn in fns:
-        print(f"{fn.__name__:>{padding}}(l): {fn(l)}")
+        print(f"{fn.__name__}(l): {fn(l)}")
     print()
 
 
