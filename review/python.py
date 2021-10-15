@@ -231,6 +231,10 @@ print("string_var.lower():", string_var.lower())
 print("Check alphaNumeric string with AString123.isalnum():", "AString123".isalnum())
 print("Check alpha string with AString.isalnum():", "AString".isalpha())
 print("Check numeric (int) string with 123.isalnum():", "123".isdigit())
+print("Justify Me".ljust(30, '-'))      # 30 == width, '-' is the fill.
+print("Justify Me".rjust(30, '-'))      # 30 == width, '-' is the fill.
+print("Justify Me".center(30, '-'))     # 30 == width, '-' is the fill.
+
 
 # NOTE: You CANNOT reassign an index of a string, i.e., this won't work:
 # string_var[6] = w
@@ -287,6 +291,7 @@ n = 42
 c = 'a'
 sqrt_sym = "√"
 value = 10/3                                        # Repeating Decimal Number
+big_value = 12345678.99
 width = 20
 precision = 5
 fill = 0
@@ -295,15 +300,22 @@ print(f"{n:^5}")                                    # Align center with ^
 print(f"{n:<5}")                                    # Align left with <
 print(f"{n:>5}")                                    # Align right with <
 print(f"{value:{fill}{width}.{precision}}")         # Works on
+print(f"{value:.2f}")                               # Prints to second decimal place.
+print(f"{big_value:,.2f}")                          # Prints to second decimal place, with comma separated thousands.
+print(f"{int(big_value):,d}")                       # Prints an int with comma separated thousands.
 print(f"{c:{fill}>{width}}")                        # Works on strings.
 print(f"str() conversion use !s: {sqrt_sym!s}")     # Could also use: {str(sqrt_sym)}
 print(f"repr() conversion use !r: {sqrt_sym!r}")    # Could also use: {repr(sqrt_sym)}
 print(f"ascii() conversion use !a: {sqrt_sym!a}")   # Could also use: {ascii(sqrt_sym)}
-print(f"As Hex: {n:#0x}")
+print(f"As Hex: {n:#0x}")                           # NOTE: LOWER case 'x' produces LOWER case Hex.
+print(f"As Hex: {n:#0X}")                           # NOTE: UPPER case 'X' produces UPPER case Hex.
 print(f"As Oct: {n:#0o}")
 print(f"As Bin: {n:#0b}")
 print(f"As Bin: {n:b}")
 print(f"As Bin: {n:{fill}{width}b}")
+print(f"As Hex: {n:>10b}")
+print(f"{n:>1b}")                                   # Prints bin string, WO leading '0b'
+print(f"{n:>{width}} {n:>{width}o} {n:>{width}x} {n:>{width}b}")
 
 # Datetime Example
 import datetime
@@ -318,6 +330,15 @@ print(f"{today:%B %d, %Y}")
 # MUTABLE,
 # CAN contain different types,
 # ARE UN-Hashable.
+
+# How to convert a string to a list of chars:
+print(list("Hello World!"))
+
+# How to make a string from a list of chars:
+print(''.join(['H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!']))
+
+# How to print a list of strings (as if like a string) via 'sep=""':
+print(*['H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'], sep="")    # NOTICE the * and the sep=""!
 
 list_var = [1, 3.14, "Matt", True]
 
@@ -922,13 +943,27 @@ x_sorted_by_value = {k: v for k, v in sorted(x.items(), key=lambda item: item[1]
 x_sorted_by_key = {k: v for k, v in sorted(x.items(), key=lambda item: item[0])}
 
 
-# Complex Sort Example (How to lowercase and sort first by len(), then by sorted()):
+# How to TEST if a list is sorted:
+is_l3_sorted = all(l3[i][1] <= l3[i+1][1] for i in range(len(l)-1))
+
+
+# Anagram Sort Example (How to lowercase and sort first by len(), then by sorted()):
 def sort_anagrams(anagrams):
     return sorted(list(map(lambda s: s.lower(), anagrams)), key=lambda x: (len(x), sorted(x)))
 
 
-# How to TEST if a list is sorted:
-is_l3_sorted = all(l3[i][1] <= l3[i+1][1] for i in range(len(l)-1))
+# Complex Sort Example:
+#   Sort a string with the following rules:
+#       - All sorted lowercase letters are ahead of uppercase letters.
+#       - All sorted uppercase letters are ahead of digits.
+#       - All sorted odd digits are ahead of sorted even digits.
+complex_string_to_sort = "Sorting1234"  # == 'ginortS1324' if sorted by the rules above.
+print(*sorted(complex_string_to_sort, key=lambda c: (-ord(c) >> 5, c in '02468', c)), sep='')
+print(*sorted(complex_string_to_sort, key=lambda c: (c.isdigit() - c.islower(), c in '02468', c)), sep='')
+order = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1357902468'
+print(*sorted(input(), key=order.index), sep='')
+import string
+print(*sorted(input(), key=(string.ascii_letters + '1357902468').index), sep='')
 
 
 #############
@@ -2393,6 +2428,18 @@ def memoize(f):
         if x not in cache:
             cache[x] = f(x)
         return cache[x]
+    return g
+
+
+def memoize(f):
+    h = {}
+    def g(*u):
+        if u in h:
+            return h[u]
+        else:
+            r = f(*u)
+            h[u] = r
+            return r
     return g
 
 
