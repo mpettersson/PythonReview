@@ -1,5 +1,5 @@
 """
-    PARENTHESIS CHECKER
+    PARENTHESIZED EXPRESSION VALIDATOR
 
     Given a string s representing a mathematical equation (using only digits, +, - , *, /, (, and )), write a function
     that returns True if all parenthesis are correctly matched False otherwise.  If no parenthesis are included in the
@@ -37,7 +37,7 @@
 #
 # Time Complexity: O(n), where n is the number of characters in the string.
 # Space Complexity: O(1).
-def is_valid_parenthesizations(s):
+def is_parenthesization_valid(s):
     if s is not None:
         parens = 0
         for c in s:
@@ -61,7 +61,7 @@ def is_valid_parenthesizations(s):
 #
 # Time Complexity: O(n), where n is the number of characters in the string.
 # Space Complexity: O(1).
-def is_valid_parenthesizations_with_asterisks_wildcard(s):
+def is_parenthesization_with_asterisks_wildcard_valid(s):
     if s is not None:
         parens_min = 0                          # The smallest (lower bound) num of ')' parens needed.
         parens_max = 0                          # The largest (upper bound) num of ')' parens needed
@@ -91,7 +91,7 @@ def is_valid_parenthesizations_with_asterisks_wildcard(s):
 #
 # Time Complexity: O(n), where n is the number of characters in the string.
 # Space Complexity: O(n), where n is the number of characters in the string.
-def is_valid_parenthesizations_via_stacks_with_asterisks_wildcard(s):
+def is_parenthesization_via_stacks_with_asterisks_wildcard_valid(s):
     if s is not None:
         l_paren_stack = []
         asterisk_stack = []
@@ -130,9 +130,9 @@ args = ["(((1 + 2) / (2 /3) * 5) )",
         "9",
         "*",
         None]
-fns = [is_valid_parenthesizations,
-       is_valid_parenthesizations_with_asterisks_wildcard,                  # Variation
-       is_valid_parenthesizations_via_stacks_with_asterisks_wildcard]       # Variation
+fns = [is_parenthesization_valid,
+       is_parenthesization_with_asterisks_wildcard_valid,                  # Variation
+       is_parenthesization_via_stacks_with_asterisks_wildcard_valid]       # Variation
 
 for s in args:
     for fn in fns:
