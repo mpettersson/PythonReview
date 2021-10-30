@@ -317,6 +317,45 @@ print(f"As Hex: {n:>10b}")
 print(f"{n:>1b}")                                   # Prints bin string, WO leading '0b'
 print(f"{n:>{width}} {n:>{width}o} {n:>{width}x} {n:>{width}b}")
 
+
+# STRING MODULE
+# The string module contains a collection of string constants.  Public module variables are:
+#   whitespace -- a string containing all ASCII whitespace
+#   ascii_lowercase -- a string containing all ASCII lowercase letters
+#   ascii_uppercase -- a string containing all ASCII uppercase letters
+#   ascii_letters -- a string containing all ASCII letters
+#   digits -- a string containing all ASCII decimal digits
+#   hexdigits -- a string containing all ASCII hexadecimal digits
+#   octdigits -- a string containing all ASCII octal digits
+#   punctuation -- a string containing all ASCII punctuation characters
+#   printable -- a string containing all ASCII characters considered printable
+#
+# This is helpful when trying to manipulate strings.
+
+import string
+
+# (STR) TRANSLATE & MAKETRANS
+#   str.translate - Replace each character in the string using the given translation table.
+#   str.maketrans - Return a translation table usable for str.translate().
+#
+# NOTE: translate/maketrans is much faster than other functions/methods because it is written in c.
+
+# How to convert punctuation to spaces in a string:
+string_to_convert_punctuation_to_spaces = "I am tired! I like fruit...and milk"
+translator = str.maketrans(string.punctuation, ' '*len(string.punctuation))  # map punctuation to space
+print(string_to_convert_punctuation_to_spaces.translate(translator))
+
+# How to remove punctuation from a string (OPTIMAL):
+string_to_remove_punctuation = "string. With. Punctuation?"
+string_to_remove_punctuation = string_to_remove_punctuation.translate(str.maketrans('', '', string.punctuation))
+print(string_to_remove_punctuation)
+
+# How to remove punctuation from a string (SLOW):
+string_to_remove_punctuation = "string. With. Punctuation?"
+string_to_remove_punctuation = ''.join(ch for ch in string_to_remove_punctuation if ch not in set(string.punctuation))
+print(string_to_remove_punctuation)
+
+
 # Datetime Example
 import datetime
 today = datetime.datetime.today()
@@ -1861,6 +1900,11 @@ print(re.findall('\d+', "I went to him at 11 A.M. on 4th July 1886"))
 
 # SPLIT
 print(re.split('[aeiou]+', 'Aey, Boy oh boy, come here', flags=re.IGNORECASE))
+# The next line splits by space, comma, and period but leaves numbers (with decimals) alone:
+print(re.split("\s|(?<!\d)[,.](?!\d)", "1.0, is a number"))     # ['1.0,', 'is', 'a', 'number']
+#   Explanation:
+#       "(?<!\d)[,.]" means to only split by , or . if it is not preceded by a digit,
+#       "[,.](?!\d)" means to only split by , or . if it is not followed by a digit.
 
 # SUB
 print(re.sub('ub', '~*' , 'Subject has Uber booked already', count=1, flags = re.IGNORECASE))
