@@ -17,55 +17,6 @@
 #   - What about duplicate palindromes in the list?
 
 
-# WRONG APPROACH: Find Longest Common Substring With Reversed String
-#
-# Reversing the string and then finding the longest common substring SEEMS like a good idea however, consider the
-# following example:
-#
-#         a  a  c  a  b  d  k  a  c  a  a
-#       +--------------------------------
-#     a | 1  1  0  1  0  0  0  1  0  1  1
-#     a | 1  2  0  1  0  0  0  1  0  1  2
-#     c | 0  0  3  0  0  0  0  0  2  0  0
-#     a | 1  1  0  4  0  0  0  1  0  3  1
-#     k | 0  0  0  0  0  0  1  0  0  0  0
-#     d | 0  0  0  0  0  1  0  0  0  0  0
-#     b | 0  0  0  0  1  0  0  0  0  0  0
-#     a | 1  1  0  1  0  0  0  1  0  1  1
-#     c | 0  0  2  0  0  0  0  0  2  0  0
-#     a | 1  1  0  3  0  0  0  1  0  3  1
-#     a | 1  2  0  1  0  0  0  1  0  1  4
-#
-# The length of the longest common substring for 'aacabdkacaa', as can be seen by the matrix (cache, or memoization
-# table) above, is 4, this corresponds to 'aaca', which is clearly NOT a palindrome.  Therefore, this approach fails
-# when there exists a reversed copy of a non-palindromic substring a a different part of the string.
-#
-# Time Complexity: O(n**2), where n is the length of the string.
-# Space Complexity: O(n**2), where n is the length of the string.
-#
-# NOTE: To fix the issue (as described above), for each candidate, simply check if the reversed substrings indices are
-# the same as the original substrings indices.
-def __wrong_len_longest_palindromic_substring_wrong__(s):
-    if isinstance(s, str):
-        result = ''
-        if len(s) == 0:
-            return result
-        memo = [[0] * len(s) for _ in range(len(s))]
-        curr_max = 0
-        for ir, cr in enumerate(reversed(s)):
-            for i, c in enumerate(s):
-                if ir == 0 or i == 0:
-                    if cr == c:
-                        memo[ir][i] = 1
-                else:
-                    if cr == c:
-                        memo[ir][i] = memo[ir - 1][i - 1] + 1
-                if memo[ir][i] > curr_max:
-                    curr_max = memo[ir][i]
-                    result = s[i - curr_max + 1: i + 1]
-    return result
-
-
 # APPROACH: Naive/Brute Force
 #
 # For each possible substring start and end index, check if the substring is a palindrome; if it is and if it is longer
@@ -260,6 +211,55 @@ def len_longest_palindromic_substring_manacher(s):
             if i + p[i] > r:                                # If palindrome centered at i is past r, adjust center:
                 c, r = i, i + p[i]
         return max(p)
+
+
+# WRONG APPROACH: Find Longest Common Substring With Reversed String
+#
+# Reversing the string and then finding the longest common substring SEEMS like a good idea however, consider the
+# following example:
+#
+#         a  a  c  a  b  d  k  a  c  a  a
+#       +--------------------------------
+#     a | 1  1  0  1  0  0  0  1  0  1  1
+#     a | 1  2  0  1  0  0  0  1  0  1  2
+#     c | 0  0  3  0  0  0  0  0  2  0  0
+#     a | 1  1  0  4  0  0  0  1  0  3  1
+#     k | 0  0  0  0  0  0  1  0  0  0  0
+#     d | 0  0  0  0  0  1  0  0  0  0  0
+#     b | 0  0  0  0  1  0  0  0  0  0  0
+#     a | 1  1  0  1  0  0  0  1  0  1  1
+#     c | 0  0  2  0  0  0  0  0  2  0  0
+#     a | 1  1  0  3  0  0  0  1  0  3  1
+#     a | 1  2  0  1  0  0  0  1  0  1  4
+#
+# The length of the longest common substring for 'aacabdkacaa', as can be seen by the matrix (cache, or memoization
+# table) above, is 4, this corresponds to 'aaca', which is clearly NOT a palindrome.  Therefore, this approach fails
+# when there exists a reversed copy of a non-palindromic substring in a different part of the string.
+#
+# Time Complexity: O(n**2), where n is the length of the string.
+# Space Complexity: O(n**2), where n is the length of the string.
+#
+# NOTE: To fix the issue (as described above), for each candidate, simply check if the reversed substrings indices are
+# the same as the original substrings indices.
+def __wrong_len_longest_palindromic_substring_wrong__(s):
+    if isinstance(s, str):
+        result = ''
+        if len(s) == 0:
+            return result
+        memo = [[0] * len(s) for _ in range(len(s))]
+        curr_max = 0
+        for ir, cr in enumerate(reversed(s)):
+            for i, c in enumerate(s):
+                if ir == 0 or i == 0:
+                    if cr == c:
+                        memo[ir][i] = 1
+                else:
+                    if cr == c:
+                        memo[ir][i] = memo[ir - 1][i - 1] + 1
+                if memo[ir][i] > curr_max:
+                    curr_max = memo[ir][i]
+                    result = s[i - curr_max + 1: i + 1]
+    return result
 
 
 string_list = ["abracadabra",

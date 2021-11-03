@@ -526,6 +526,8 @@ print("\n%(name)s age is %(age)d" % dict_var)
 # Can create a populated set with curly brackets or set(<list>).
 set_var = {"Matt", "Value", 1, 1, 3.14}   # Duplicates don't cause errors, but will only be included once in the set.
 set_var_two = set(["Matt", 1, 3.14, "Hello World", 42])
+sml_set = {1, 42}
+disjoint_set = {"Not in other sets..."}
 
 # NOTE: CANNOT create empty set with curly brackets {} (bc it'll be a dict), MUST use set() constructor.
 
@@ -536,14 +538,22 @@ print("set_var = ", set_var)
 
 print("Get the length of a set with len(set_var)", len(set_var))
 print("Add a value to a set with set_var.add(value):"); set_var.add("value")
-print("Remove a value from a set with set_var.discard(value):", set_var.discard("value"))
+print("Remove a value from a set (if not a member, don't do anything) via set_var.discard(value):", set_var.discard("value"))
 print("Pop a random value from a set with set_var.pop():", set_var.pop())
+print("Test if one set is a subset of another with sml_set.issubset(set_var): ", sml_set.issubset(set_var))
+print("Test if one set is a superset of another with sml_set.issuperset(set_var): ", sml_set.issuperset(set_var))
+print("Test if two sets are disjoint sml_set.isdisjoint(disjoint_set): ", sml_set.isdisjoint(disjoint_set))
 print("Return common values of two sets with set_var.intersection(set_var_two):", set_var.intersection(set_var_two))
-print(set_var.symmetric_difference(set_var_two))
-print(set_var.difference(set_var_two))
+print("Return the symmetric difference (all elements that are in exactly one of the sets) via "
+      "set_var.symmetric_difference(set_var_two):", set_var.symmetric_difference(set_var_two))
+print("Update a set with the symmetric difference of itself and another via: "
+      "set_var.symmetric_difference_update(set_var_two)):", set_var.symmetric_difference_update(set_var_two))
+print("Return the difference of two or more sets (or, all elements that are in a set but not the others) as a new set "
+      "via set_var.difference(set_var_two):", set_var.difference(set_var_two))
 print("Add (join) to a set with set_var |= {99}"); set_var |= {99, 101}
 print("Join, or combine, sets with set_var_three = set_var | set_var_two"); set_var_three = set_var | set_var_two
 print("Clear all items in a set with set_var_three.clear():", set_var_three.clear())
+
 
 # NOTE: To create a set that can't be changed use frozenset:
 frz_set_one = frozenset({"frozen", "set"})
