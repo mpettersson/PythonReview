@@ -248,6 +248,14 @@ def knapsack_01_dp_via_top_down(items, capacity):
 #     C   [False, False, False, False, False, False, False, False, False, False,  True],
 #     D   [False, False, False,  True,  True,  True,  True,  True,  True,  True,  True]]
 #
+# To build the list of items, start at the b[-1][-1], then do:
+#   - If the current cell is True, add the row's item to the output list, then update the col as col-rows.weight.
+#   - If the current cell is False, do nothing.
+#   - Decrement the row (move one row up).
+#
+# Once at row 0, return the values. For the example above, the two cells (that cause the item to be append) are:
+#   b['D'][10] and b['B'][7] (the full path is: b['D'][10]->b['D'][7]-> b['C'][7]->b['B'][7]->b['B'][3]->b['A'][7]).
+#
 # NOTE: This approach ASSUMES INTEGER VALUES for prices and weights; modify with math.ceil() if REAL NUMS are wanted!
 #
 # Time Complexity: O(n * capacity), where n is the number of the items list.
@@ -274,7 +282,7 @@ def knapsack_01_dp_via_bottom_up(items, capacity):
         result_set = []                                     # The next few lines builds the result set from the
         c = capacity                                        # boolean matrix, see the example above for more info.
         for i in range(n, 0, -1):                           # NOTE: The reverse order (to start at b[-1][-1])!!
-            if b[i][c]:                                     # If the
+            if b[i][c]:                                     # Only included corresponding items will be True.
                 result_set.append(items[i-1])               # Add this item to the results set.
                 c -= items[i-1].weight                      # Update the weight/capacity for the next iteration.
         return dp[-1][-1], result_set

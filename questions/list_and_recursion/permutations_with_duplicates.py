@@ -92,16 +92,16 @@ def get_perms_w_dups_via_set(s):
 #
 # Time Complexity: O(n!/(num_c_1! * num_c_2! * ... * num_c_m!), where n = len(s), and num_c is the unique char count.
 # Space Complexity: O(n!/(num_c_1! * num_c_2! * ... * num_c_m!), where n = len(s), and num_c is the unique char count.
-def get_perms_w_dups_vid_dict(s):
+def get_perms_w_dups_via_dict(s):
 
-    def _get_perms_w_dups_vid_dict(d, i, prefix, result):
+    def _rec(d, i, prefix, result):
         if i == 0:
             result.append(prefix)
         else:
             for k in d.keys():
                 if d[k] > 0:
                     d[k] -= 1
-                    _get_perms_w_dups_vid_dict(d, i - 1, prefix + k, result)
+                    _rec(d, i - 1, prefix + k, result)
                     d[k] += 1
 
     if s is not None:
@@ -109,12 +109,12 @@ def get_perms_w_dups_vid_dict(s):
         d = {}
         for c in s:
             d[c] = d.setdefault(c, 0) + 1
-        _get_perms_w_dups_vid_dict(d, len(s), "", result)
+        _rec(d, len(s), "", result)
         return result
 
 
 # NOTE: The following is the dictionary approach (above) implemented for lists.
-def get_list_perms_w_dups_vid_dict(l):
+def get_list_perms_w_dups_via_dict(l):
 
     def _rec(d, i, a, result):
         if i == 0:
@@ -141,7 +141,7 @@ args = ["", "A", "AB", "ABC", "AAB", "AAAB", "AAAAB", "AABBC"]
 fns = [get_itertools_perms,
        get_perms_w_dups_naive,
        get_perms_w_dups_via_set,
-       get_perms_w_dups_vid_dict]
+       get_perms_w_dups_via_dict]
 
 for s in args:
     for fn in fns:
