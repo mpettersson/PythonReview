@@ -1,20 +1,82 @@
 """
-    THE KNAPSACK PROBLEM (EPI 17.6,
-                          50CIQ 2: KNAPSACK)
+    THE KNAPSACK PROBLEMS
 
-    A thief breaks into a clock store.  Each clock has a weight and a value, which are known to the thief.  His knapsack
-    cannot hold more than a specified combined weight.  His intention is to take clocks whose total value is maximum
-    subject to the knapsack's weight constraint.
+    From Wikipedia (SEE: wikipedia.org/wiki/Knapsack_problem):
 
-    Write a program for the knapsack problem that selects a subset of items that has a maximum value and satisfies the
-    weight constraint.  All items have integer weights and values.  Return the value of the subset.
+        The knapsack problem is a problem in combinatorial optimization: Given a set of items, each with a
+        weight and a value, determine the number of each item to include in a collection so that the total
+        weight is less than or equal to a given limit and the total value is as large as possible. It derives
+        its name from the problem faced by someone who is constrained by a fixed-size knapsack and must fill
+        it with the most valuable items. The problem often arises in resource allocation where the decision
+        makers have to choose from a set of non-divisible projects or tasks under a fixed budget or time
+        constraint, respectively.
 
+        The knapsack problem has been studied for more than a century, with early works dating as far back as
+        1897. The name "knapsack problem" dates back to the early works of the mathematician Tobias Dantzig
+        (1884–1956), and refers to the commonplace problem of packing the most valuable or useful items
+        without overloading the luggage.
+
+    The most common Knapsack problems include:
+        The 01 Knapsack Problem
+            - Given a set of items that each have a value and a weight, determine which of those items to select to as
+              to maximize the total value, constrained by the given knapsack's capacity.
+            - SEE: knapsack_01.py
+        The Bounded Knapsack Problem (BKP)
+            - Given a set of items that each have a value, a weight, and a number of units, determine the number of
+              items and units to select as to maximize the total value, constrained by the given knapsack's capacity.
+            - SEE: knapsack_bounded.py
+        The Unbounded Knapsack Problem (UKP)
+            - Given a set of items that each have a value, a weight, and an unlimited (unbounded) number of units,
+              determine the set of items to select as to maximize the total value, constrained by the given knapsack's
+              capacity.
+            - SEE: knapsack_unbounded.py
+
+    TODO: This section needs to be finished...
+    Other variations include:
+        Fractional, or continuous, Knapsack problems.
+        Knapsack problems with real number weights.
+        Multi-objective knapsack problem
+            This variation changes the goal of the individual filling the knapsack. Instead of one objective, such as
+            maximizing the monetary profit, the objective could have several dimensions. For example, there could be
+            environmental or social concerns as well as economic goals. Problems frequently addressed include portfolio
+            and transportation logistics optimizations.[21][22]
+            As an example, suppose you ran a cruise ship. You have to decide how many famous comedians to hire. This
+            boat can handle no more than one ton of passengers and the entertainers must weigh less than 1000 lbs. Each
+            comedian has a weight, brings in business based on their popularity and asks for a specific salary. In this
+            example, you have multiple objectives. You want, of course, to maximize the popularity of your entertainers
+            while minimizing their salaries. Also, you want to have as many entertainers as possible.
+        Multi-dimensional knapsack problem
+            In this variation, the weight of knapsack item i is given by a D-dimensional vector and the knapsack has a
+            D-dimensional capacity vector. The target is to maximize the sum of the values of the items in the knapsack
+            so that the sum of weights in each dimension does not exceed.
+        Multiple knapsack problem
+            This variation is similar to the Bin Packing Problem. It differs from the Bin Packing Problem in that a
+            subset of items can be selected, whereas, in the Bin Packing Problem, all items have to be packed to certain
+            bins. The concept is that there are multiple knapsacks. This may seem like a trivial change, but it is not
+            equivalent to adding to the capacity of the initial knapsack. This variation is used in many loading and
+            scheduling problems in Operations Research and has a Polynomial-time approximation scheme.
+        Quadratic knapsack problem
+            The quadratic knapsack problem maximizes a quadratic objective function subject to binary and linear
+            capacity constraints. The problem was introduced by Gallo, Hammer, and Simeone in 1980, however the first
+            treatment of the problem dates back to Witzgall in 1975.
+        Subset-sum problem
+            The subset sum problem is a special case of the decision and 0-1 problems where each kind of item, the
+            weight equals the value. In the field of cryptography, the term knapsack problem is often used to refer
+            specifically to the subset sum problem and is commonly known as one of Karp's 21 NP-complete problems.
+            The generalization of subset sum problem is called multiple subset-sum problem, in which multiple bins exist
+            with the same capacity. It has been shown that the generalization does not have an FPTAS.
+        Geometric knapsack problem
+            In the geometric knapsack problem, there is a set of rectangles with different values, and a rectangular
+            knapsack. The goal is to pack the largest possible value into the knapsack.
+
+
+    TODO: Compile all of the used 'items' lists here for reference.
     Example:
         Input = [(65, 20), (35, 8), (245, 60), (195, 55), (65, 40), (99, 10), (275, 85), (155, 25), (120, 30), (75, 75),
                  (320, 65), (40, 10), (200, 95), (100, 50), (220, 40), (150, 70)], 130  # (price, weight), total_weight
         Output = 695    # Max value set: [(155, 25), (320, 65), (220, 40)]
 
-    Variations:
+    Example Variations:
         - Solve the same problem using O(w) space, where w is the initial capacity.
         - Solve the same problem using O(c) space, where c is the number of weights between 0 and w that can be
           achieved. For example, if the weights are 100, 200, 200, 500, and w=853, then c=9, corresponding to the
@@ -27,141 +89,17 @@
         - Solve the divide-the-spoils-fairly problem with the additional constraint that the thieves have the same
           number of items.
 """
-import itertools
-import sys
-import time
 
 
-# APPROACH: Recursive
-#
-# Time Complexity:
-# Space Complexity:
-def knapsack_rec(l, max_w):
-    def _knapsack_rec(l, i, cap, value):
-        if i == len(l) or cap == 0:
-            return value
-        included = _knapsack_rec(l, i+1, cap - l[i].weight, value + l[i].value) if cap >= l[i].weight else 0
-        excluded = _knapsack_rec(l, i+1, cap, value)
-        return max(included, excluded)
-    if l and max_w > 0:
-        return _knapsack_rec(l, 0, max_w, 0)
-
-
-# APPROACH: Powerset (Via Itertools Combinations)
-#
-# Time Complexity: O(2**s), where s is the number of elements in items list.
-# Space Complexity: O(m), where m is the size of the max value set (could be O(1) if max_price_set isn't maintained).
-def knapsack_power_set(items, capacity):
-    if items is not None and capacity is not None and capacity > 0:
-        max_price_set = None
-        max_price = -sys.maxsize
-        for r in range(len(items)):
-            for s in itertools.combinations(items, r):
-                if sum(x.weight for x in s) <= capacity:
-                    price = sum(x.value for x in s)
-                    if price > max_price:
-                        max_price = price
-                        max_price_set = set(s)
-        return max_price, max_price_set
-
-
-# APPROACH: Combinatorics/Iterative
-#
-# Time Complexity: O(2**s), where s is the number of elements in items list.
-# Space Complexity: O(m), where m is the size of the max value set (could be O(1) if max_price_set isn't maintained).
-def knapsack_combinatorics(items, capacity):
-
-    def _gen_reversed_bits(n):
-        while True:
-            yield n & 1
-            n >>= 1
-
-    if items is not None and capacity is not None and capacity > 0:
-        max_price_set = None
-        max_price = -sys.maxsize
-        for i in range(2**len(items)):
-            g = _gen_reversed_bits(i)
-            s = {e for e, b in zip(items, g) if b}
-            if sum(x.weight for x in s) <= capacity:
-                price = sum(x.value for x in s)
-                if price > max_price:
-                    max_price = price
-                    max_price_set = s
-        return max_price, max_price_set
-
-
-# APPROACH: Memoization/Dynamic Programming
-#
-# This approach is just a coded version of the following recurrence:
-#       V[i][w]  =  max(V[i-1][w], V[i-1][w-i.w]+i.v)       if i.w < w
-#                   V[i-1][w]                               otherwise
-#   Where:
-#       V is the Max Value/Price memoization table (0..i rows, 0..w columns, initialized to -1, start/end at [i][w])
-#       i is the size of the items list; each item has a weight i.w and value i.v.
-#       w is the weight capacity.
-#
-# Time and space complexity is O(sw), where s is the size of the items list.
-#
-# Example:
-#   Items Table:
-#              Val Weight
-#            |-----------
-#           0| $60    5oz
-#           1| $50    3oz
-#           2| $70    4oz
-#           3| $30    2oz
-#
-#   Completed Knapsack (V/Max Value/Price) Table:
-#                    CAPACITY
-#               0   1   2   3   4   5
-#            |-----------------------
-#       I   0|  0   0   0   0  -1  60
-#       T   1| -1   0  -1  50  -1  60
-#       E   2| -1  -1  -1  50  -1  70
-#       M   3| -1  -1  -1  -1  -1  80  <-- Starts/ends/returns at [3][5] OR [len(items)][capacity]
-#
-# NOTE: This approach ASSUMES WHOLE NUMBER/INTEGER VALUES for prices and weights!
-# NOTE: This approach DOESN'T maintain the set associated with the max value!
-def knapsack_memo(items, capacity):     # ASSUMES INTEGERS!  Modify with math.ceil() if real nums are wanted!
-
-    def _knapsack_memo(items, i, cap, memo):
-        if i < 0:
-            return 0
-        if memo[i][cap] == -1:
-            without_curr_item = _knapsack_memo(items, i - 1, cap, memo)
-            with_curr_item = 0 if cap < items[i].weight else items[i].value + _knapsack_memo(items, i - 1, cap - items[i].weight, memo)
-            memo[i][cap] = max(without_curr_item, with_curr_item)
-        return memo[i][cap]
-
-    if items is not None and capacity is not None:
-        memo = [[-1] * (capacity + 1) for _ in range(len(items))]   # memo[len(items)][capacity] has max value when done
-        return _knapsack_memo(items, len(items) - 1, capacity, memo)
-
-
-class Item:
-    def __init__(self, value, weight):
-        self.value = value
-        self.weight = weight
-
-    def __repr__(self):
-        return f"(Value: {self.value}, Weight: {self.weight})"
-
-
-items = [Item(65, 20), Item(35, 8), Item(245, 60), Item(195, 55), Item(65, 40), Item(99, 10), Item(275, 85),
-         Item(155, 25), Item(120, 30), Item(75, 75), Item(320, 65), Item(40, 10), Item(200, 95), Item(100, 50),
-         Item(220, 40), Item(150, 70)]
-weight_capacity = 130
-fns = [knapsack_rec,
-       knapsack_power_set,
-       knapsack_combinatorics,
-       knapsack_memo]
-
-print(f"items: {items}\nweight_capacity: {weight_capacity}\n")
-
-for fn in fns:
-    t = time.time()
-    print(f"{fn.__name__}(items, max_weight),", end="")
-    result = fn(items, weight_capacity)
-    print(f" took {time.time() - t} seconds: {result}")
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - What are the possible values for capacity (int, None, negative, etc.)?
+#   - Does the full capacity need to be used (what should happen if can't use total capacity)?
+#   - What should be returned (total, or list of items, what should happen if failure)?
+#   - What are the possible sizes of the list (empty, max size)?
+#   - What are the possible values in the list (int/float/None/negative)?
+#   - Can the list have unique/duplicate values?
+#   - Will the list be sorted?
+#   - Can the list be modified?
 
 

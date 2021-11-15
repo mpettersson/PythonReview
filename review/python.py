@@ -506,6 +506,31 @@ for k, v in dict_var.items():
 print("\n%(name)s age is %(age)d" % dict_var)
 
 
+# DEFAULTDICT
+# A very helpful builtin is defaultdict; it is a dict with a default factory, that is, it handles basic initialization.
+# From the docs:
+#   "The default factory is called without arguments to produce a new value when a key is not present, in __getitem__
+#    only. A defaultdict compares equal to a dict with the same items. All remaining arguments are treated the same as
+#    if they were passed to the dict constructor, including keyword arguments."
+#
+# To use it, first import it:
+from collections import defaultdict
+
+# Then create some dictionaries:
+default_list_dict = defaultdict(list)
+default_int_dict = defaultdict(int)
+
+# NOTE: To get a default value of None, lambda (WITHOUT a variable) is used, for more information on lambda please see
+#       the lambda section below.
+default_none_dict = defaultdict(lambda: None)
+
+# Now, any getting any (non-defined) key value from the dictionary will NOT produce a key error, but will return the
+# types default value (from the type used as a default factory):
+default_int_dict[6] += 1                        # Until this line, there was no key 6 in default_int_dict, now it's = 1.
+default_list_dict['any_key_here'].append(4)     # This works, even though a key named 'any_key_here' wasn't added!
+print(default_none_dict[3])                     # This will print 'None'.
+
+
 ########
 # SETS #
 ########

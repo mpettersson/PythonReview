@@ -1,22 +1,32 @@
 """
     THE 01 KNAPSACK PROBLEM
 
-    "Given a set of items that each have a value and a weight, determine which of those items to select to as to maximize
-     the total value, constrained by the knapsack's capacity."
+    Given a set of items that each have a value and a weight, determine which of those items to select to as to maximize
+    the total value, constrained by the given knapsack's capacity.
 
     NOTE: This variation of the problem is called the 01 knapsack problem because each item can be 'picked' or not
           'picked', and because fractional items are not allowed.
-
-    Write a program for the knapsack problem that selects a subset of items that has a maximum value and satisfies the
-    weight constraint.  All items have integer weights and values.  Return the value of the subset.
 
     Example:
         Input = [(65, 20), (35, 8), (245, 60), (195, 55), (65, 40), (99, 10), (275, 85), (155, 25), (120, 30), (75, 75),
                  (320, 65), (40, 10), (200, 95), (100, 50), (220, 40), (150, 70)], 130  # (price, weight), total_weight
         Output = 695    # Max value set: [(155, 25), (320, 65), (220, 40)]
 """
+import copy
 import itertools
 import time
+
+
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - What are the possible values for capacity (int, None, negative, etc.)?
+#   - Does the full capacity need to be used (what should happen if can't use total capacity)?
+#   - What should be returned (total, or list of items, what should happen if failure)?
+#   - What are the possible sizes of the list (empty, max size)?
+#   - What are the possible values in the list (int/float/None/negative)?
+#   - Can the list have unique/duplicate values?
+#   - Will the list be sorted?
+#   - Can the list be modified?
 
 
 # BRUTE FORCE APPROACH OBSERVATIONS:
@@ -91,14 +101,6 @@ def knapsack_01_bf_via_combinatorics(items, capacity):
 # Starting at the first item, this approach computes then returns the best option (either taking or not taking the item
 # with the recursive result from the next item).
 #
-# The recurrence relation for this approach is:
-#       V[i][w]  =  max(V[i-1][w], V[i-1][w-i.w]+i.v)       if i.w < w
-#                   V[i-1][w]                               otherwise
-#   Where:
-#       V is the Max Value/Price memoization table (0..i rows, 0..w columns, initialized to -1, start/end at [i][w])
-#       i is the size of the items list; each item has a weight i.w and value i.v.
-#       w is the weight capacity.
-#
 # Consider the following four items:
 #     Items:     A   B   C   D
 #     Values:   10  40  30  60
@@ -114,37 +116,36 @@ def knapsack_01_bf_via_combinatorics(items, capacity):
 #              /                  \                  /                  \
 #  (include B)/         (exclude B)\                / (include B)        \ (exclude B)
 #            /                      \              /                      \
-#      val:10, cap:5        val:0, cap:10     val:10, cap:5           val:0, cap:10
+#      val:10, cap:5        val:0, cap:10     val:40, cap:6           val:0, cap:10
 #          /    \               /   \             /   \                   /    \
 #        ...    ...           ...  ...          ...   ...               ...    ...
 #
 # Time Complexity: O(2**n), where n is the number of elements in items list.
-# Space Complexity:
-def knapsack_01_naive_via_rec(l, capacity):
+# Space Complexity: O(2**n), where n is the number of elements in items list.
+def knapsack_01_naive_via_rec(items, capacity):
 
-    def _rec(l, i, rem_cap):
-        if i < 0:
+    def _rec(items, i, capacity):
+        if i < 0 or capacity <= 0:
             return 0, []
-        excluded = _rec(l, i-1, rem_cap)
-        if rem_cap >= l[i].weight:
-            included = _rec(l, i-1, rem_cap - l[i].weight)
-            included = (included[0] + l[i].value, included[1] + [l[i]])
-            return max(included, excluded, key=lambda x: x[0])
+        excluded = _rec(items, i-1, capacity)
+        if capacity >= items[i].weight:
+            included = _rec(items, i-1, capacity - items[i].weight)
+            included = (included[0] + items[i].value, included[1] + [items[i]])
+            return max(excluded, included, key=lambda x: x[0])
         return excluded
 
-    if l and capacity > 0:
-        return _rec(l, len(l)-1, capacity)
-
+    if items and capacity > 0:
+        return _rec(items, len(items)-1, capacity)
 # NOTE: If you only want the value total, then you can exclude the extra boolean matrix logic:
-# def knapsack_01_naive_via_rec(l, capacity):
-#     def _rec(l, i, rem_cap):
+# def knapsack_01_naive_via_rec(items, capacity):
+#     def _rec(items, i, capacity):
 #         if i < 0:
 #             return 0
-#         excluded = _rec(l, i-1, rem_cap)
-#         included = 0 if rem_cap < l[i].weight else (l[i].value + _rec(l, i-1, rem_cap - l[i].weight))
+#         excluded = _rec(items, i-1, capacity)
+#         included = 0 if capacity < items[i].weight else (items[i].value + _rec(items, i-1, capacity-items[i].weight))
 #         return max(included, excluded)
-#     if l and capacity > 0:
-#         return _rec(l, len(l)-1, capacity)
+#     if items and capacity > 0:
+#         return _rec(items, len(items)-1, capacity)
 
 
 # APPROACH: Memoization/Top Down Dynamic Programming
@@ -159,14 +160,16 @@ def knapsack_01_naive_via_rec(l, capacity):
 #
 # Then the completed top down dynamic programming cache, or memoization, table:
 #              0      1      2      3      4     5      6      7      8      9      10    (Capacity)
-#     A  [[    0,     0,  None,     0,     0, None,    10,    10,  None,  None,     10],
+#        [[None,   None,  None,  None,  None, None,  None,  None,  None,  None,   None],  PADDING (for simplified code)
+#     A   [    0,     0,  None,     0,     0, None,    10,    10,  None,  None,     10],
 #     B   [ None,     0,  None,  None,    40, None,  None,    40,  None,  None,     50],
 #     C   [ None,  None,  None,  None,  None, None,  None,    40,  None,  None,     70],
 #     D   [ None,  None,  None,  None,  None, None,  None,  None,  None,  None,    100]]
 #
 # The completed top down dynamic programming boolean table (for tacking the included items):
 #              0      1      2      3      4     5      6      7      8      9      10    (Capacity)
-#     A  [[False, False, False, False, False, False,  True,  True, False, False,  True],
+#        [[False, False, False, False, False, False, False, False, False, False, False],   PADDING (for simplified code)
+#     A   [False, False, False, False, False, False,  True,  True, False, False,  True],
 #     B   [False, False, False, False,  True, False, False,  True, False, False,  True],
 #     C   [False, False, False, False, False, False, False, False, False, False,  True],
 #     D   [False, False, False, False, False, False, False, False, False, False,  True]]
@@ -177,12 +180,12 @@ def knapsack_01_naive_via_rec(l, capacity):
 # Time Complexity: O(n * capacity), where n is the number of the items list.
 def knapsack_01_dp_via_top_down(items, capacity):
 
-    def _rec(l, i, cap, dp, b):
-        if i < 0:
+    def _rec(items, i, cap, dp, b):
+        if i == 0:
             return 0
         if dp[i][cap] is None:
-            excluded = _rec(l, i-1, cap, dp, b)
-            included = 0 if cap < l[i].weight else (l[i].value + _rec(l, i-1, cap-l[i].weight, dp, b))
+            excluded = _rec(items, i-1, cap, dp, b)
+            included = 0 if cap < items[i-1].weight else (items[i-1].value + _rec(items, i-1, cap-items[i-1].weight, dp, b))
             if excluded < included:
                 dp[i][cap] = included
                 b[i][cap] = True
@@ -192,31 +195,31 @@ def knapsack_01_dp_via_top_down(items, capacity):
 
     if items is not None and capacity is not None:
         n = len(items)
-        dp = [[None] * (capacity + 1) for _ in range(len(items))]   # dp[-1][-1] has max value when done
-        b = [[False] * (capacity + 1) for _ in range(len(items))]
-        result_tot = _rec(items, n-1, capacity, dp, b)
-        result_set = []                                             # The next few lines builds the result set from the
-        c = capacity                                                # boolean mat, see the example above for more info.
-        for r in range(n-1, -1, -1):                                # NOTE: The reverse order (to start at b[-1][-1])!!
+        dp = [[None] * (capacity + 1) for _ in range(n+1)]      # dp[-1][-1] has max value when done
+        b = [[False] * (capacity + 1) for _ in range(n+1)]
+        result_tot = _rec(items, n, capacity, dp, b)
+        result_set = []                                         # The next few lines builds the result set from the
+        c = capacity                                            # boolean mat, see the example above for more info.
+        for r in range(n, 0, -1):                               # NOTE: The reverse order (to start at b[-1][-1])!!
             if b[r][c]:
-                result_set.append(items[r])
-                c -= items[r].weight
+                result_set.append(items[r-1])
+                c -= items[r-1].weight
         return result_tot, result_set
-
 # NOTE: If you only want the value total, then you can exclude the extra boolean matrix logic:
 # def knapsack_01_dp_via_top_down(items, capacity):
-#     def _rec(l, i, cap, dp):
-#         if i < 0:
+#     def _rec(items, i, capacity, dp):
+#         if i == 0:
 #             return 0
-#         if dp[i][cap] is None:
-#             excluded = _rec(l, i-1, cap, dp)
-#             included = 0 if cap < l[i].weight else (l[i].value + _rec(l, i-1, cap-l[i].weight, dp))
-#             dp[i][cap] = max(included, excluded)
-#         return dp[i][cap]
+#         if dp[i][capacity] is None:
+#             excluded = _rec(items, i-1, capacity, dp)
+#             included = 0 if capacity < items[i-1].weight else (items[i-1].value +
+#                                                                _rec(items, i-1, capacity-items[i-1].weight, dp))
+#             dp[i][capacity] = max(included, excluded)
+#         return dp[i][capacity]
 #     if items is not None and capacity is not None:
 #         n = len(items)
-#         dp = [[None] * (capacity + 1) for _ in range(len(items))]   # dp[-1][-1] has max value when done
-#         return _rec(items, n-1, capacity, dp)
+#         dp = [[None] * (capacity + 1) for _ in range(n+1)]
+#         return _rec(items, n, capacity, dp)
 
 
 # APPROACH: Tabulation/Bottom Up Dynamic Programming
@@ -272,34 +275,38 @@ def knapsack_01_dp_via_bottom_up(items, capacity):
         n = len(items)
         dp = [[0] * (capacity+1) for _ in range(n+1)]       # dp[-1][-1] has max value when done
         b = [[False] * (capacity+1) for _ in range(n+1)]    # NOTE: Be VERY careful with the counters!
-        for i in range(1, n+1):                             # i=0 is a padding row, i=1 to n are the list items.
-            for w in range(capacity+1):                     # w = a discrete capacity from 0 to total capacity
-                if items[i-1].weight <= w and dp[i-1][w] < items[i-1].value + dp[i-1][w-items[i-1].weight]:
-                    dp[i][w] = items[i-1].value + dp[i-1][w-items[i-1].weight]
-                    b[i][w] = True
+        for r in range(1, n+1):                             # r=0 is a padding row, r=1 to n are the list items.
+            for c in range(capacity+1):                     # c = a discrete capacity from 0 to total capacity
+                if items[r-1].weight <= c and dp[r-1][c] < items[r-1].value + dp[r-1][c-items[r-1].weight]:
+                    dp[r][c] = items[r-1].value + dp[r-1][c-items[r-1].weight]
+                    b[r][c] = True
                 else:
-                    dp[i][w] = dp[i-1][w]
+                    dp[r][c] = dp[r-1][c]
         result_set = []                                     # The next few lines builds the result set from the
         c = capacity                                        # boolean matrix, see the example above for more info.
-        for i in range(n, 0, -1):                           # NOTE: The reverse order (to start at b[-1][-1])!!
-            if b[i][c]:                                     # Only included corresponding items will be True.
-                result_set.append(items[i-1])               # Add this item to the results set.
-                c -= items[i-1].weight                      # Update the weight/capacity for the next iteration.
+        for r in range(n, 0, -1):                           # NOTE: The reverse order (to start at b[-1][-1])!!
+            if b[r][c]:                                     # Only included corresponding items will be True.
+                result_set.append(items[r-1])               # Add this item to the results set.
+                c -= items[r-1].weight                      # Update the weight/capacity for the next iteration.
         return dp[-1][-1], result_set
 
 
 class Item:
-    def __init__(self, value, weight):
+    def __init__(self, value, weight, name=None, units=1):
         self.value = value
         self.weight = weight
+        self.name = name
+        self.units = units
 
     def __repr__(self):
-        return f"(Value: {self.value}, Weight: {self.weight})"
+        return ((f"(Name: {self.name}, " if self.name else "(") +
+                f"Value: {self.value}, Weight: {self.weight}" +
+                (f", Units: {self.units})" if self.units > 1 else ")"))
 
 
 args = [(130, [Item(65, 20), Item(35, 8), Item(245, 60), Item(195, 55), Item(65, 40), Item(99, 10), Item(275, 85),
-         Item(155, 25), Item(120, 30), Item(75, 75), Item(320, 65), Item(40, 10), Item(200, 95), Item(100, 50),
-         Item(220, 40), Item(150, 70)]),
+               Item(155, 25), Item(120, 30), Item(75, 75), Item(320, 65), Item(40, 10), Item(200, 95), Item(100, 50),
+               Item(220, 40), Item(150, 70)]),
         (10, [Item(10, 5), Item(40, 4), Item(30, 6), Item(60, 3)])]
 fns = [knapsack_01_bf_via_itertools,
        knapsack_01_bf_via_combinatorics,
@@ -310,18 +317,16 @@ fns = [knapsack_01_bf_via_itertools,
 for capacity, items in args:
     print(f"\nitems: {items}\ncapacity: {capacity}")
     for fn in fns:
-        print(f"{fn.__name__}(items, capacity): {fn(items, capacity)}")
+        print(f"{fn.__name__}(items, capacity): {fn(copy.copy(items), capacity)}")
     print()
 
-capacity = 390
+capacity = 260
 items = [Item(65, 20), Item(35, 8), Item(245, 60), Item(195, 55), Item(65, 40), Item(99, 10), Item(275, 85),
          Item(155, 25), Item(120, 30), Item(75, 75), Item(320, 65), Item(40, 10), Item(200, 95), Item(100, 50),
          Item(220, 40), Item(150, 70), Item(65, 20), Item(35, 8), Item(245, 60), Item(195, 55), Item(65, 40),
          Item(99, 10), Item(275, 85), Item(155, 25), Item(120, 30), Item(75, 75), Item(320, 65), Item(40, 10),
-         Item(200, 95), Item(100, 50), Item(220, 40), Item(150, 70), Item(65, 20), Item(35, 8), Item(245, 60),
-         Item(195, 55), Item(65, 40), Item(99, 10), Item(275, 85), Item(155, 25), Item(120, 30), Item(75, 75),
-         Item(320, 65), Item(40, 10), Item(200, 95), Item(100, 50), Item(220, 40), Item(150, 70)]
-print(f"\ncapacity: {capacity}\nitems: {items}")
+         Item(200, 95), Item(100, 50), Item(220, 40), Item(150, 70)]
+print(f"\nitems: {items}\ncapacity: {capacity}")
 for fn in reversed(fns):
     t = time.time()
     print(f"{fn.__name__}(items, capacity),", end="")
