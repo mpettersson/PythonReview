@@ -1,23 +1,34 @@
 """
-    FIND K SUMS
+    FIND COMBINATIONS WITH LENGTH K AND SUM T
 
-    Write a function that takes an integer list l, and two integers k, and t. The function returns list of unique lists,
-    each containing k DISTINCT elements from the list, and sum to t.
+    Write a function that takes an integer list l, a subset size k, and a target sum t. The function returns list of
+    unique lists, each containing k DISTINCT elements from the list, with a sum of t.
 
     Example:
         Input = [11, 2, 5, 7, 3], 3, 21
         Output = TODO
 
-    Variations:
-        - Same question, however, the k elements MAY NOT NECESSARILY BE DISTINCT.
-
     References:
         - https://cs.stackexchange.com/questions/2973/generalised-3sum-k-sum-problem
         - https://people.csail.mit.edu/virgi/6.s078/lecture9.pdf
 """
-import bisect
 import itertools
 import time
+
+
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - Verify combinations (not permutations).
+#   - Verify definition of unique.
+#   - What is the possible length of the list?
+#   - What size can the result (sub) lists be?
+#   - What are the possible number values (for both the list and the target)?
+#   - Are there duplicate values in the list?
+#   - Are duplicates allowed in the results lists?
+#   - What order should the results list be in?
+
+
+# NOTE: The approaches (below) are listed in order of SLOWEST TO FASTEST.
 
 
 # APPROACH: (DISTINCT k-sum) Via Naive/Brute Force (Itertools Combinations)
@@ -34,7 +45,7 @@ import time
 #
 # NOTE: You could use recursion to achieve k nested loops, which would be able to sum k items; this would have the same
 #       time complexity (with added stack space complexity).
-def find_k_sums_via_comb(l, k, t):
+def find_combinations_with_len_k_and_sum_t_via_comb(l, k, t):
     if isinstance(l, list) and isinstance(k, int) and 0 <= k and isinstance(t, int):
         result = set()
         for r in itertools.combinations(l, k):
@@ -54,7 +65,7 @@ def find_k_sums_via_comb(l, k, t):
 #
 # Time Complexity: O(n ** (k-1)), where n is the number of elements in the list.
 # Space Complexity: max(O(n), O(k)), where n is the number of elements in the list.
-def find_k_sums_via_pointers(l, k, t):
+def find_combinations_with_len_k_and_sum_t_via_pointers(l, k, t):
 
     def _find_two_sums(l, start, t):
         result = []
@@ -102,7 +113,7 @@ def find_k_sums_via_pointers(l, k, t):
 #
 # Time Complexity: O(n ** (k-1)), where n is the number of elements in the list.
 # Space Complexity: max(O(n), O(k)), where n is the number of elements in the list.
-def find_k_sums_via_hash_set(l, k, t):
+def find_combinations_with_len_k_and_sum_t_via_hash_set(l, k, t):
 
     def _find_two_sums(l, start, t):
         result = []
@@ -146,7 +157,7 @@ def find_k_sums_via_hash_set(l, k, t):
 #
 # Time Complexity: O(n ** (k-1)), where n is the number of elements in the list.
 # Space Complexity: max(O(n), O(k)), where n is the number of elements in the list.
-def find_k_sums_unoptimized(l, k, t):
+def find_combinations_with_len_k_and_sum_t_unoptimized(l, k, t):
 
     def _rec(l, low, high, k, t, a, result):
         if k == 0 and t == 0:                                   # k == 0:  O(1). Don't need to sort.
@@ -183,7 +194,7 @@ def find_k_sums_unoptimized(l, k, t):
 #
 # Time Complexity: O(n ** (k-1)), where n is the number of elements in the list.
 # Space Complexity: max(O(n), O(k)), where n is the number of elements in the list.
-def find_k_sums_optimized(l, k, t):
+def find_combinations_with_len_k_and_sum_t_optimized(l, k, t):
 
     def _rec(l, low, high, k, t, a, result):                        # Early Termination Conditions:
         if (high-low + 1 < k                                            # Fewer than k elements in (sub)list to search.
@@ -218,120 +229,6 @@ def find_k_sums_optimized(l, k, t):
         return result
 
 
-# VARIATION: Same question, however, the k elements MAY NOT NECESSARILY BE DISTINCT.
-
-
-# VARIATION APPROACH: (NOT NECESSARILY DISTINCT k-sum) Via Naive/Brute Force (Itertools Combinations)
-#
-# This approach checks the sum of each possible k element combinations from the list; when k elements are found, with a
-# sum equal to t, the elements are added to the results.  After all combinations have been considered the results are
-# returned.
-#
-# Time Complexity: O(n**k) (as reduced from the formula below), where n is the number of elements in the list.
-# Space Complexity: O(1) (because of itertools use of generators).
-#
-# REMEMBER: The formula (and time complexity), for the number of combinations (of k items) from a set of size n is:
-#               (n+k-1)!/(k!*(n-1)!)
-#
-# NOTE: You could use recursion to achieve k nested loops, which would be able to sum k items; this would have the same
-#       time complexity (with added stack space complexity).
-def find_k_sums_via_comb_indistinct(l, k, t):
-    if isinstance(l, list) and isinstance(k, int) and 0 <= k and isinstance(t, int):
-        result = set()
-        for r in itertools.combinations_with_replacement(l, k):
-            if sum(r) == t:
-                result.add(tuple(sorted(r)))
-        return [list(i) for i in result]
-
-
-# VARIATION APPROACH: (NOT NECESSARILY DISTINCT k-sum) Via Two Pointers Pattern
-#
-# This approach uses a generalized, find k sum, function where k-2 nested calls are followed by a find two sum call.
-# The first step is to sort the list, this required by the two pointers pattern/approach. Then recursively call the
-# generalized find k sum function (2 times) until k is two, at which point, the find two sum is called.  The find two
-# sum function simply uses a high and low pointer that converge until either they pass each other or a pair with the
-# desired sum is found.  When values are returned from a nested function (whether it is find k sum or find two sum), the
-# enumerated value (from the calling function) is appended to the lists in the nested functions results.
-#
-# Time Complexity: O(n ** (k-1)), where n is the number of elements in the list.
-# Space Complexity: max(O(n), O(k)), where n is the number of elements in the list.
-def find_k_sums_via_pointers_indistinct(l, k, t):
-
-    def _find_two_sums(l, t):
-        result = set()
-        lo, hi = 0, len(l) - 1
-        while lo < hi:
-            curr_sum = l[lo] + l[hi]
-            if curr_sum < t:
-                lo += 1
-            elif curr_sum > t:
-                hi -= 1
-            else:
-                result.add((l[lo], l[hi]))
-                lo += 1
-                hi -= 1
-        if t % 2 == 0 and t // 2 in l:                          # Check if t is even and t/2 is in the list, if it is
-            result.add((t // 2, t // 2))                        # add (t/2, t/2) tuple to the results.
-        return result
-
-    def _rec(l, k, t):
-        result = set()
-        n = len(l)
-        if n == 0 or l[0] * k > t or t > l[-1] * k:
-            return result
-        if k == 2:
-            return _find_two_sums(l, t)
-        for i in range(n):
-            for res_l in _rec(l, k-1, t-l[i]):
-                result.add(tuple(sorted([l[i], *res_l])))
-        return result
-
-    if isinstance(l, list) and isinstance(k, int) and 0 <= k and isinstance(t, int):
-        if k == t == 0:
-            return [[]]
-        if k == 1:
-            return [[t]] if t in l else [[]]                    # O(n), (but better than sorting and binary search...)
-        l = sorted(set(l))
-        return [list(ss) for ss in _rec(l, k, t)]
-
-
-# VARIATION APPROACH: (NOT NECESSARILY DISTINCT k-sum) Via Hash Set
-#
-# This approach is very similar to the approach above, the only difference is the find two sum approach/implementation.
-# The find two sum function in the approach uses a hash set for quick (O(n) time) lookups, storing seen values, and
-# checking for the complement (or difference between the desired total and current value) in the set of seen values.
-#
-# Time Complexity: O(n ** (k-1)), where n is the number of elements in the list.
-# Space Complexity: max(O(n), O(k)), where n is the number of elements in the list.
-def find_k_sums_via_hash_set_indistinct(l, k, t):
-
-    def _rec(s, k, t):
-        result = set()
-        if k == 0:
-            return result
-        if k == 2:
-            return _find_two_sums(s, t)
-        for v in s:
-            for res_l in _rec(s, k-1, t-v):
-                result.add(tuple(sorted([v, *res_l])))
-        return result
-
-    def _find_two_sums(s, t):
-        result = set()
-        for v in s:
-            if t - v in s:
-                result.add((t - v, v) if t - v < v else (v, t-v))
-        return result
-
-    if isinstance(l, list) and isinstance(k, int) and 0 <= k and isinstance(t, int):
-        if k == t == 0:                                         # Edge case.
-            return [[]]
-        if k == 1:
-            return [[t]] if t in l else [[]]                    # O(n), (but better than sorting and binary search...)
-        s = set(l)
-        return [list(i) for i in _rec(s, k, t)]
-
-
 args = [([11, 2, 5, 7, 3], 4, 21),
         ([], 0, 0),
         ([11, 7, 8, -2, 2, 1, 4], 2, 6),
@@ -363,14 +260,11 @@ args = [([11, 2, 5, 7, 3], 4, 21),
         ([11, 7, -2, 2, 1, 4], 0, 10),
         ([11, 7, -2, 2, 1, 4], None, 10),
         ([11, 7, -2, 2, 1, 4], 4, None)]
-fns = [find_k_sums_via_comb,
-       find_k_sums_via_pointers,
-       find_k_sums_via_hash_set,
-       find_k_sums_unoptimized,
-       find_k_sums_optimized,
-       find_k_sums_via_comb_indistinct,
-       find_k_sums_via_pointers_indistinct,
-       find_k_sums_via_hash_set_indistinct]
+fns = [find_combinations_with_len_k_and_sum_t_via_comb,
+       find_combinations_with_len_k_and_sum_t_via_pointers,
+       find_combinations_with_len_k_and_sum_t_via_hash_set,
+       find_combinations_with_len_k_and_sum_t_unoptimized,
+       find_combinations_with_len_k_and_sum_t_optimized]
 
 for l, k, t in args:
     for fn in fns:
@@ -591,17 +485,11 @@ long_list = [82597, -9243, 62390, 83030, -97960, -26521, -61011, 83390, -38677, 
              -1119, -2072, -93476, 67981, 40887, -89304, -12235, 41488, 1454, 5355, -34855, -72080, 24514, -58305, 3340,
              34331, 8731, 77451, -64983, -57876, 82874, 62481, -32754, -39902, 22451, -79095, -23904, 78409, -7418,
              77916, 1, -1, 2, -2, 0]
-fns_to_time = [find_k_sums_via_pointers,
-               find_k_sums_via_hash_set,
-               find_k_sums_unoptimized,
-               find_k_sums_optimized,
-               find_k_sums_via_pointers_indistinct,
-               find_k_sums_via_hash_set_indistinct]
 k = 3
 target_sum = 0
-print("long_list:", long_list, "\n")
 
-for fn in fns_to_time:
+print("long_list:", long_list, "\n")
+for fn in reversed(fns):
     t = time.time()
     print(f"{fn.__name__}(long_list, {k}, {target_sum}) took ", end="")
     fn(long_list[:], k, target_sum)

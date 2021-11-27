@@ -1,7 +1,7 @@
 """
-    NUM SUBSETS WITH SUM K
+    NUMBER OF SUBSETS (OR COMBINATIONS) WITH SUM T
 
-    Given a list of integers and a value (k) write a function that returns the number of subsets with sum equal to k.
+    Given a list of integers and a target sum t, write a function that returns the number of subsets with a sum of t.
 
     Example:
         Input = [2, 4, 6, 10], 16
@@ -26,7 +26,7 @@ import time
 #
 # Time Complexity: TODO
 # Space Complexity: TODO
-def num_subsets_with_sum_k_powerset(l, k):
+def num_subsets_with_sum_t_powerset(l, t):
 
     def _power_set(l):
         if l is not None:
@@ -39,11 +39,11 @@ def num_subsets_with_sum_k_powerset(l, k):
                 s.add(h)
             return t + ht
 
-    if l is not None and k is not None:
+    if l is not None and t is not None:
         count = 0
         ps = _power_set(l)
         for s in ps:
-            if sum(s) is k:
+            if sum(s) is t:
                 count += 1
         return count
 
@@ -56,12 +56,12 @@ def num_subsets_with_sum_k_powerset(l, k):
 #
 # Time Complexity: TODO
 # Space Complexity: TODO
-def num_subsets_with_sum_k_itertools(l, k):
-    if l is not None and k is not None:
+def num_subsets_with_sum_t_itertools(l, t):
+    if l is not None and t is not None:
         count = 0
         for r in range(len(l) + 1):
             for s in itertools.combinations(l, r):
-                if sum(s) is k:
+                if sum(s) is t:
                     count += 1
         return count
 
@@ -74,19 +74,19 @@ def num_subsets_with_sum_k_itertools(l, k):
 #
 # Time Complexity: TODO
 # Space Complexity: TODO
-def num_subsets_with_sum_k_rec(l, k):
+def num_subsets_with_sum_t_rec(l, t):
 
-    def _num_subsets_with_sum_k_rec(l, k, i):
-        if k == 0:
+    def _rec(l, t, i):
+        if t == 0:
             return 1
-        if k < 0 or i < 0:
+        if t < 0 or i < 0:
             return 0
-        if k < l[i]:
-            return _num_subsets_with_sum_k_rec(l, k, i - 1)
-        return _num_subsets_with_sum_k_rec(l, k - l[i], i - 1) + _num_subsets_with_sum_k_rec(l, k, i - 1)
+        if t < l[i]:
+            return _rec(l, t, i - 1)
+        return _rec(l, t - l[i], i - 1) + _rec(l, t, i - 1)
 
-    if l is not None and k is not None:
-        return _num_subsets_with_sum_k_rec(l, k, len(l) - 1)
+    if l is not None and t is not None:
+        return _rec(l, t, len(l) - 1)
 
 
 # APPROACH: Top Down Dynamic Programming
@@ -95,52 +95,52 @@ def num_subsets_with_sum_k_rec(l, k):
 #
 # TODO: DESCRIPTION
 #
-# Time Complexity: O(n * k), where n is the number of items in the list.
+# Time Complexity: O(n * t), where n is the number of items in the list.
 # Space Complexity: TODO
-def num_subsets_with_sum_k_memo(l, k):
+def num_subsets_with_sum_t_top_down(l, t):
 
-    def _num_subsets_with_sum_k_memo(l, k, i, memo):
-        key = str(k) + ":" + str(i)
-        if k == 0:
+    def _rec(l, t, i, dp):
+        key = str(t) + ":" + str(i)
+        if t == 0:
             return 1
-        if k < 0 or i < 0:
+        if t < 0 or i < 0:
             return 0
-        if key in memo:
-            return memo[key]
-        if k < l[i]:
-            memo[key] = _num_subsets_with_sum_k_memo(l, k, i - 1, memo)
-            return memo[key]
-        memo[key] = _num_subsets_with_sum_k_memo(l, k - l[i], i-1, memo) + _num_subsets_with_sum_k_memo(l, k, i-1, memo)
-        return memo[key]
+        if key in dp:
+            return dp[key]
+        if t < l[i]:
+            dp[key] = _rec(l, t, i - 1, dp)
+            return dp[key]
+        dp[key] = _rec(l, t - l[i], i-1, dp) + _rec(l, t, i-1, dp)
+        return dp[key]
 
-    if l is not None and k is not None:
-        memo = {}
-        return _num_subsets_with_sum_k_memo(l, k, len(l) - 1, memo)
+    if l is not None and t is not None:
+        dp = {}
+        return _rec(l, t, len(l) - 1, dp)
 
 
 args = [([2, 4, 6, 10], 16),
         ([10, 6, 4, 2], 16),
         ([2, 4, 6, 10], 0),
         ([1, 2, 4, 6, 8, 10, 12, 16, 22, 25, 99], 30)]
-fns = [num_subsets_with_sum_k_itertools,
-       num_subsets_with_sum_k_powerset,
-       num_subsets_with_sum_k_rec,
-       num_subsets_with_sum_k_memo]
+fns = [num_subsets_with_sum_t_itertools,
+       num_subsets_with_sum_t_powerset,
+       num_subsets_with_sum_t_rec,
+       num_subsets_with_sum_t_top_down]
 
-for (l, k) in args:
+for (l, t) in args:
+    print(f"l: {l}\nt: {t}")
     for fn in fns:
-        print(f"{fn.__name__}({l}, {k}):", fn(l[:], k))
+        print(f"{fn.__name__}(l, t):", fn(l[:], t))
     print()
 
 
 l = list(range(1, 18))
-k = 42
-
-print(f"l: {l}\nk: {k}")
+t = 42
+print(f"l: {l}\nt: {t}")
 for fn in fns:
-    t = time.time()
-    print(f"{fn.__name__}(s,k)", end="")
-    fn(l[:], k)
-    print(f" took {time.time() - t} seconds")
+    start = time.time()
+    print(f"{fn.__name__}(s,t)", end="")
+    fn(l[:], t)
+    print(f" took {time.time() - start} seconds")
 
 

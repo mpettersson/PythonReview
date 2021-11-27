@@ -23,6 +23,45 @@
         Updating Most Recently Used:  Move node to front of linked list.  (Dictionary doesn't need to be updated)
         Eviction:  Remove tail of linked list.  Get key from linked list and remove key from dictionary.
 """
+from collections import OrderedDict
+
+
+# TODO: ADD SOLUTIONS FROM https://leetcode.com/problems/lru-cache/solution/
+class LRUCache(OrderedDict):
+    def __init__(self, capacity):
+        """
+        :type capacity: int
+        """
+        super().__init__()
+        self.capacity = capacity
+
+    def get(self, key):
+        """
+        :type key: int
+        :rtype: int
+        """
+        if key not in self:
+            return - 1
+
+        self.move_to_end(key)
+        return self[key]
+
+    def put(self, key, value):
+        """
+        :type key: int
+        :type value: int
+        :rtype: void
+        """
+        if key in self:
+            self.move_to_end(key)
+        self[key] = value
+        if len(self) > self.capacity:
+            self.popitem(last=False)
+
+# Your LRUCache object will be instantiated and called as such:
+# obj = LRUCache(capacity)
+# param_1 = obj.get(key)
+# obj.put(key,value)
 
 
 class LinkedListNode:
@@ -33,7 +72,7 @@ class LinkedListNode:
         self.prev = None
 
 
-class LRUCache:
+class LRUCacheViaLinkedList:
     def __init__(self, max_size):
         self._max_size = max_size
         self._map = {}
@@ -107,7 +146,7 @@ class LRUCache:
         return str(result)
 
 
-least_recently_used_cache = LRUCache(4)
+least_recently_used_cache = LRUCacheViaLinkedList(4)
 print("least_recently_used_cache:", least_recently_used_cache, "\n")
 print("least_recently_used_cache.set_key_value(0, \"Zero\")"); least_recently_used_cache.set_key_value(0, "Zero")
 print("least_recently_used_cache.set_key_value(1, \"One\")"); least_recently_used_cache.set_key_value(1, "One")

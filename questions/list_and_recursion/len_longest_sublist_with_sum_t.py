@@ -1,5 +1,5 @@
 """
-    LEN LONGEST SUBLIST WITH SUM
+    LEN LONGEST SUBLIST WITH SUM T
 
     Write a function, which takes a list and a target value t, and returns the length of the longest sublist with sum t.
 
@@ -8,7 +8,7 @@
         Output = 2
 
     Variations:
-        - SEE: find_sublists_with_sum.py and num_sublists_with_sum.py
+        - SEE: find_sublists_with_sum_t.py and num_sublists_with_sum_t.py
 """
 
 
@@ -29,7 +29,7 @@
 #
 # Time Complexity: O(n**3), where n is the length of the list.
 # Space Complexity: O(1).
-def len_longest_sublist_with_sum_via_naive_bf(l, t=0):
+def len_longest_sublist_with_sum_t_naive_bf(l, t=0):
     if l is not None:
         result = 0
         for i in range(len(l)):
@@ -50,7 +50,7 @@ def len_longest_sublist_with_sum_via_naive_bf(l, t=0):
 #
 # Time Complexity: O(n**2), where n is the length of the list.
 # Space Complexity: O(1).
-def len_longest_sublist_with_sum_via_bf(l, t=0):
+def len_longest_sublist_with_sum_t_bf(l, t=0):
     if l is not None:
         result = 0
         for i in range(len(l)):
@@ -80,7 +80,7 @@ def len_longest_sublist_with_sum_via_bf(l, t=0):
 #
 # Time Complexity: O(n), where n is the length of the list.
 # Space Complexity: O(n), where n is the length of the list.
-def len_longest_sublist_with_sum_via_dict(l, t=0):
+def len_longest_sublist_with_sum_t(l, t=0):
     d = {}
     total = 0
     max_len = 0
@@ -100,6 +100,7 @@ def len_longest_sublist_with_sum_via_dict(l, t=0):
 lists = [[1, 2, 1, 3],
          [0, 0, 0, 0, 0, 0, 0],
          [0, 1, 2, 1, 3],
+         [2, -2, 2, -2, 2, -2],
          [3, -1, 1],
          [0, 3, -1, 1, 0],
          [1, 2, 1, 0, 3],
@@ -112,15 +113,15 @@ lists = [[1, 2, 1, 3],
          [1, 2, -5, 1, 2, -1],
          [1, 2, -5, 1, 2, 0, 0, -1]]
 t_vals = [0, 3, -3]
-fns = [len_longest_sublist_with_sum_via_naive_bf,
-       len_longest_sublist_with_sum_via_bf,
-       len_longest_sublist_with_sum_via_dict]
+fns = [len_longest_sublist_with_sum_t_naive_bf,
+       len_longest_sublist_with_sum_t_bf,
+       len_longest_sublist_with_sum_t]
 
 for l in lists:
     for t in t_vals:
-        print(f"l: {l}")
+        print(f"l: {l}\tt: {t}")
         for fn in fns:
-            print(f"{fn.__name__}(l, {t}): {fn(l[:], t)}")
+            print(f"{fn.__name__}(l, t): {fn(l[:], t)}")
         print()
 
 

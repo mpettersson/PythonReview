@@ -27,61 +27,6 @@
 """
 
 
-# Partial Match Table (AKA Failure Function)
-#
-# This function builds the lookup table, which is used to 'shift' the pattern string when the search function is
-# comparing characters.  The pattern string either shifted all the way back to its beginning (there were no re-usable
-# matches) or to the index where a partial match occurred (and would be maintained without needing re-compare pattern
-# and text).
-#
-# NOTE: The prefix length lookup table/partial match table sets the value at index 0 to -1; this (flag) value is used in
-#       the search function to indicate that there is no match (to go to the next character of the text and to restart
-#       at the beginning of the pattern string).
-#
-# Consider the following examples:
-#
-#   Example 1: pattern = "abcdefg"
-#
-#                                 Indices:   0, 1, 2, 3, 4, 5, 6, 7
-#       Partial Match/Prefix Length Table: [-1, 0, 0, 0, 0, 0, 0, 0]
-#                 Corresponding Character:      a  b  c  d  e  f  g
-#
-#       In this example, there are no matching characters, or prefix matches.  Thus, the lookup table consists of 0s,
-#       and the pattern will always restart/shift back to its beginning.
-#
-#   Example 2: pattern = "abcxxxabcy"
-#
-#                                 Indices:   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-#       Partial Match/Prefix Length Table: [-1, 0, 0, 0, 0, 0, 0, 1, 2, 3,  0]
-#                 Corresponding Character:      a  b  c  x  x  x  a  b  c   y
-#
-#       In this example, there are both matching/duplicate characters and a repeated prefix.  Therefore, if a mismatch
-#       were to occur during the search (when comparing the characters of the pattern to the text); the pattern string
-#       may start over (i.e., the index of the pattern string was between 1 and 6, or at 10) OR it may simply shift
-#       to the next possible comparison (i.e., if the index of the pattern string being compared with the text was 9, or
-#       'c', then the pattern string would 'shift' to index 3, or to the first occurrence of 'c').
-#
-# Time Complexity: O(n), where n is the length of the pattern string.
-# Space Complexity: O(n), where n is the length of the pattern string.
-def compute_partial_match_table(pattern):
-    if isinstance(pattern, str):
-        pattern_len = len(pattern)
-        partial_match_table = [-1] + [0] * pattern_len          # Index 0 (-1) is a flag.  All others are SHIFT amounts.
-        prefix_len = 0
-        i = 1
-        while i < pattern_len:
-            if pattern[prefix_len] == pattern[i]:
-                prefix_len += 1
-                i += 1                                          # NOTE: i is incremented here.
-                partial_match_table[i] = prefix_len
-            elif prefix_len > 0:                                # NOTE: i IS NOT incremented here.
-                prefix_len = partial_match_table[prefix_len]    # Doesn't necessarily restart, maintains longest match
-            else:                                               # (i.e., if repeated subpattern was seen in pattern).
-                i += 1                                          # NOTE: i is incremented here.
-                partial_match_table[i] = 0
-        return partial_match_table
-
-
 # Knuth Morris Pratt Search
 #
 # REMEMBER: The key to this algorithm is the lookup table/partial match table.  You only need a pointer in the text (t)
@@ -89,9 +34,60 @@ def compute_partial_match_table(pattern):
 #           only reset/rolled back when either a full match has been found or a mis-match has occurred (in which case it
 #           uses itself to only rollback as far as necessary).
 #
-# Time Complexity: O(n), where n is the length of the pattern string.
+# Time Complexity: O(n+m), where n and m are the lengths of the text and pattern strings.
 # Space Complexity: O(n), where n is the length of the pattern string.
 def knuth_morris_pratt_search(text, pattern):
+
+    # Partial Match Table (AKA Failure Function)
+    #
+    # This function builds the lookup table, which is used to 'shift' the pattern string when the search function is
+    # comparing characters.  The pattern string either shifted all the way back to its beginning (there were no
+    # re-usable matches) or to the index where a partial match occurred (and would be maintained without needing
+    # re-compare pattern and text).
+    #
+    # NOTE: The prefix length lookup table/partial match table sets the value at index 0 to -1; this (flag) value is
+    #       used in the search function to indicate that there is no match (to go to the next character of the text and
+    #       to restart at the beginning of the pattern string).
+    #
+    # Example 1: pattern = "abcdefg"
+    #                                     Indices:   0, 1, 2, 3, 4, 5, 6, 7
+    #           Partial Match/Prefix Length Table: [-1, 0, 0, 0, 0, 0, 0, 0]
+    #                     Corresponding Character:      a  b  c  d  e  f  g
+    #
+    #   In this example, there are no matching characters, or prefix matches.  Thus, the lookup table consists of 0s,
+    #   and the pattern will always restart/shift back to its beginning.
+    #
+    # Example 2: pattern = "abcxxxabcy"
+    #                                     Indices:   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+    #           Partial Match/Prefix Length Table: [-1, 0, 0, 0, 0, 0, 0, 1, 2, 3,  0]
+    #                     Corresponding Character:      a  b  c  x  x  x  a  b  c   y
+    #
+    #   In this example, there are both matching/duplicate characters and a repeated prefix.  Therefore, if a mismatch
+    #   were to occur during the search (when comparing the characters of the pattern to the text); the pattern string
+    #   may start over (i.e., the index of the pattern string was between 1 and 6, or at 10) OR it may simply shift
+    #   to the next possible comparison (i.e., if the index of the pattern string being compared with the text was 9, or
+    #   'c', then the pattern string would 'shift' to index 3, or to the first occurrence of 'c').
+    #
+    # Time Complexity: O(m), where n is the length of the pattern string.
+    # Space Complexity: O(m), where n is the length of the pattern string.
+    def compute_partial_match_table(pattern):
+        if isinstance(pattern, str):
+            pattern_len = len(pattern)
+            partial_match_table = [-1] + [0] * pattern_len  # Index 0 (-1) is a flag.  All others are SHIFT amounts.
+            prefix_len = 0
+            i = 1
+            while i < pattern_len:
+                if pattern[prefix_len] == pattern[i]:
+                    prefix_len += 1
+                    i += 1                                  # NOTE: i is incremented here.
+                    partial_match_table[i] = prefix_len
+                elif prefix_len > 0:                        # NOTE: i IS NOT incremented here.
+                    prefix_len = partial_match_table[prefix_len]    # Doesn't necessarily restart, maintains longest
+                else:                                               # match (if repeated subpattern was seen in pattern)
+                    i += 1                                  # NOTE: i is incremented here.
+                    partial_match_table[i] = 0
+            return partial_match_table
+
     if isinstance(text, str) and isinstance(pattern, str):
         t = 0                               # Index (position) of the current character in the text string.
         p = 0                               # Index (position) of the current character in the pattern string.
@@ -111,7 +107,7 @@ def knuth_morris_pratt_search(text, pattern):
                 if p < 0:                   # I.e., if p == -1 (the 0th index of the lookup table).
                     t += 1
                     p += 1
-        return result
+        return result, lookup_table
 
 
 args = [("---abcxxxab-----------",
@@ -124,9 +120,9 @@ args = [("---abcxxxab-----------",
          ["non", " ", "a", "e", "Excepteur"])]
 
 for text, patterns in args:
-    print(f"\ntext: {text!r}\n")
     for pattern in patterns:
-        print(f"compute_partial_match_table({pattern!r}): {compute_partial_match_table(pattern)}")
-        print(f"knuth_morris_pratt_search(text, {pattern!r}): {knuth_morris_pratt_search(text, pattern)}\n")
+        print(f"\n\ntext: {text!r}\npattern: {pattern!r}")
+        result = knuth_morris_pratt_search(text, pattern)
+        print(f"knuth_morris_pratt_search(text, pattern): {result[0]} (with lookup table: {result[1]})")
 
 
