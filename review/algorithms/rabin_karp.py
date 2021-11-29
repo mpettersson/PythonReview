@@ -1,19 +1,20 @@
 """
     RABIN KARP
 
-    Average Runtime:    O(n + m)
-    Worst Runtime:      O(n * m)    (when each window has a spurious, or false, match)
-    Best Runtime:       O(n + m)
-    Space Complexity:   O(1)
-    Alg Paradigm:       String Search
-
     The Rabin–Karp algorithm or Karp–Rabin algorithm is a string searching algorithm created by Richard M. Karp and
     Michael O. Rabin (1987) that uses hashing to find an exact match of a pattern string in a text. It uses a rolling
     hash (window) to quickly filter out positions of the text that cannot match the pattern, and then checks for a match
     at the remaining positions. Generalizations of the same idea can be used to find more than one match of a single
     pattern, or to find matches for more than one pattern.
 
-    SEE: wikipedia.org/wiki/Rabin–Karp_algorithm
+    Average Runtime:    O(n + m)
+    Worst Runtime:      O(n * m)    (when each window has a spurious, or false, match)
+    Best Runtime:       O(n + m)
+    Space Complexity:   O(1)
+    Alg Paradigm:       String Search
+
+    References:
+        - wikipedia.org/wiki/Rabin–Karp_algorithm
 """
 
 # d is the number of characters in the input alphabet

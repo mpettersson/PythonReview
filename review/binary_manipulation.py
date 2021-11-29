@@ -17,6 +17,17 @@ def logical_right_shift(num, i, num_bits=32):
     return (num % 0x100000000) >> i
 
 
+# Don't use this function, use the next one, this is a naive way...
+def is_power_two_naive(n):
+    if n == 0:
+        return False
+    while n != 1:
+        if n % 2 != 0:
+            return False
+        n //= 2
+    return True
+
+
 def is_power_two(n):
     if n == 0:
         return False
