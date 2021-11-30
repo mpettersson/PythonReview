@@ -1,9 +1,9 @@
 r"""
-    HAS PATH WITH SUM K (EPI 10.6: FIND A ROOT TO LEAF PATH WITH SPECIFIED SUM)
+    HAS PATH WITH SUM T (EPI 10.6: FIND A ROOT TO LEAF PATH WITH SPECIFIED SUM)
 
     Given the root of a binary tree, where each node's value is a number (whole or decimal, positive or negative) and
-    a number k, write a function that returns True if a root to leaf path (with downward movement only) has the sum k,
-    False otherwise.
+    a target sum t, write a function that returns True if a root to leaf path (with downward movement only) has the sum
+    t, False otherwise.
 
     Consider the following binary tree:
 
@@ -18,54 +18,30 @@ r"""
     Example:
                 tree = Node(10, Node(5, Node(3, Node(4), Node(-2)), Node(2, None, Node(-1))),
                                 Node(-3, None, Node(7, None, Node(11))))
-        Input = tree, 7
-        Output = 4
-
-    Variations:
-        - Same question, only, return all paths that have the sum k.  EX: in=16 out=[[10, 5, 3, -2], [10, 5, 2, -1]]
+        Input = tree, 16
+        Output = True
 """
 
 
-# Recursive Approach:  Recurse from root, adding node value as a current sum until a leaf is reached, then return True
-# if the the current sum is equal to k.
-# # Time Complexity: O(n), where n is the number of nodes in the tree.
-# # Space Complexity: O(h), where h is the height of the tree.
-def has_path_with_sum_k(root, k):
+# APPROACH: Via Recursion
+#
+# Recurse from root, adding node value as a current sum until a leaf is reached, then return True if the the current sum
+# is equal to T.
+#
+# Time Complexity: O(n), where n is the number of nodes in the tree.
+# Space Complexity: O(h), where h is the height of the tree.
+def has_path_with_sum_t(root, t):
 
-    def _has_path_with_sum_k(root, k, curr_sum):
+    def _rec(root, t, curr_sum):
         if root:
             curr_sum += root.value
-            if root.left is None and root.right is None and curr_sum is k:
+            if root.left is None and root.right is None and curr_sum is t:
                 return True
-            return _has_path_with_sum_k(root.left, k, curr_sum) or _has_path_with_sum_k(root.right, k, curr_sum)
+            return _rec(root.left, t, curr_sum) or _rec(root.right, t, curr_sum)
         return False
 
-    if root and k is not None:
-        return _has_path_with_sum_k(root, k, 0)
-
-
-# VARIATION: Same question, only, return all paths that have the sum k.
-
-
-# Recursive Approach:  Recurse from root, appending nodes to the path, adding the nodes to result if at a leaf and the
-# values of the nodes in the path is k, then popping from the end of the path.
-# Time Complexity: O(n), where n is the number of nodes in the tree.
-# Space Complexity: O(n), where n is the number of nodes in the tree.
-def get_paths_with_sum_k(root, k):
-
-    def _get_paths_with_sum_k(root, k, path, result):
-        if root:
-            path.append(root)
-            if root.left is None and root.right is None and sum([n.value for n in path]) is k:
-                result.append(list(path))
-            _get_paths_with_sum_k(root.left, k, path, result)
-            _get_paths_with_sum_k(root.right, k, path, result)
-            path.pop()
-
-    if root and k is not None:
-        result = []
-        _get_paths_with_sum_k(root, k, [], result)
-        return result
+    if root and t is not None:
+        return _rec(root, t, 0)
 
 
 class Node:
@@ -115,16 +91,16 @@ def display(node):
 
 
 tree = Node(10, Node(5, Node(3, Node(4), Node(-2)), Node(2, None, Node(-1))), Node(-3, None, Node(7, None, Node(11))))
-args = [-6, 16, 22, 23, 24, 25, None]
-fns = [has_path_with_sum_k,
-       get_paths_with_sum_k]    # Variation
+t_vals = [-6, 16, 22, 23, 24, 25, None]
+fns = [has_path_with_sum_t]
 
-print("display(tree)")
+print("\ndisplay(tree)")
 display(tree)
 print()
-for fn in fns:
-    for k in args:
-        print(f"{fn.__name__}(tree, {k}): {fn(tree, k)}")
-    print()
+for t in t_vals:
+    for fn in fns:
+        print(f"{fn.__name__}(tree, {t}): {fn(tree, t)}")
+    if len(fns) > 1:
+        print()
 
 

@@ -10,14 +10,19 @@
     Single Source Shortest Path Algorithm (SSSP); finds the shortest/minimum weight path from ONE source node, to EVERY
     other node in a weighted directed graph.  Good for sparse graphs.
 
-    Big O:
-        - O(E log(V)) Average Time
-        - O(V + E) Space Complexity.
+    Average Runtime:    O(E log(V))
+    Worst Runtime:      O() TODO
+    Best Runtime:       O() TODO
+    Space Complexity:   O(V + E)
+    Alg Paradigm:       Greedy Minimum Spanning Tree
 
     Graph Properties:
         - Graph must be directed.
         - Graph must be weighted with POSITIVE values only.
         - Graph CAN have cycles.
+
+    References:
+        -
 """
 import heapq
 

@@ -19,12 +19,18 @@
 """
 
 
-# Naive Approach: Build a graph from the words in the dictionary set, where each word is a vertex and edges exists only
-# between vertices that are the same length and have a single char difference.  Time complexity is O(l * n ** 2) to
-# build the graph and O(min(n, l) + n ** 2) for DFS, where l is the length of the longest word, and n is the number of
-# words in the dictionary set.  Since O(l * n ** 2) is greater than O(min(n, l) + n ** 2), O(l * n ** 2) is the time
-# complexity.  Space complexity for the graph is O(n * n ** 2) at worst, or O(n ** 3), where n is the number of strings
-# in the dictionary set; this is larger than O(n), or, the queue space used by BFS.
+# APPROACH: Naive Via Graph & BFS
+#
+# Build a graph from the words in the dictionary set, where each word is a vertex and edges exists only between vertices
+# that are the same length and have a single char difference.
+#
+# Time Complexity: O(l * (n ** 2)), where n is the number of words and l is the length of the longest word.
+# Space Complexity: O(n * (n ** 2)) at worst, or O(n ** 3), where n is the number of strings in the dictionary set;
+#                   this is larger than O(n), or, the queue space used by BFS.
+#
+# NOTE: The time complexity to build the graph is O(l * (n ** 2)), where the time complexity to execute a DFS is
+#       O(min(n, l) + (n**2)), where l is the length of the longest word, and n is the number of words in the dict set.
+#       Therefore O(l * (n ** 2)) is the time complexity; since O(l * (n ** 2)) is greater than O(min(n, l) + (n**2)).
 def num_steps_to_transform_string_naive(dict_set, s, t):
 
     def _is_one_away(s, t):
@@ -67,19 +73,23 @@ def num_steps_to_transform_string_naive(dict_set, s, t):
         return _bfs(adj_list, s, t)
 
 
-# Optimal Approach:  We don't actually have to build a graph; we can account for 'edges' by checking if any described
-# transformation of the current 'vertex' is in the dictionary set.  Furthermore, by using the provided dictionary set
-# to indicate search status, we don't need an additional visited list.  Time complexity, in the worst case, is
-# O(n + n ** 2), where the first n represent the vertices, and the n ** 2 is the max number of edges, and the size of n
+# APPROACH: Optimal Via BFS (Only--No Graph)
+#
+# We don't actually have to build a graph; we can account for 'edges' by checking if any described transformation of the
+# current 'vertex'/word is in the dictionary set.  Furthermore, by using the provided dictionary set to indicate search
+# status (if visited), we don't need an additional "visited" list.
+#
+# Time complexity, in the worst case, is O(n + n ** 2), where the first n represent the vertices, and the n**2 is the
+# max number of edges, and the size of n
 # is the number of words in dictionary set.  If the max length of the words in the dictionary set is l, then the time
 # complexity is O(n + n * l), or O(n * l), where n is the number of words and l is size of the longest string, in the
-# dictionary set.  Space complexity is O(n), where n represents the number of vertices and is the number of strings in
-# the dictionary set.
+# dictionary set.
+# Space Complexity: O(n), where n represents the number of vertices (or strings in the dictionary set).
 def num_steps_to_transform_string(dict_set, s, t):
     if dict_set is not None and s is not None and t is not None and s in dict_set and t in dict_set:
         dict_set.remove(s)                                  # Use dict_set as the visited set.
         q = [(s, 0)]
-        while len(q) > 0:
+        while q:
             s, d = q.pop(0)
             if s == t:
                 return d
@@ -92,13 +102,18 @@ def num_steps_to_transform_string(dict_set, s, t):
 
 
 dict_set = {'bat', 'cot', 'dog', 'dag', 'dot', 'cat', 'mat', 'hat', 'bag', 'hag', 'zip', 'zap'}
-args = [('cat', 'dog'), ('cat', 'cat'), ('cot', 'dot'), ('zip', 'zap'), ('cat', 'zap'), ('cat', 'nob')]
-fns = [num_steps_to_transform_string_naive, num_steps_to_transform_string]
+args = [('cat', 'dog'),
+        ('cat', 'cat'),
+        ('cot', 'dot'),
+        ('zip', 'zap'),
+        ('cat', 'zap'),
+        ('cat', 'nob')]
+fns = [num_steps_to_transform_string_naive,
+       num_steps_to_transform_string]
 
-print(f"dict_set: {dict_set}\n")
-
-for fn in fns:
-    for s, t in args:
+print(f"\ndict_set: {dict_set}\n")
+for s, t in args:
+    for fn in fns:
         print(f"{fn.__name__}(dict_set, {s!r}, {t!r}): {fn(set(dict_set), s, t)}")
     print()
 
