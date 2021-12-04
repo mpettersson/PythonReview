@@ -26,7 +26,7 @@ r"""
 
 
 # Questions you should ask the interviewer (if not explicitly stated):
-#   - What time/space complexity are you looking for?
+#   - What time/space complexity are you looking for (does implicit stack space count)?
 #   - Clarify the BST definition (there are several variations)?
 #   - What data types will the tree contain (if, for example strings, then how would the be compared)?
 
@@ -44,24 +44,22 @@ r"""
 # Space Complexity: O(h) where h is the height of the tree (or, O(log(n)) where n is the number of nodes in the tree).
 def is_bst(root):
 
-    def _is_bst(n, max_val=None, min_val=None):
+    def _rec(n, _max=None, _min=None):
         if n is None:
             return True
-        if max_val and n.value > max_val:
+        if _max is not None and n.value > _max:
             return False
-        if min_val and n.value <= min_val:
+        if _min is not None and n.value <= _min:
             return False
-        l_res = _is_bst(n.left, n.value, min_val)
-        r_res = _is_bst(n.right, max_val, n.value)
-        return l_res and r_res
+        return _rec(n.left, n.value, _min) and _rec(n.right, _max, n.value)
 
     if root:
-        return _is_bst(root)
+        return _rec(root)
 
 
-# APPROACH: Optimized & Minimized Recursive Max/Min
+# APPROACH: Minimized Recursive Max/Min
 #
-# This is the same approach as above, however, it has been very slightly optimized and minimized...
+# This is the same approach as above, however, it has been very slightly minimized...
 #
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(h) where h is the height of the tree (or, O(log(n)) where n is the number of nodes in the tree).

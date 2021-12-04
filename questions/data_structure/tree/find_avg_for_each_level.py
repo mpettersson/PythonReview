@@ -20,10 +20,24 @@ r"""
         Input = Node(4, Node(7, Node(10), Node(2, right=Node(6, left=Node(2)))), Node(9, right=Node(6)))    # tree above
         Output = [4.0, 8.0, 6.0, 6.0, 2.0]
 """
+from collections import deque
 
 
-# List of Depths Approach: Time and space complexity is O(n) where n is the number of nodes in the tree.
+# APPROACH: DFS & List of Depths
+#
+#
+# Time Complexity: O(n) where n is the number of nodes in the tree.
+# Space Complexity: O(n) where n is the number of nodes in the tree.
 def avg_for_each_level(root):
+
+    def get_values_by_depth(n, vals, depth=0):
+        if n:
+            if depth not in vals.keys():
+                vals[depth] = []
+            vals[depth].append(n.value)
+            get_values_by_depth(n.left, vals, depth + 1)
+            get_values_by_depth(n.right, vals, depth + 1)
+
     depth_values_dict = {}
     res = []
     get_values_by_depth(root, depth_values_dict)
@@ -33,13 +47,20 @@ def avg_for_each_level(root):
     return res
 
 
-def get_values_by_depth(n, vals, depth=0):
-    if n:
-        if depth not in vals.keys():
-            vals[depth] = []
-        vals[depth].append(n.value)
-        get_values_by_depth(n.left, vals, depth + 1)
-        get_values_by_depth(n.right, vals, depth + 1)
+def averageOfLevels(root):
+    vals = []
+    q = deque()
+    q.append((0, root))
+    while q:
+        i, n = q.popleft()
+        if len(vals) < i+1:
+            vals.append([])
+        vals[i].append(n.val)
+        if n.left:
+            q.append((i+1, n.left))
+        if n.right:
+            q.append((i+1, n.right))
+    return [sum(vals[i])/len(vals[i]) for i in range(len(vals))]
 
 
 class Node:
