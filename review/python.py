@@ -18,6 +18,7 @@ import random
 
 
 # Single line comment
+from typing import List, Optional
 
 ''' 
     Multi line comment
@@ -1319,6 +1320,9 @@ flattened_list = functools.reduce(lambda i, j: i + j, list_of_list, [])
 flattened_list = list(itertools.chain(*list_of_list))
 flattened_list = sum(list_of_list, [])
 
+# Assigning a lambda that flattens a list of lists (not a good practice; just use a def...):
+flatten = lambda y: [x for a in y for x in flatten(a)] if type(y) is list else [y]
+
 # Flatten two lists (all of one list then all of second):
 f = [y for x in [int_list, chr_list] for y in x]
 f = [*int_list, *chr_list]
@@ -1862,6 +1866,31 @@ john = Employee()  # Create an empty employee record
 john.name = 'John Doe'  # Fill the fields of the record
 john.dept = 'computer lab'
 john.salary = 1000
+
+
+##################
+# TYPING # TYPES #
+##################
+
+# TODO: Add description/info/etc....
+
+# How to use typing in variable assignments:
+my_var_with_typing: int = annotated_fn_w_defaults()
+
+
+class TypingExamples:
+
+    # TODO: Comment on, and rename this.
+    def levelOrder(self, root: 'Node') -> List[List[int]]:
+        pass
+
+    # TODO: Comment on, and rename this.
+    def levelOrder(self, root: Optional[Shape]) -> List[List[int]]:
+        pass
+
+    def method_with_shape_object_argument(self, a_shape_object: 'Shape') -> List[int]:
+        # This would need to return a list of ints...
+        pass
 
 
 #################################

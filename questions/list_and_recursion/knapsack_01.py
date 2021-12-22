@@ -11,6 +11,12 @@
         Input = [(65, 20), (35, 8), (245, 60), (195, 55), (65, 40), (99, 10), (275, 85), (155, 25), (120, 30), (75, 75),
                  (320, 65), (40, 10), (200, 95), (100, 50), (220, 40), (150, 70)], 130  # (price, weight), total_weight
         Output = 695    # Max value set: [(155, 25), (320, 65), (220, 40)]
+
+    Applications:
+        - TODO
+
+    References:
+        - TODO
 """
 import copy
 import itertools

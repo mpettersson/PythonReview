@@ -1,5 +1,5 @@
 """
-    FIND LONGEST SUBLIST WITH SUM
+    FIND LONGEST SUBLIST WITH SUM T
 
     Write a function, which takes a list and a target value t, and returns the start and end indices of the longest
     sublist with sum t (None otherwise).
@@ -7,9 +7,6 @@
     Example:
         Input = [1, 2, 1, 3], 3
         Output = (0, 1)  # or the list [1, 2], or indices/list (1, 2)/[2, 1]]
-
-    Variations:
-        - SEE: find_sublists_with_sum.py, num_sublists_with_sum.py, len_longest_sublist_with_sum.py
 """
 
 
@@ -25,7 +22,7 @@
 # APPROACH: Naive/Brute Force
 #
 # For each possible starting indices in the list, iterate over the values to find the sum.  If the sum is equal to the
-# target sum and greater (in length) than the result, update the result.  After all iterations have compelted, return
+# target sum and greater (in length) than the result, update the result.  After all iterations have completed, return
 # the longest matching sublist.
 #
 # Time Complexity: O(n**3), where n is the length of the list.

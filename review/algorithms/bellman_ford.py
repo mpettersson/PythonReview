@@ -4,6 +4,9 @@
         - ADD VISUAL GRAPH EXAMPLE
         - ADD BETTER CODE COMMENTS
         - ADD:  Alternative Methods/Algorithms:
+        - Add this:
+            As already stated in the chosen answer, Bellman-Ford performs the check on all the vertices, Dijkstra only on the one with the best distance calculated so far. Again already noted, this improves the complexity of the Dijkstra approach, however it requires to compare all the vertices to find out the minimum distance value. Being this not necessary in the Bellman-Ford, it is easier to implement in a distributed environment. That's why it is used in Distance Vector routing protocols (e.g., RIP and IGRP), where mostly local information is used. To use Dijkstra in routing protocols, instead, it is necessary first to distribute the entire topology, and this is what happens in Link State protocols, such as OSPF and ISIS.
+            https://stackoverflow.com/questions/19482317/bellman-ford-vs-dijkstra-under-what-circumstances-is-bellman-ford-better
 
     BELLMAN-FORD ALGORITHM
 
@@ -11,7 +14,7 @@
     other node in a weighted directed graph.
 
     Big O:
-        - O(V + E) Time
+        - O(VE) Time
         - O(V + E) Space
 
     Graph Properties:

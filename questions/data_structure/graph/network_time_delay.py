@@ -27,7 +27,7 @@ import heapq
 #
 # This is a heapq implementation of Dijkstra's single source shortest path (SSSP) algorithm.
 #
-# Time Complexity:  O(e log(v)), where e and v are the number of edges and vertices in the graph.
+# Time Complexity:  O((e+v)*log(v)), where e and v are the number of edges and vertices in the graph.
 # Space Complexity:  O(e + v), where e and v are the number of edges and vertices in the graph.
 #
 # SEE: leetcode.com/problems/network-delay-time/discuss/329376/efficient-oe-log-v-python-dijkstra-min-heap-with-explanation
@@ -62,8 +62,8 @@ def network_time_delay_via_dijkstra(times, n, k):
 #
 # This is an implementation of the Bellman-Ford single source shortest path (SSSP) algorithm.
 #
-# Time Complexity:  O(v + e), where v and e are the number of vertices and edges in the graph.
-# Space Complexity:  O(v + e), where v and e are the number of vertices and edges in the graph.
+# Time Complexity:  O(ve), where v and e are the number of vertices and edges in the graph.
+# Space Complexity:  O(ve), where v and e are the number of vertices and edges in the graph.
 def network_time_delay_via_bellman_ford(times, n, k):
     graph = {i: dict() for i in range(1, n+1)}          # Initialize the Graph/Weight/Previous Dictionaries
     for frm, to, cost in times:

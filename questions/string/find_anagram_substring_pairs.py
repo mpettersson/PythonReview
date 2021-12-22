@@ -1,5 +1,5 @@
 """
-    FIND PALINDROME SUBSTRING PAIRS
+    FIND ANAGRAM SUBSTRING PAIRS
 
     Write a function, which accepts a string s, then finds the (beginning) index pairs of substrings in s that are
     anagrams of each other.

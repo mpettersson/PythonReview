@@ -1,5 +1,5 @@
 """
-    SEARCH ROTATED LIST (CCI 10.3: SEARCH IN ROTATED LIST,
+    ROTATED LIST SEARCH (CCI 10.3: SEARCH IN ROTATED LIST,
                          leetcode.com/problems/search-in-rotated-sorted-array-ii
                          leetcode.com/problems/search-in-rotated-sorted-array)
 
@@ -23,13 +23,6 @@ import time
 #   - What data type does the list contain?
 
 
-# NOTE: If ONLY membership is required (i.e., a True/False whether the target value is IN the list), just do:
-#           if t in set(nums):
-#               return True
-#           return False
-#       (This was my fastest accepted answer according to leetcode.com).
-
-
 # OBSERVATIONS:
 #   - If NO Duplicate Values:
 #       - Then 1 SIDE, at most, will be out of order.
@@ -42,7 +35,8 @@ import time
 #       - If low/mid/high values are all the same, CAN'T eliminate a side (just increment by one, or O(n) time...).
 #       - If low/high values are the same, still CAN'T eliminate a side (just increment by one, or O(n) time...).
 #       - In some circumstances, can eliminate a side (i.e., if low < mid values and the target isn't in that range).
-#   THEREFORE, We only need to check ONE side, if lo < mid or lo > mid
+#
+# NOTE: It really helps to draw the list as a graph; where the index is the x coordinate and value is y coordinate.
 
 
 # APPROACH: List Index Method
@@ -235,22 +229,58 @@ def search_rotated_list_bin_search(l, t):
 
 # NOTE: If the list values are unique (no duplicates), then the following will work:
 def search_rotated_list_unique_values(l, t):
-        lo = 0
-        hi = len(l) - 1
-        while lo <= hi:
-            mid = (lo + hi) // 2
-            if l[mid] == t:
-                return mid
-            elif l[mid] > l[lo]:
-                if l[lo] <= t < l[mid]:
-                    hi = mid - 1
-                else:
-                    lo = mid + 1
+    lo = 0
+    hi = len(l) - 1
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        if l[mid] == t:
+            return mid
+        elif l[mid] > l[lo]:
+            if l[lo] <= t < l[mid]:
+                hi = mid - 1
             else:
-                if l[hi] >= t > l[mid]:
-                    lo = mid + 1
-                else:
-                    hi = mid - 1
+                lo = mid + 1
+        else:
+            if l[hi] >= t > l[mid]:
+                lo = mid + 1
+            else:
+                hi = mid - 1
+
+
+# NOTE: To find the MINIMUM VALUE in a rotated list (with duplicates):
+def min_value_in_rotated_list(l):
+    lo = 0
+    hi = len(l)-1
+    if l[0] < l[-1]:                    # If it's in sorted order:
+        return l[0]                         # Just return the first element.
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if l[mid] < l[hi]:              # Case 1:   The right side is sorted.
+            hi = mid                                # Then the min value MUST be in the left side (or middle value).
+        elif l[mid] > l[hi]:            # Case 2:   The right side is NOT sorted:
+            lo = mid + 1                            # Then the min value MUST be in the right side.
+        else:                           # Case 3:   Can't rule out either side (l[mid] == l[hi]):
+            hi -= 1                                 # Just decrement high (but we keep l[mid], which has the same value)
+    return l[hi]        # Return hi for how many 'times' the list was rotated right.
+
+
+# NOTE: To find the MAXIMUM VALUE in a rotated list (with duplicates):
+def max_value_in_rotated_list(l):
+    if l is not None and len(l) > 0:
+        lo = 0
+        hi = len(l)-1
+        if l[0] < l[-1]:                # If it's in sorted order:
+            return l[-1]                     # Just return the last element.
+        while lo <= hi:
+            if hi - lo < 2:             # If just one or two elements left, just return the max...
+                return max(l[hi], l[lo])
+            mid = (lo + hi) // 2
+            if l[lo] < l[mid]:          # Case 1: The max value MUST be in either the middle/pivot list value OR in the
+                lo = mid                        # RIGHT side.
+            elif l[lo] > l[mid]:        # Case 2: The max value MUST be LEFT of the middle/pivot list value.
+                hi = mid-1
+            else:                       # Case 3: Don't know for sure; but since the low list value is equal to the
+                lo += 1                         # middle/pivot value, we can rule out the low list value.
 
 
 args = [([52, 75, 80, 92, 99, -95, -79, -75, -62, -59, -29, -28, -28, -28, 10, 21, 27, 41, 45, 49], 10),
