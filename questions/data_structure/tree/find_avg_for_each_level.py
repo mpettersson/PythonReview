@@ -1,5 +1,5 @@
 r"""
-    AVG FOR EACH LEVEL
+    FIND AVG FOR EACH LEVEL (leetcode.com/problems/average-of-levels-in-binary-tree)
 
     Given a binary tree, write a function that returns a list of numbers representing the average of each level of the
     binary tree.
@@ -23,44 +23,109 @@ r"""
 from collections import deque
 
 
-# APPROACH: DFS & List of Depths
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for (can you use extra space)?
+#   - What properties does the tree have (is it balanced, is it a BST, data types, etc.)?
+#   - Implement a node class, or assume one is created (if created what names were used)?
+
+
+# APPROACH: Naive/DFS & Lists Of Values Per Depths
 #
+# This approach uses depth first search to populate a list of lists with the values for each level of the tree, then
+# once all of the values have been added to the lists, each level's average is computed (and returned in a list).
 #
 # Time Complexity: O(n) where n is the number of nodes in the tree.
 # Space Complexity: O(n) where n is the number of nodes in the tree.
-def avg_for_each_level(root):
+def find_avg_for_each_level_dfs_naive(root):
 
-    def get_values_by_depth(n, vals, depth=0):
-        if n:
-            if depth not in vals.keys():
-                vals[depth] = []
-            vals[depth].append(n.value)
-            get_values_by_depth(n.left, vals, depth + 1)
-            get_values_by_depth(n.right, vals, depth + 1)
-
-    depth_values_dict = {}
-    res = []
-    get_values_by_depth(root, depth_values_dict)
-
-    for k in depth_values_dict.keys():
-        res.append(sum(depth_values_dict[k]) / len(depth_values_dict[k]))
-    return res
-
-
-def averageOfLevels(root):
-    vals = []
-    q = deque()
-    q.append((0, root))
-    while q:
-        i, n = q.popleft()
-        if len(vals) < i+1:
+    def _rec(n, vals, lvl=0):
+        if len(vals) < lvl+1:
             vals.append([])
-        vals[i].append(n.val)
+        vals[lvl].append(n.value)
         if n.left:
-            q.append((i+1, n.left))
+            _rec(n.left, vals, lvl + 1)
         if n.right:
-            q.append((i+1, n.right))
+            _rec(n.right, vals, lvl + 1)
+
+    vals = []
+    if root:
+        _rec(root, vals)
     return [sum(vals[i])/len(vals[i]) for i in range(len(vals))]
+
+
+# APPROACH: Naive/BFS & Lists Of Values Per Depths
+#
+# This approach uses breadth first search to populate a list of lists with the values for each level of the tree, then
+# once all of the values have been added to the lists, each level's average is computed (and returned in a list).
+#
+# Time Complexity: O(n) where n is the number of nodes in the tree.
+# Space Complexity: O(n) where n is the number of nodes in the tree.
+def find_avg_for_each_level_bfs_naive(root):
+    vals = []
+    if root:
+        q = deque()
+        q.append((0, root))
+        while q:
+            lvl, n = q.popleft()
+            if len(vals) < lvl+1:
+                vals.append([])
+            vals[lvl].append(n.value)
+            if n.left:
+                q.append((lvl+1, n.left))
+            if n.right:
+                q.append((lvl+1, n.right))
+    return [sum(vals[i])/len(vals[i]) for i in range(len(vals))]
+
+
+# APPROACH: DFS & List Of [Depth Sum, Depth Count]
+#
+# This approach uses depth first search to populate a list of level sum and level count pairs for each level of the
+# tree, then once all of the values have been added to the lists, each levels sum is divided by the count (and returned
+# in a list).
+#
+# Time Complexity: O(n) where n is the number of nodes in the tree.
+# Space Complexity: O(h) where n is the height of the tree.
+def find_avg_for_each_level_dfs(root):
+
+    def _rec(n, vals, lvl=0):
+        if len(vals) < lvl+1:
+            vals.append([0, 0])
+        vals[lvl][0] += n.value
+        vals[lvl][1] += 1
+        if n.left:
+            _rec(n.left, vals, lvl + 1)
+        if n.right:
+            _rec(n.right, vals, lvl + 1)
+
+    vals = []
+    if root:
+        _rec(root, vals)
+    return [v[0]/v[1] for v in vals]
+
+
+# APPROACH: BFS & Lists Of Values Per Depths
+#
+# This approach uses breadth first search to populate a list of lists with the values for each level of the tree, then
+# once all of the values have been added to the lists, each level's average is computed (and returned in a list).
+#
+# Time Complexity: O(n) where n is the number of nodes in the tree.
+# Space Complexity: O(h) where n is the height of the tree.
+def find_avg_for_each_level_bfs(root):
+    vals = []
+    if root:
+        q = deque()
+        q.append((0, root))
+        while q:
+            lvl, n = q.popleft()
+            if len(vals) < lvl+1:
+                vals.append([0, 0])
+            vals[lvl][0] += n.value
+            vals[lvl][1] += 1
+            if n.left:
+                q.append((lvl+1, n.left))
+            if n.right:
+                q.append((lvl+1, n.right))
+    return [v[0]/v[1] for v in vals]
 
 
 class Node:
@@ -70,29 +135,27 @@ class Node:
         self.right = right
 
 
-# Helper Function
 def display(node):
-    def wrapper(node):
-        """Returns list of strings, width, height, and horizontal coordinate of the root."""
+    def _rec(node):
         if node.right is None and node.left is None:                                        # No child.
             return [str(node.value)], len(str(node.value)), 1, len(str(node.value)) // 2
         if node.right is None:                                                              # Only left child.
-            lines, n, p, x = wrapper(node.left)
+            lines, n, p, x = _rec(node.left)
             u = len(str(node.value))
             first_line = (x + 1) * ' ' + (n - x - 1) * '_' + str(node.value)
             second_line = x * ' ' + '/' + (n - x - 1 + u) * ' '
             shifted_lines = [line + u * ' ' for line in lines]
             return [first_line, second_line] + shifted_lines, n + u, p + 2, n + u // 2
         if node.left is None:                                                               # Only right child.
-            lines, n, p, x = wrapper(node.right)
+            lines, n, p, x = _rec(node.right)
             u = len(str(node.value))
             first_line = str(node.value) + x * '_' + (n - x) * ' '
             second_line = (u + x) * ' ' + '\\' + (n - x - 1) * ' '
             shifted_lines = [u * ' ' + line for line in lines]
             return [first_line, second_line] + shifted_lines, n + u, p + 2, u // 2
         else:                                                                               # Two children.
-            left, n, p, x = wrapper(node.left)
-            right, m, q, y = wrapper(node.right)
+            left, n, p, x = _rec(node.left)
+            right, m, q, y = _rec(node.right)
             u = len(str(node.value))
             first_line = (x + 1) * ' ' + (n - x - 1) * '_' + str(node.value) + y * '_' + (m - y) * ' '
             second_line = x * ' ' + '/' + (n - x - 1 + u + y) * ' ' + '\\' + (m - y - 1) * ' '
@@ -103,9 +166,12 @@ def display(node):
             lines = [first_line, second_line] + [a + u * ' ' + b for a, b in zip(left, right)]
             return lines, n + m + u, max(p, q) + 2, n + u // 2
     if node:
-        lines, _, _, _ = wrapper(node)
+        lines, _, _, _ = _rec(node)
         for line in lines:
-            print(line)
+            print(f"\t{line}")
+    else:
+        print(f"\tNone")
+    print()
 
 
 trees = [Node(4, Node(7, Node(10), Node(2, right=Node(6, left=Node(2)))), Node(9, right=Node(6))),
@@ -122,9 +188,16 @@ trees = [Node(4, Node(7, Node(10), Node(2, right=Node(6, left=Node(2)))), Node(9
                            Node(90, Node(88), Node(99, None, Node(105, None, Node(420)))))),
          Node(0),
          None]
+fns = [find_avg_for_each_level_dfs_naive,
+       find_avg_for_each_level_bfs_naive,
+       find_avg_for_each_level_dfs,
+       find_avg_for_each_level_bfs]
 
-for i, t in enumerate(trees):
-    print(f"display(trees[{i}]):"); display(t)
-    print(f"avg_for_each_level(trees[{i}]):", avg_for_each_level(t), "\n")
+for tree in trees:
+    print(f"\ntree:")
+    display(tree)
+    for fn in fns:
+        print(f"{fn.__name__}(trees):", fn(tree))
+    print()
 
 
