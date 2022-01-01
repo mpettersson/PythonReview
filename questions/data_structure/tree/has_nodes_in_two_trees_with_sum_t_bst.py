@@ -1,21 +1,23 @@
 r"""
-    HAS TWO NODES WITH WITH SUM T (leetcode.com/problems/two-sum-iv-input-is-a-bst)
+    HAS TWO NODES WITH WITH SUM T (leetcode.com/problems/two-sum-bsts)
 
-    Given the root of a binary search tree (BST), where each node's value is an integer, and a target value t, write a
-    function that returns True if two node's values sum to t, False otherwise.
+    Given the root of TWO binary search trees (BST) (where each node's value is an integer), and a target value t, write
+    a function that returns True if there exists two nodes, ONE from each tree, with values that sum to t, False
+    otherwise.
 
     Consider the following binary search trees:
 
-                5
-              /   \
-            3      6
-           / \      \
-          2   4      7
+                0              5
+              /   \          /   \
+            -10   10        1     7
+                          /   \
+                         0     2
 
     Example:
-                tree = Node(5, Node(3, Node(2), Node(4)), Node(6, None, Node(7)))
-        Input = tree, 9
-        Output = True # either 4+5, 3+6, or 2+7
+                tree1 = Node(0, Node(-10), Node(10))
+                tree2 = Node(5, Node(1, Node(0), Node(2)), Node(7))
+        Input = tree1, tree2, 12
+        Output = True   # 10+2
 
 """
 from collections import deque
@@ -27,37 +29,37 @@ from collections import deque
 #   - Implement a node class, or assume one is created (if created what names were used)?
 
 
-# APPROACH: Naive Via Inorder Traversal & Two Pointers Search
+# APPROACH: Naive Via Inorder Traversal & Has Two Sum
 #
-# Compile a list of values via an inorder traversal, then check for two list values with a sum of t via the two pointer
-# approach.
+# Compile two lists of values via two inorder traversals (one for each tree), then check for two list values, where the
+# values are from different lists, with a sum of t via the two pointer search approach (starting with one pointer
+# pointing at the low end of one list and the other pointer pointing at the high end of the other list).
 #
-# Time Complexity: O(n), where n is the number of nodes in the tree.
-# Space Complexity: O(n), where n is the number of nodes in the tree.
-def has_two_nodes_with_sum_t_bst_naive(root, t):
+# Time Complexity: O(n), where n is the number of nodes in the tree with the most nodes.
+# Space Complexity: O(u), where u is the number of nodes in the tree with the most unique node values.
+def has_nodes_in_two_trees_with_sum_t_bst_naive(root1, root2, t):
 
     def _inorder_traversal(node):
         if node is None:
-            return []
-        return _inorder_traversal(node.left) + [node.value] + _inorder_traversal(node.right)
+            return set()
+        return _inorder_traversal(node.left) | {node.value} | _inorder_traversal(node.right)
 
-    def _has_two_sum(l, t):
-        lo = 0
-        hi = len(l) - 1
-        while lo < hi:
-            if l[lo] + l[hi] == t:
+    def _has_two_sum(s1, s2, t):
+        if len(s2) < len(s1):
+            s1, s2 = s2, s1
+        for x in s1:
+            if t - x in s2:
                 return True
-            if l[lo] + l[hi] > t:
-                hi -= 1
-            else:
-                lo += 1
         return False
 
-    if isinstance(root, Node) and isinstance(t, int):
-        return _has_two_sum(_inorder_traversal(root), t)
+    if isinstance(root1, Node) and isinstance(root2, Node) and root1 is not root2 and isinstance(t, int):
+        l1 = _inorder_traversal(root1)
+        l2 = _inorder_traversal(root2)
+        return _has_two_sum(l1, l2, t)
+    return False
 
 
-# APPROACH: (Optimal) Via BFS & Set
+# APPROACH: (Optimal) Via BFS & Two Sets
 #
 # Perform a BFS, where each node's value is first checked against a set of complement values (to allow for EARLY
 # TERMINATION), if not found, the complement of its value is added to the set, then both of its children are added to
@@ -67,21 +69,21 @@ def has_two_nodes_with_sum_t_bst_naive(root, t):
 # Space Complexity: O(n), where n is the number of nodes in the tree.
 #
 # NOTE: Despite the same asymptotic time (as the naive approach), this approach can terminate early (UNLIKE above).
-def has_two_nodes_with_sum_t_bst(root, t):
-    if isinstance(root, Node) and isinstance(t, int):
+def has_nodes_in_two_trees_with_sum_t_bst(root0, root1, t):
+    if isinstance(root0, Node) and isinstance(root1, Node) and root0 is not root1 and isinstance(t, int):
         q = deque()
-        q.append(root)
-        complements = set()
+        q.extend([(0, root0), (1, root1)])              # Use an integer to distinguish the two trees.
+        complements = [set(), set()]                    # Complement sets (one for each of the trees).
         while q:
-            node = q.popleft()
-            if node.value in complements:
+            i, node = q.popleft()
+            if node.value in complements[(i+1) % 2]:    # Has the complement been seen in the OTHER tree's set?
                 return True
-            complements.add(t - node.value)
+            complements[i].add(t - node.value)
             if node.left:
-                q.append(node.left)
+                q.append((i, node.left))
             if node.right:
-                q.append(node.right)
-        return False
+                q.append((i, node.right))
+    return False
 
 
 class Node:
@@ -126,25 +128,30 @@ def display(node):
             return lines, n + m + u, max(p, q) + 2, n + u // 2
     if node:
         lines, _, _, _ = _display(node)
-        return '\t' + '\n\t'.join(lines) + '\n'
-    else:
-        return "\tNone"
+        return '\t' + '\n\t'.join(lines)
 
 
-trees = [Node(5, Node(3, Node(2), Node(4)), Node(6, None, Node(7))),
-         Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), Node(6))),
+trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), Node(6))),
+         Node(5, Node(3, Node(2, Node(1)), Node(4)), Node(6, None, Node(8, Node(7), Node(9)))),
          Node(3, Node(1, Node(0, Node(-1)), Node(2)), Node(5, Node(4), Node(7, Node(6), Node(9)))),
-         Node(42),
+         Node(10),
          None]
-t_vals = [-5, -1, 0, 1, 7, 9, 16]
-fns = [has_two_nodes_with_sum_t_bst_naive,
-       has_two_nodes_with_sum_t_bst]
+args = [(trees[0], trees[1], 0),
+        (trees[0], trees[2], 0),
+        (trees[0], trees[3], 0),
+        (trees[1], trees[1], 0),
+        (trees[1], trees[2], 0),
+        (trees[1], trees[3], 0),
+        (trees[0], trees[4], 0),
+        (trees[4], trees[1], 0),
+        (trees[4], trees[4], 0)]
+fns = [has_nodes_in_two_trees_with_sum_t_bst_naive,
+       has_nodes_in_two_trees_with_sum_t_bst]
 
-for tree in trees:
-    print(f"\ntree: \n{display(tree)}")
-    for t in t_vals:
-        for fn in fns:
-            print(f"{fn.__name__}(tree, {t}): {fn(tree, t)}")
-        print()
+for tree_a, tree_b, target in args:
+    print(f"\ntree_a: \n{display(tree_a)}\n\ntree_b:\n{display(tree_b)}\n")
+    for fn in fns:
+        print(f"{fn.__name__}(tree_a, tree_b, {target}): {fn(tree_a, tree_b, target)}")
+    print()
 
 
