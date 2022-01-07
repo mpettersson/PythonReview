@@ -1,6 +1,7 @@
 r"""
     IS BALANCED (CCI  4.4: CHECK BALANCED,
-                 EPI 10.1: TEST IF A BINARY TREE IS HEIGHT-BALANCED)
+                 EPI 10.1: TEST IF A BINARY TREE IS HEIGHT-BALANCED,
+                 leetcode.com/problems/balanced-binary-tree)
 
     Write a function that accepts a binary tree root and returns True if the tree is balanced, False otherwise.  A
     balanced tree is a tree such that the heights of two subtrees of any node never differ by more than one.
@@ -34,7 +35,30 @@ r"""
 #     than one)?
 
 
-# APPROACH: Recursive (Via Dual Return Value)
+# APPROACH: Naive Recursive
+#
+# This naive approach has a separate (recursive) function to find node height, that is called multiple (duplicate) times
+# along with the actual recursive is balanced function.
+#
+# Time Complexity: O(n * log(n)), where n is the number of nodes in the tree.
+# Space Complexity: O(h), where h is the height of the tree.
+def is_balanced_naive(root):
+
+    def _height(node):
+        if not node:
+            return -1                           # An empty tree (node == None) has height -1
+        return 1 + max(_height(node.left), _height(node.right))
+
+    def _rec(n):
+        if n is None:
+            return True                         # An empty tree (node == None) is 'balanced'.
+        return abs(_height(n.left) - _height(n.right)) < 2 and _rec(n.left) and _rec(n.right)
+
+    if isinstance(root, Node):
+        return _rec(root)
+
+
+# APPROACH: Recursive (Via Two Return Values)
 #
 # This approach uses a recursive function that returns a Tuple of type (bool, int) representing a balanced tree amd the
 # current height of the tree.  At each node, the function is called on both children (if the child is None, then 0 is
@@ -42,21 +66,24 @@ r"""
 #
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(h), where h is the height of the tree.
-def is_balanced_tree(root):
+def is_balanced(root):
 
-    def _rec(node):
-        if node is None:
-            return True, 0
-        lb, lh = _rec(node.left)
-        rb, rh = _rec(node.right)
-        return lb and rb and (abs(lh - rh) <= 1), max(lh, rh) + 1
+    def _rec(n):
+        if not n:
+            return True, -1                 # An empty tree is balanced and has height -1
+        l_res, l_height = _rec(n.left)
+        if not l_res:
+            return False, 0
+        r_res, r_height = _rec(n.right)
+        if not r_res:
+            return False, 0
+        return (abs(l_height - r_height) < 2), 1 + max(l_height, r_height)
 
-    if root is not None:
-        balanced, height = _rec(root)
-        return balanced
+    if isinstance(root, Node):
+        return _rec(root)[0]
 
 
-# APPROACH: Recursive (Via Int Value)
+# APPROACH: Recursive (Via A Single Int Value)
 #
 # This approach uses a recursive function that returns an integer value representing either; and unbalanced tree (-1) or
 # the height of the tree (>= 0).  At each node, both the function is called on both children (if the child is None, then
@@ -64,19 +91,21 @@ def is_balanced_tree(root):
 #
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(h), where h is the height of the tree.
-def is_balanced(root):
+def is_balanced_alt(root):
 
-    def _is_balanced(n):
+    def _rec(n):
         if n is None:
             return 0
-        l = _is_balanced(n.left)
-        r = _is_balanced(n.right)
-        if l == -1 or r == -1 or abs(l - r) > 1:
-            return -1                                       # -1 == unbalanced flag
-        return max(l, r) + 1
+        l_res = _rec(n.left)
+        if l_res == -1:
+            return -1                               # -1 == 'unbalanced' flag
+        r_res = _rec(n.right)
+        if r_res == -1 or abs(l_res - r_res) > 1:
+            return -1                               # -1 == 'unbalanced' flag
+        return max(l_res, r_res) + 1
 
-    if root is not None:
-        return False if _is_balanced(root) == -1 else True
+    if isinstance(root, Node):
+        return False if _rec(root) == -1 else True
 
 
 # VARIATION: Same question, however, the definition of balanced tree is now: A balanced tree is a tree such that the
@@ -90,7 +119,7 @@ def is_balanced(root):
 #
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(h), where h is the height of the tree.
-def are_all_branches_balanced(r):
+def are_all_branches_balanced(root):
 
     def get_tree_max_and_min_height(n):
         def _rec(n):
@@ -105,8 +134,8 @@ def are_all_branches_balanced(r):
             return max(lmax, rmax) + 1, min(lmin, rmin) + 1     # Case: 0 or 2 children.
         return _rec(n)
 
-    if r:
-        max_height, min_height = get_tree_max_and_min_height(r)
+    if isinstance(root, Node):
+        max_height, min_height = get_tree_max_and_min_height(root)
         return max_height - min_height <= 1
 
 
@@ -159,10 +188,9 @@ def display(node):
             return lines, n + m + u, max(p, q) + 2, n + u // 2
     if node:
         lines, _, _, _ = _display(node)
-        for line in lines:
-            print(line)
+        return '\t' + '\n\t'.join(lines) + '\n'
     else:
-        print()
+        return "\tNone\n"
 
 
 trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), None)),
@@ -182,16 +210,15 @@ trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), None)),
                            Node(90, Node(88), Node(99, None, Node(105, None, Node(420)))))),
          Node(0),
          None]
-fns = [is_balanced_tree,
+fns = [is_balanced_naive,
        is_balanced,
+       is_balanced_alt,
        are_all_branches_balanced]
 
-for i, t in enumerate(trees):
-    print(f"\ndisplay(trees[{i}]):")
-    display(t)
-    print()
+for tree in trees:
+    print(f"\ntree:\n{display(tree)}")
     for fn in fns:
-        print(f"{fn.__name__}(trees[{i}]): {fn(t)}")
+        print(f"{fn.__name__}(trees): {fn(tree)}")
     print()
 
 
