@@ -4,10 +4,11 @@ r"""
     Write a function, that accepts k sorted (in ascending order) linked lists, then merges (in increasing sorted order)
     and returns one sorted (in ascending order) linked list.
 
-    Consider the following linked lists:
+    Consider the following (3) linked lists:
         1 ⟶ 3 ⟶ 5 ⟶ 7
         0 ⟶ 8
         2 ⟶ 4 ⟶ 6
+    The result of merging the above (3) linked lists:
         0 ⟶ 1 ⟶ 2 ⟶ 3 ⟶ 4 ⟶ 5 ⟶ 6 ⟶ 7 ⟶ 8
 
     Example:
@@ -15,10 +16,7 @@ r"""
                 l_2 = Node(0, Node(8)),                     # Or, the 2nd linked list.
                 l_3 = Node(2, Node(4, Node(6)))             # Or, the 3rd linked list.
         Input = l_1, l_2, l_3
-        Output = Node(0, Node(1, Node(2, Node(3, Node(4, Node(5, Node(6, Node(7, Node(8)))))))))  # Or, the 4th list.
-
-    Variations:
-        - SEE: merge_k_sorted_lists.py
+        Output = Node(0, Node(1, Node(2, Node(3, Node(4, Node(5, Node(6, Node(7, Node(8)))))))))  # Or, the 4th/result.
 """
 import copy
 import heapq
@@ -30,9 +28,23 @@ import heapq
 #   - What are the possible number of lists?
 
 
-# SLOW APPROACHES:
-#   - Brute Force: Construct a list, sort it, then make a linked list.  Time: O(n * log(n)), Space: O(n)
-#   - One By One: While there are values; find the k list heads min value for the new list. Time: O(k * n) Space O(n).
+# APPROACH: Naive Via Sort
+#
+# Construct a (python) list consisting of the values from all of the linked lists, then sort the (python) list, finally,
+# create and return a linked list from the sorted list.
+#
+# Time Complexity: O(n * log(n)), where n is the total number of elements (in all k lists).
+# Space Complexity: O(n), where n is the total number of elements (in all k lists).
+def merge_k_sorted_linked_lists_naive(args):
+    if args:
+        l = [e for sl in args for e in sl]  # Can do this because Node has __iter__ method.
+        l.sort()
+        result = Node(l.pop(0))
+        tail = result
+        while l:
+            tail.next = Node(l.pop(0))
+            tail = tail.next
+        return result
 
 
 # APPROACH: Min Heap/Heapq
@@ -46,29 +58,28 @@ import heapq
 #
 # NOTE: If the Node class is already defined WITHOUT a __lt__ method, execute the following line to add a __lt__ method:
 #           Node.__lt__ = lambda self, node: self.value < node.value
-def merge_k_sorted_linked_lists_heapq(l):
+def merge_k_sorted_linked_lists_heapq(args):
     head = tail = None
-    if l:
+    if args:
         min_heap = []
-        for e in l:
-            head = e
-            while head:
-                curr = head
-                head = head.next
-                curr.next = None
-                min_heap.append(curr)
+        for ll in args:
+            min_heap.append(ll)
         heapq.heapify(min_heap)
         while min_heap:
             curr = heapq.heappop(min_heap)
+            if curr.next:
+                heapq.heappush(min_heap, curr.next)
+                curr.next = None
             if tail is None:
                 head = tail = curr
             else:
                 tail.next = curr
                 tail = tail.next
+
     return head
 
 
-# APPROACH: Dynamic Programming/Merge Sort
+# APPROACH: Merge Sort
 #
 # While there are more than two lists, merge two lists at a time; when only one list remains, return its head.  That is;
 # Pair up the k lists and merge each pair, (after the first pairing, k lists are merged into k/2 lists with average of
@@ -80,39 +91,32 @@ def merge_k_sorted_linked_lists_heapq(l):
 # NOTE: IF the k lists were merged one at a time (for example; via merging 2 lists k-1 times, or fold(merge, args, [])),
 # then the time complexity would be O(k * n) NOT O(n * log(k)).  This is because the summation of the series would be;
 # the sum from 1 to k-1, of ((i * (n/k)) + (n/k)), which equals O(k * n).
-def merge_k_sorted_linked_lists_dp(l):
+def merge_k_sorted_linked_lists(args):
 
-    def _merge_two_sorted_linked_lists(a, b):
-        if not a or not b:
-            return a if a else b
-        head = curr = None
-        while a and b:
-            if a.value <= b.value:
-                c = a
-                a = a.next
+    def _rec(l1, l2):
+        temp = prev = Node(-float("inf"))  # temp.next = result
+        # NOTE: The temp (Node) has a value less than any values in l1 or l2, and is used as the 'result' variable;
+        #       where temp.next is the actual return value (NOT temp).  This is done to MINIMIZE the code.
+        while l1 and l2:
+            if l1.value <= l2.value:
+                prev.next = l1
+                l1 = l1.next
             else:
-                c = b
-                b = b.next
-            c.next = None
-            if head is None:
-                head = curr = c
-            else:
-                curr.next = c
-                curr = curr.next
-        if a or b:
-            curr.next = a if a else b
-        return head
+                prev.next = l2
+                l2 = l2.next
+            prev = prev.next
+        prev.next = l1 if l1 else l2        # In case either of the lists still have values.
+        return temp.next                    # REMEMBER, temp.next is the result (temp is just a pointer).
 
-    if l:
-        while len(l) > 1:
+    if args:
+        while len(args) > 1:
             temp = []
-            if len(l) % 2 == 1:
-                temp.append(l.pop())
-            while l:
-                temp.append(_merge_two_sorted_linked_lists(l.pop(), l.pop()))
-            l = temp
-        return l.pop()
-    return l
+            if len(args) % 2 == 1:
+                temp.append(args.pop())
+            while args:
+                temp.append(_rec(args.pop(), args.pop()))
+            args = temp
+        return args.pop()
 
 
 class Node:
@@ -123,6 +127,12 @@ class Node:
     # NOTE: This is required because the naive heapq implementation will be comparing nodes.
     def __lt__(self, node):
         return self.value < node.value
+
+    def __eq__(self, node):
+        return self.value == node.value
+
+    def __gt__(self, node):
+        return self.value > node.value
 
     def __iter__(self):
         yield self.value
@@ -146,8 +156,9 @@ args_list = [[Node(1, Node(3, Node(5, Node(7)))),
               Node(-8, Node(-2, Node(-4, Node(6, Node(8))))),
               Node(-9, Node(-7, Node(2, Node(3, Node(4, Node(5, Node(6, Node(7, Node(8, Node(9))))))))))],
              []]
-fns = [merge_k_sorted_linked_lists_dp,
-       merge_k_sorted_linked_lists_heapq]
+fns = [merge_k_sorted_linked_lists_naive,
+       merge_k_sorted_linked_lists_heapq,
+       merge_k_sorted_linked_lists]
 
 for args in args_list:
     print("args:")
