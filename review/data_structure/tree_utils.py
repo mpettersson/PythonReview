@@ -69,3 +69,36 @@ def display(node):
         for line in lines:
             print(line)
 
+
+# BINARY SEARCH TREES
+
+#  2
+# / \
+# 1 3
+Node(2, Node(1), Node(3))
+
+#   _3_
+#  /   \
+#  1   5
+# / \ / \
+# 0 2 4 6
+Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), Node(6)))
+
+#            5
+#         /    \
+#        3      6
+#      /  \      \
+#     2    4      8
+#   /           /  \
+#  1           7    9
+Node(5, Node(3, Node(2, Node(1)), Node(4)), Node(6, None, Node(8, Node(7), Node(9))))
+
+#     _3_
+#    /   \
+#    1   5_
+#   / \ /  \
+#   0 2 4  7
+#  /      / \
+# -1      6 9
+Node(3, Node(1, Node(0, Node(-1)), Node(2)), Node(5, Node(4), Node(7, Node(6), Node(9))))
+

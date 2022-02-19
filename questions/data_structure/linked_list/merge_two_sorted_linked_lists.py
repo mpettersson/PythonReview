@@ -25,6 +25,11 @@ import copy
 #   - What are the possible number of lists?
 
 
+# NOTE: These solutions use SINGLY linked lists; if asked to use DOUBLY linked lists, you have two options:
+#         1) Use these solutions, then once merged, walk the result list once to fix the prev links.
+#         2) Fix the prev links inline/during the merge process.
+
+
 # APPROACH: Naive Via Sort
 #
 # Construct a (python) list consisting of the values from each of the two linked lists, then sort the (python) list,
