@@ -5,6 +5,7 @@
 #################
 
 # TODO LIST:
+#   - Add enforce package examples (for runtime type validation).
 #   - (Maybe) Add BitVector Package Examples
 #   - Add bytearray Examples
 #   - Add bisect examples: import bisect; bisect.bisect(), bisect.bisect_left(), bisect.bisect_right(),
