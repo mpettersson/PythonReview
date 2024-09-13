@@ -28,22 +28,22 @@
 # NOTE: Since Python integer implementation is dynamic, a mask is needed (in some negative value cases) to prevent
 #       infinite loops.
 #
-# Time Complexity: O(1).
-# Space Complexity: O(1).
+# Time Complexity: O(log2(n)), where n is the maximum number of bits needed to represent a or b.
+# Space Complexity: O(log2(n)), where n is the maximum number of bits needed to represent a or b.
 def add_via_bit_manipulation_rec(a, b):
     mask = 0xffffffff
     if b & mask <= 0:
         return a & mask if b > 0 else a
-    partial_sum = a ^ b
+    xor_sum = a ^ b
     carry = (a & b) << 1
-    return add_via_bit_manipulation_rec(partial_sum, carry)
+    return add_via_bit_manipulation_rec(xor_sum, carry)
 # NOTE: If only positive numbers are considered, this becomes very simple:
 # def add_via_bit_manipulation_rec(a, b):
 #     if b == 0:
 #         return a
-#     partial_sum = a ^ b
+#     xor_sum = a ^ b
 #     carry = (a & b) << 1
-#     return add_via_bit_manipulation_rec(partial_sum, carry)
+#     return add_via_bit_manipulation_rec(xor_sum, carry)
 
 
 # APPROACH:  Iterative Bitwise Sum & Carry
@@ -51,28 +51,28 @@ def add_via_bit_manipulation_rec(a, b):
 # This approach uses the same concepts as the recursive approach above, however, this is done in an (iterative) while
 # loop, and therefore doesn't add any stack overhead.
 #
-# Time Complexity: O(1).
+# Time Complexity: O(log2(N)), where n is the maximum number of bits needed to represent a or b.
 # Space Complexity: O(1).
 def add_via_bit_manipulation(a, b):
     mask = 0xffffffff
     while b & mask > 0:
-        sum = a ^ b
+        xor_sum = a ^ b
         carry = (a & b) << 1
-        a, b = sum, carry
+        a, b = xor_sum, carry
     return a & mask if b > 0 else a
 # NOTE: If only positive numbers are considered, this becomes very simple:
 # def add_via_bit_manipulation(a, b):
 #     while b != 0:
-#         sum = a ^ b
+#         xor_sum = a ^ b
 #         carry = (a & b) << 1
-#         a = sum
+#         a = xor_sum
 #         b = carry
 #     return a
 
 
 # APPROACH: Kogge Stone Adder
 #
-# This is based on the Kogge-Stone (KSA/KS) look-ahead adder.
+# This is based on the Kogge-Stone (KSA/KS) look-ahead adder.  This is optimal.
 # SEE: en.wikipedia.org/wiki/Kogge-Stone_adder
 #
 # Time Complexity: O(1).
