@@ -116,4 +116,3 @@ for a, b in args:
         print(f"{fn.__name__}({a}, {b}): {fn(a, b)}")
     print()
 
-
