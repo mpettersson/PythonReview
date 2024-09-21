@@ -52,7 +52,8 @@ import time
 # Time Complexity: O(2**n), where n is the number of list items.
 # Space Complexity: O(2**n), where n is the number of list items.
 def power_set_functools_reduce(iterable):           # NOTE: This takes an iterable, so works on STRINGS (i.e., "AB")
-    return functools.reduce(lambda t_result, h: t_result + [subset + [h] for subset in t_result], iterable, [[]])
+    if iterable is not None and hasattr(iterable, '__iter__'):
+        return functools.reduce(lambda t_result, h: t_result + [subset + [h] for subset in t_result], iterable, [[]])
 
 
 # APPROACH: Itertools Combinations
@@ -63,31 +64,12 @@ def power_set_functools_reduce(iterable):           # NOTE: This takes an iterab
 # Time Complexity: O(2**n), where n is the number of list items.
 # Space Complexity: O(2**n), where n is the number of list items.
 def power_set_itertools_combinations(iterable):     # NOTE: This takes an iterable, so works on STRINGS (i.e., "AB")
-    results = []
-    for r in range(len(iterable) + 1):
-        for e in itertools.combinations(iterable, r):
-            results.append(list(e))
-    return results
-
-
-# APPROACH: DFS/Recursive
-#
-# This is simply a recursive DFS traversal of the elements of the iterable (which are converted to a list for
-# processing), where the value for each 'node' (in the tree) is added to the results list.
-#
-# Time Complexity: O(2**n), where n is the number of list items.
-# Space Complexity: O(2**n), where n is the number of list items.
-def power_set_dfs(iterable):
-
-    def _dfs(i, path):
-        result.append(path)
-        for j in range(i, len(l)):
-            _dfs(j+1, path+[l[j]])
-
-    result = []
-    l = list(iterable)
-    _dfs(0, [])
-    return result
+    if iterable is not None and hasattr(iterable, '__iter__'):
+        results = []
+        for r in range(len(iterable) + 1):
+            for e in itertools.combinations(iterable, r):
+                results.append(list(e))
+        return results
 
 
 # APPROACH: (Minimized) Itertools Combinations
@@ -99,7 +81,8 @@ def power_set_dfs(iterable):
 #
 # NOTE: This is a close second to the fastest approach.
 def power_set_itertools_combinations_min(iterable):   # NOTE: Takes an iterable, so works on STRINGS (i.e., "AB")
-    return [set(combo) for r in range(len(iterable) + 1) for combo in itertools.combinations(iterable, r)]
+    if iterable is not None and hasattr(iterable, '__iter__'):
+        return [set(combo) for r in range(len(iterable) + 1) for combo in itertools.combinations(iterable, r)]
 
 
 # APPROACH: Combinatorics/Iterative/Bit Masking:
@@ -110,13 +93,34 @@ def power_set_itertools_combinations_min(iterable):   # NOTE: Takes an iterable,
 #
 # Time Complexity: O(2**n), where n is the number of list items.
 # Space Complexity: O(2**n), where n is the number of list items.
-def power_set_combinatorics(s):
-    if s is not None:
-        res = []
-        length = len(s)
-        for i in range(2**length):
-            res.append([x for b, x in zip([int(c) for c in f"{i:b}".zfill(length)], s) if b])
-        return res
+def power_set_combinatorics(iterable):
+    if iterable is not None and hasattr(iterable, '__iter__'):
+        length = len(iterable)
+        l = [a for a in iterable]
+        ps = set()
+
+        for i in range(2 ** length):
+            selector = f'{i:0{length}b}'
+            subset = {l[j] for j, bit in enumerate(selector) if bit == '1'}
+            ps.add(frozenset(subset))       # NOTE: This uses frozenset because an empty set cannot be added to a set.
+
+        return [set(s) for s in ps]
+
+
+# APPROACH: (Minimized) Combinatorics/Iterative/Bit Masking:
+#
+# This is simply a refactored and minimized version of the combinatorics approach above.
+#
+# Time Complexity: O(2**n), where n is the number of list items.
+# Space Complexity: O(2**n), where n is the number of list items.
+#
+# NOTE: This is a close second to the fastest approach.
+def power_set_combinatorics_min(iterable):
+    if iterable is not None and hasattr(iterable, '__iter__'):
+        result = []
+        for i in range(2**len(iterable)):                   # f'{i:0{len(iterable)}b}' === f"{i:b}".zfill(len(iterable))
+            result.append([x for b, x in zip([int(c) for c in f'{i:0{len(iterable)}b}'], iterable) if b])
+        return result
 
 
 # APPROACH: Recursive
@@ -127,38 +131,41 @@ def power_set_combinatorics(s):
 #
 # Time Complexity: O(2**n), where n is the number of list items.
 # Space Complexity: O(2**n), where n is the number of list items.
-def power_set(iterable):
+def power_set_rec_slow(iterable):
 
     def _rec(s):
-        if s is not None:
-            if len(s) == 0:
-                return [set()]
-            h = s.pop()
-            t = power_set(s)
-            th = copy.deepcopy(t)
-            for i in th:
-                i.add(h)
-            return t + th
-
-    return _rec(set(iterable))
-
-
-# WRONG APPROACH: Recursive
-#
-# NOTE: This DOESN'T add the empty set, therefore, this DOESN'T produce a power set.
-#
-# Time Complexity: O(2**n), where n is the number of list items.
-# Space Complexity: O(2**n), where n is the number of list items.
-def __wrong_power_set__(s):
-    if s is not None:
         if len(s) == 0:
-            return []
+            return [set()]
         h = s.pop()
-        t = __wrong_power_set__(s)
+        t = _rec(s)
         th = copy.deepcopy(t)
         for i in th:
             i.add(h)
-        return [{h}] + t + th   # NOTE: Don't use set(h) here, because if h is an int, it will fail.
+        return t + th
+
+    if iterable is not None and hasattr(iterable, '__iter__'):
+        return _rec(set(iterable))
+
+
+# APPROACH: DFS/Recursive
+#
+# This is simply a recursive DFS traversal of the elements of the iterable (which are converted to a list for
+# processing), where the value for each 'node' is added to the results list.
+#
+# Time Complexity: O(2**n), where n is the number of list items.
+# Space Complexity: O(2**n), where n is the number of list items.
+def power_set_rec(iterable):
+
+    def _rec(i, accumulator):
+        result.append(accumulator)
+        for j in range(i, len(l)):
+            _rec(j + 1, accumulator + [l[j]])
+
+    if iterable is not None and hasattr(iterable, '__iter__'):
+        result = []
+        l = list(iterable)
+        _rec(0, [])
+        return result
 
 
 iterables = [{'A', 'B', 'C'},
@@ -166,13 +173,15 @@ iterables = [{'A', 'B', 'C'},
              "abc",
              range(5),
              set(),
-             []]
+             [],
+             None]
 fns = [power_set_functools_reduce,
        power_set_itertools_combinations,
-       power_set_dfs,
        power_set_itertools_combinations_min,
        power_set_combinatorics,
-       power_set]
+       power_set_combinatorics_min,
+       power_set_rec_slow,
+       power_set_rec]
 
 for iterable in iterables:
     print(f"iterable: {iterable}")
@@ -180,11 +189,10 @@ for iterable in iterables:
         print(f"{fn.__name__}(iterable): {fn(iterable)}")
     print()
 
-s = set(range(18))
+s = set(range(19))
 print(f"s: {s}")
 for fn in fns:
     t = time.time(); print(f"{fn.__name__}(s)", end="")
     fn(set(s))
     print(f" took {time.time() - t} seconds")
-
 
