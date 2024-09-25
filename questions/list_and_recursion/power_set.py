@@ -18,7 +18,6 @@
     Variations:
         - SEE power_set_from_multiset.py for a power set, or all unique subsets from a non-unique set (multiset).
 """
-import copy
 import functools
 import itertools
 import time
@@ -138,10 +137,7 @@ def power_set_rec_slow(iterable):
             return [set()]
         h = s.pop()
         t = _rec(s)
-        th = copy.deepcopy(t)
-        for i in th:
-            i.add(h)
-        return t + th
+        return t + [e | {h} for e in t]
 
     if iterable is not None and hasattr(iterable, '__iter__'):
         return _rec(set(iterable))
