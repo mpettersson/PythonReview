@@ -11,12 +11,6 @@
         Input = [(65, 20), (35, 8), (245, 60), (195, 55), (65, 40), (99, 10), (275, 85), (155, 25), (120, 30), (75, 75),
                  (320, 65), (40, 10), (200, 95), (100, 50), (220, 40), (150, 70)], 130  # (price, weight), total_weight
         Output = 695    # Max value set: [(155, 25), (320, 65), (220, 40)]
-
-    Applications:
-        - TODO
-
-    References:
-        - TODO
 """
 import copy
 import itertools
@@ -130,28 +124,18 @@ def knapsack_01_bf_via_combinatorics(items, capacity):
 # Space Complexity: O(2**n), where n is the number of elements in items list.
 def knapsack_01_naive_via_rec(items, capacity):
 
-    def _rec(items, i, capacity):
-        if i < 0 or capacity <= 0:
+    def _rec(items, i, c):
+        if i < 0 or c <= 0:
             return 0, []                        # Value, List of included Items.
-        excluded = _rec(items, i-1, capacity)
-        if capacity >= items[i].weight:
-            included = _rec(items, i-1, capacity - items[i].weight)
+        excluded = _rec(items, i-1, c)
+        if c >= items[i].weight:
+            included = _rec(items, i-1, c-items[i].weight)
             included = (included[0] + items[i].value, included[1] + [items[i]])
             return max(excluded, included, key=lambda x: x[0])
         return excluded
 
     if items and capacity > 0:
         return _rec(items, len(items)-1, capacity)
-# NOTE: If you only want the value total, then you can exclude the extra boolean matrix logic:
-# def knapsack_01_naive_via_rec(items, capacity):
-#     def _rec(items, i, capacity):
-#         if i < 0:
-#             return 0
-#         excluded = _rec(items, i-1, capacity)
-#         included = 0 if capacity < items[i].weight else (items[i].value + _rec(items, i-1, capacity-items[i].weight))
-#         return max(included, excluded)
-#     if items and capacity > 0:
-#         return _rec(items, len(items)-1, capacity)
 
 
 # APPROACH: Memoization/Top Down Dynamic Programming
@@ -190,46 +174,32 @@ def knapsack_01_naive_via_rec(items, capacity):
 # Time Complexity: O(n * capacity), where n is the number of the items list.
 def knapsack_01_dp_via_top_down(items, capacity):
 
-    def _rec(items, i, cap, dp, b):
+    def _rec(items, i, c, dp, b):
         if i == 0:
             return 0
-        if dp[i][cap] is None:
-            excluded = _rec(items, i-1, cap, dp, b)
-            included = 0 if cap < items[i-1].weight else (items[i-1].value + _rec(items, i-1, cap-items[i-1].weight, dp, b))
+        if dp[i][c] is None:
+            excluded = _rec(items, i-1, c, dp, b)
+            included = 0 if c < items[i-1].weight else items[i-1].value + _rec(items, i-1, c-items[i-1].weight, dp, b)
+            # NOTE: UNBOUNDED KNAPSACK recurses on i, not i-1 (ie, _rec(items, i, c-items[i-1].weight, dp, b)).
             if excluded < included:
-                dp[i][cap] = included
-                b[i][cap] = True
+                dp[i][c] = included
+                b[i][c] = True
             else:
-                dp[i][cap] = excluded
-        return dp[i][cap]
+                dp[i][c] = excluded
+        return dp[i][c]
 
     if items is not None and capacity is not None:
         n = len(items)
-        dp = [[None] * (capacity + 1) for _ in range(n+1)]      # dp[-1][-1] has max value when done
-        b = [[False] * (capacity + 1) for _ in range(n+1)]
+        dp = [[None] * (capacity+1) for _ in range(n+1)]      # dp[-1][-1] has max value when done
+        b = [[False] * (capacity+1) for _ in range(n+1)]
         result_tot = _rec(items, n, capacity, dp, b)
         result_set = []                                         # The next few lines builds the result set from the
         c = capacity                                            # boolean mat, see the example above for more info.
-        for r in range(n, 0, -1):                               # NOTE: The reverse order (to start at b[-1][-1])!!
-            if b[r][c]:
-                result_set.append(items[r-1])
-                c -= items[r-1].weight
+        for i in range(n, 0, -1):                               # NOTE: The reverse order (to start at b[-1][-1])!!
+            if b[i][c]:
+                result_set.append(items[i-1])
+                c -= items[i-1].weight
         return result_tot, result_set
-# NOTE: If you only want the value total, then you can exclude the extra boolean matrix logic:
-# def knapsack_01_dp_via_top_down(items, capacity):
-#     def _rec(items, i, capacity, dp):
-#         if i == 0:
-#             return 0
-#         if dp[i][capacity] is None:
-#             excluded = _rec(items, i-1, capacity, dp)
-#             included = 0 if capacity < items[i-1].weight else (items[i-1].value +
-#                                                                _rec(items, i-1, capacity-items[i-1].weight, dp))
-#             dp[i][capacity] = max(included, excluded)
-#         return dp[i][capacity]
-#     if items is not None and capacity is not None:
-#         n = len(items)
-#         dp = [[None] * (capacity + 1) for _ in range(n+1)]
-#         return _rec(items, n, capacity, dp)
 
 
 # APPROACH: Tabulation/Bottom Up Dynamic Programming
@@ -285,24 +255,29 @@ def knapsack_01_dp_via_top_down(items, capacity):
 #           capacity_size = log(b, capacity) ==>
 #           capacity = b**capacity_size
 #       So O(n * capacity) is really O(n * b**capacity_size), or PSEUDO-POLYNOMIAL, or WEAKLY-NP-COMPLETE.
+
+
 def knapsack_01_dp_via_bottom_up(items, capacity):
     if items is not None and capacity is not None:
         n = len(items)
         dp = [[0] * (capacity+1) for _ in range(n+1)]       # dp[-1][-1] has max value when done
         b = [[False] * (capacity+1) for _ in range(n+1)]    # NOTE: Be VERY careful with the counters!
-        for r in range(1, n+1):                             # r=0 is a padding row, r=1 to n are the list items.
+        for i in range(1, n+1):                             # i=0 is a padding row, i=1 to n are the list items.
             for c in range(capacity+1):                     # c = a discrete capacity from 0 to total capacity
-                if items[r-1].weight <= c and dp[r-1][c] < items[r-1].value + dp[r-1][c-items[r-1].weight]:
-                    dp[r][c] = items[r-1].value + dp[r-1][c-items[r-1].weight]  # If INCLUDED
-                    b[r][c] = True
-                else:
-                    dp[r][c] = dp[r-1][c]                                       # Else EXCLUDED
+                excluded = dp[i-1][c]
+                included = 0 if c < items[i-1].weight else items[i-1].value + dp[i-1][c-items[i-1].weight]
+                # NOTE: For UNBOUNDED KNAPSACK, dp would reference dp[i], not dp[i-1] (ie, dp[i-1][c-items[i-1].weight]).
+                if excluded < included:                     # If INCLUDED
+                    dp[i][c] = included
+                    b[i][c] = True
+                else:                                       # Else EXCLUDED
+                    dp[i][c] = excluded
         result_set = []                                     # The next few lines builds the result set from the
         c = capacity                                        # boolean matrix, see the example above for more info.
-        for r in range(n, 0, -1):                           # NOTE: The reverse order (to start at b[-1][-1])!!
-            if b[r][c]:                                     # Only included corresponding items will be True.
-                result_set.append(items[r-1])               # Add this item to the results set.
-                c -= items[r-1].weight                      # Update the weight/capacity for the next iteration.
+        for i in range(n, 0, -1):                           # NOTE: The reverse order (to start at b[-1][-1])!!
+            if b[i][c]:                                     # Only included corresponding items will be True.
+                result_set.append(items[i-1])               # Add this item to the results set.
+                c -= items[i-1].weight                      # Update the weight/capacity for the next iteration.
         return dp[-1][-1], result_set
 
 
@@ -325,6 +300,9 @@ args = [(130, [Item(65, 20), Item(35, 8), Item(245, 60),
                Item(75, 75), Item(320, 65), Item(40, 10),
                Item(200, 95), Item(100, 50), Item(220, 40),
                Item(150, 70)]),
+        (5, [Item(6, 1), Item(10, 2), Item(12, 3)]),
+        (50, [Item(6, 1), Item(10, 2), Item(12, 3)]),
+        (1, [Item(10, 5), Item(40, 4), Item(30, 6), Item(60, 3)]),
         (10, [Item(10, 5), Item(40, 4), Item(30, 6), Item(60, 3)])]
 fns = [knapsack_01_bf_via_itertools,
        knapsack_01_bf_via_combinatorics,
@@ -348,7 +326,7 @@ items = [Item(65, 20), Item(35, 8), Item(245, 60), Item(195, 55),
          Item(120, 30), Item(75, 75), Item(320, 65), Item(40, 10),
          Item(200, 95), Item(100, 50), Item(99, 40), Item(150, 70)]
 print(f"\nitems: {items}\ncapacity: {capacity}")
-for fn in reversed(fns):
+for fn in fns[2:]:  # Skipping Combinatorics approaches; they would not finish any time soon...
     t = time.time()
     print(f"{fn.__name__}(items, capacity),", end="")
     result = fn(items, capacity)
