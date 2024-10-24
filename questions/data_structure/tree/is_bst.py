@@ -28,7 +28,7 @@ r"""
 # Questions you should ask the interviewer (if not explicitly stated):
 #   - What time/space complexity are you looking for (does implicit stack space count)?
 #   - Clarify the BST definition (there are several variations)?
-#   - What data types will the tree contain (if, for example strings, then how would the be compared)?
+#   - What data types will the tree contain (if, for example strings, then how would they be compared)?
 
 
 # APPROACH: Recursive Max/Min
@@ -37,7 +37,7 @@ r"""
 # is greater than the max or less than or equal to the minimum value, return False.  Recurse and return the logical and
 # for both children.  The base case is that the node is None; True is returned.
 #
-# NOTE: The key with this question is passing down a max and and min value, where the max is used for the left children
+# NOTE: The key with this question is passing down a max and a min value, where the max is used for the left children
 #       and the min is used for the right children.
 #
 # Time Complexity: O(n), where n is the number of nodes in the tree.
@@ -55,26 +55,6 @@ def is_bst(root):
 
     if root:
         return _rec(root)
-
-
-# APPROACH: Minimized Recursive Max/Min
-#
-# This is the same approach as above, however, it has been very slightly minimized...
-#
-# Time Complexity: O(n), where n is the number of nodes in the tree.
-# Space Complexity: O(h) where h is the height of the tree (or, O(log(n)) where n is the number of nodes in the tree).
-def is_bst_min(root):
-
-    def _is_bst_min(n, _min=None, _max=None):
-        if n:
-            if _min is not None and n.value <= _min or _max is not None and _max < n.value:
-                return False
-            if not _is_bst_min(n.left, _min, n.value) or not _is_bst_min(n.right, n.value, _max):
-                return False
-        return True
-
-    if root:
-        return _is_bst_min(root)
 
 
 # VARIATION: Alternate BST Property: 'all left descendants <= node <= all right descendants'.
@@ -113,23 +93,23 @@ def is_alt_prop_bst_via_gen(root):
 
 # VARIATION APPROACH: BST Property Max/Min
 #
-# This approach is almost exactly the same as for the original question, with the exception of the nodes value to the
-# supplied _min value.
+# This approach is exactly the same as the approach for the original question; only one comparison was changed.
 #
 # Time Complexity: O(n), where n is the number of nodes in the tree.
 # Space Complexity: O(h) where h is the height of the tree (or, O(log(n)) where n is the number of nodes in the tree).
-def is_alt_prop_bst(node, _min=None, _max=None):
-    if node:
-        if _min and node.value < _min:          # This is the only difference (original question would use  <=).
+def is_alt_prop_bst(root):
+
+    def _rec(n, _max, _min):
+        if n is None:
+            return True
+        if _max is not None and n.value > _max:
             return False
-        if _max and _max < node.value:
+        if _min is not None and n.value < _min:  # This is the only variation difference (original question uses <=).
             return False
-        is_left_bst = is_right_bst = True
-        if node.left:
-            is_left_bst = is_alt_prop_bst(node.left, _min, node.value)
-        if is_left_bst and node.right:
-            is_right_bst = is_alt_prop_bst(node.right, node.value, _max)
-        return is_left_bst and is_right_bst
+        return _rec(n.left, n.value, _min) and _rec(n.right, _max, n.value)
+
+    if root:
+        return _rec(root, None, None)
 
 
 class Node:
@@ -210,7 +190,6 @@ trees = [Node(3, Node(1, Node(0), Node(2)), Node(5, Node(4), Node(6))),
          Node(0),
          None]
 fns = [is_bst,                      # BST Prop: 'all left descendants <= node < all right descendants'
-       is_bst_min,                  # BST Prop: 'all left descendants <= node < all right descendants'
        is_alt_prop_bst_via_gen,     # Alt. BST Prop: 'all left descendants <= node <= all right descendants'
        is_alt_prop_bst]             # Alt. BST Prop: 'all left descendants <= node <= all right descendants'
 
