@@ -2,12 +2,16 @@ class HashNode:
     def __init__(self, key, value=None, next_node=None):
         self.key = key
         self.value = value
-        self.next = next_node
+        self.next_node = next_node
+
+    def __repr__(self):
+        return f"{self.key}: {self.value}"
 
 
 class HashMap:
     def __init__(self, init_capacity=10, load_capacity=.7):
         self.size = 0
+        print(init_capacity, load_capacity)
         if init_capacity < 1 or load_capacity <= 0 or load_capacity > 1:
             raise ValueError
         self.capacity = init_capacity
@@ -32,7 +36,7 @@ class HashMap:
             if node.key is key:
                 break
             prev = node
-            node = node.next
+            node = node.next_node
 
         if not node:
             raise KeyError(key)
@@ -40,9 +44,9 @@ class HashMap:
         self.size -= 1
 
         if prev:
-            prev.next = node.next
+            prev.next_node = node.next_node
         else:
-            self._list[index] = node.next
+            self._list[index] = node.next_node
 
         return node.value
 
@@ -51,7 +55,8 @@ class HashMap:
         while node:
             if node.key is key:
                 return node.value
-            node = node.next
+            node = node.next_node
+        raise KeyError(key)
 
     def add(self, key, value):
         index = self.get_index(key)
@@ -61,12 +66,12 @@ class HashMap:
             if node.key is key:
                 node.value = value
                 return
-            node = node.next
+            node = node.next_node
 
         self.size += 1
         node = self._list[index]
         new_node = HashNode(key, value)
-        new_node.next = node
+        new_node.next_node = node
         self._list[index] = new_node
 
         if self.size / self.capacity >= self.load_capacity:
@@ -77,31 +82,49 @@ class HashMap:
             for i in temp:
                 while i:
                     self.add(i.key, i.value)
-                    i = i.next
+                    i = i.next_node
 
     def keys(self):
-        keys = []
+        result = []
         for n in self._list:
             while n:
-                keys.append(n.key)
-                n = n.next
-        return keys
+                result.append(n.key)
+                n = n.next_node
+        return result
 
     def values(self):
-        values = []
+        result = []
         for n in self._list:
             while n:
-                values.append(n.value)
-                n = n.next
-        return values
+                result.append(n.value)
+                n = n.next_node
+        return result
 
     def items(self):
-        items = []
+        result = []
         for n in self._list:
             while n:
-                items.append((n.key, n.value))
-                n = n.next
-        return items
+                result.append((n.key, n.value))
+                n = n.next_node
+        return result
+
+    def __getitem__(self, key):
+        return self.get(key)
+
+    def __setitem__(self, key, value):
+        return self.add(key, value)
+
+    def __delitem__(self, key):
+        return self.remove(key)
+
+    def __iter__(self):
+        for n in self._list:
+            while n:
+                yield n
+                n = n.next_node
+
+    def __repr__(self):
+        return "{" + ", ".join([repr(x) for x in iter(self)]) + "}"
 
 
 import random
@@ -111,6 +134,8 @@ hm = HashMap()
 for _ in range(10):
     n = random.randint(0, 1000)
     hm.add(n, n)
+
+print(hm)
 
 # Test Methods
 print("len(hm):", len(hm))
@@ -125,5 +150,6 @@ for i, n in enumerate(hm._list):
     print(f"List[{i}]:", n)
     while n:
         print(" key:", n.key, "value:", n.value)
-        n = n.next
+        n = n.next_node
 
+print(hm)
