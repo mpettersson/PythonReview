@@ -1,17 +1,58 @@
+"""
+    HASHMAP, HASHTABLE, DICTIONARY, ASSOCIATIVE ARRAY, SYMBOL TABLE
+
+    A hashmap is a data structure that stores key-value pairs, providing an efficient way to retrieve, insert, and
+    delete data. It uses a hash function to compute an index (or hash code) into an array, where the value associated
+    with a key is stored.
+
+    Key Characteristics of a Hashmap
+        - Key-Value Storage: Data is stored in pairs, where each key is unique, and each key maps to a specific value.
+        - Hash Function: A function mapping keys to array indices with the goal of uniform distribution across the array.
+        - Fast Operations: Lookup, Insertion, and Deletion; These operations are, on average, O(1) (constant time),
+          assuming the hash function minimizes collisions.
+        - Handling Collisions: If two keys hash to the same index, collisions occur. There are two common strategies to
+          resolve collisions include:
+            + Chaining: Store multiple key-value pairs at the same index using a linked list or another data structure.
+            + Open Addressing: Probe other indices in the array to find an empty slot.
+
+    Time and Space Complexity:
+                Average         Worst
+        Search: O(1)            O(n)
+        Insert: O(1)            O(n)
+        Delete: O(1)            O(n)
+        Space:  O(n)            O(n)
+
+    Applications:
+        - Caching: Store and retrieve frequently used data.
+        - Counting Frequencies: Count occurrences of elements (e.g., words in a text).
+        - Indexing: Efficiently store and look up data by a unique identifier.
+        - Set Implementation: Hashmaps often serve as the backbone for sets.
+
+    History:
+        The idea of hashing arose independently in different places. In January 1953, Hans Peter Luhn wrote an internal
+        IBM memorandum that used hashing with chaining. The first example of open addressing was proposed by A. D. Linh,
+        building on Luhn's memorandum.
+
+    References:
+        - en.wikipedia.org/wiki/Hash_table
+"""
+
+
 class HashNode:
     def __init__(self, key, value=None, next_node=None):
+        if next_node is not None and not isinstance(next_node, self.__class__):
+            raise TypeError
         self.key = key
         self.value = value
         self.next_node = next_node
 
     def __repr__(self):
-        return f"{self.key}: {self.value}"
+        return f"{self.key!r}: {self.value!r}"
 
 
 class HashMap:
     def __init__(self, init_capacity=10, load_capacity=.7):
         self.size = 0
-        print(init_capacity, load_capacity)
         if init_capacity < 1 or load_capacity <= 0 or load_capacity > 1:
             raise ValueError
         self.capacity = init_capacity
@@ -31,7 +72,6 @@ class HashMap:
         index = self.get_index(key)
         node = self._list[index]
         prev = None
-
         while node:
             if node.key is key:
                 break
@@ -42,12 +82,10 @@ class HashMap:
             raise KeyError(key)
 
         self.size -= 1
-
         if prev:
             prev.next_node = node.next_node
         else:
             self._list[index] = node.next_node
-
         return node.value
 
     def get(self, key):
@@ -61,11 +99,10 @@ class HashMap:
     def add(self, key, value):
         index = self.get_index(key)
         node = self._list[index]
-
         while node:
             if node.key is key:
                 node.value = value
-                return
+                return value
             node = node.next_node
 
         self.size += 1
@@ -73,8 +110,7 @@ class HashMap:
         new_node = HashNode(key, value)
         new_node.next_node = node
         self._list[index] = new_node
-
-        if self.size / self.capacity >= self.load_capacity:
+        if self.size / self.capacity > self.load_capacity:
             temp = self._list
             self.capacity = self.capacity * 2
             self.size = 0
@@ -83,6 +119,7 @@ class HashMap:
                 while i:
                     self.add(i.key, i.value)
                     i = i.next_node
+        return value
 
     def keys(self):
         result = []
@@ -127,29 +164,31 @@ class HashMap:
         return "{" + ", ".join([repr(x) for x in iter(self)]) + "}"
 
 
-import random
-
 # Create and Populate with Random Values
-hm = HashMap()
-for _ in range(10):
-    n = random.randint(0, 1000)
+hm = HashMap(10, 1)
+print("hm.add(1, 'a')")
+hm.add(1, 'a')
+print("hm.add('a', 'a')")
+hm.add('a', 'a')
+print(f"Capacity: {hm.capacity} \tSize: {hm.size} \thm:{hm!r}\n")
+
+print("Adding: ", end="")
+for n in range(8):
+    print(f" ({n}:{n})", end="")
     hm.add(n, n)
+print(f"\nCapacity: {hm.capacity} \tSize: {hm.size} \thm:{hm}\n")
 
-print(hm)
+print("hm.add('A', 'A')")
+hm.add('A', 'A')
+print(f"Capacity: {hm.capacity} \tSize: {hm.size} \thm:{hm}\n")
 
-# Test Methods
-print("len(hm):", len(hm))
-print("hm.capacity:", hm.capacity)
+print("hm.add('B', 'B')")
+hm.add('B', 'B')
+print(f"Capacity: {hm.capacity} \tSize: {hm.size} \thm:{hm}\n")
+
 print("hm.keys():", hm.keys())
 print("hm.items():", hm.items())
 print("hm.values():", hm.values())
 print()
-
-# Visually Show List
-for i, n in enumerate(hm._list):
-    print(f"List[{i}]:", n)
-    while n:
-        print(" key:", n.key, "value:", n.value)
-        n = n.next_node
 
 print(hm)
