@@ -11,6 +11,13 @@
 """
 
 
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What time/space complexity are you looking for?
+#   - What about similar items (upper/lower cased strings, etc.)?
+#   - What if there are multiple elements, all with the same (minimum) distance (what should be returned)?
+#   - What is the behavior for invalid k values?
+
+
 # APPROACH: Naive/Brute Force
 #
 # For each element in the list, compare all the following elements to find the nearest duplicate.  Whenever the nearest
@@ -31,7 +38,8 @@ def find_closest_duplicate_in_list_naive(l):
                     dup_start = i
                     dup_end = j
                     break
-        return dup_value, dup_end - dup_start
+        if dup_value is not None:
+            return dup_value, dup_end - dup_start
 
 
 # APPROACH: Dictionary/Hash Map Approach
@@ -56,7 +64,8 @@ def find_closest_duplicate_in_list(l):
                     dup_dist = i - d[w]
                     dup_value = w
                     d[w] = i
-        return dup_value, dup_dist
+        if dup_value is not None:
+            return dup_value, dup_dist
 
 
 
@@ -64,12 +73,13 @@ lists = [['she', 'sells', 'seashells', 'by', 'the', 'seashore', 'the', 'shells',
           'i’m', 'sure', 'so', 'if', 'she', 'sells', 'seashells', 'on', 'the', 'seashore', 'then', 'i’m', 'sure', 'she',
           'sells', 'seashore', 'shells'],
          ['all', 'work', 'and', 'no', 'play', 'makes', 'for', 'no', 'work', 'no', 'fun', 'and', 'no', 'results'],
+         ['all', 'work', 'and', 'no', 'play', 'makes', 'jack', 'a', 'dull', 'boy'],
          [4, 11, 13, 37, 38, 28, 1, 6, 9, 24, 30, 11, 9, 38, 3, 13, 6, 22, 5, 48]]
 fns = [find_closest_duplicate_in_list_naive,
        find_closest_duplicate_in_list]
 
 for l in lists:
-    print(f"l: {l}\n")
+    print(f"l: {l}")
     for fn in fns:
         print(f"{fn.__name__}(l): {fn(l)}")
     print()
