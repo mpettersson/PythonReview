@@ -15,7 +15,7 @@
 #   - What time/space complexity are you looking for?
 #   - What about similar items (upper/lower cased strings, etc.)?
 #   - What if there are multiple elements, all with the same (minimum) distance (what should be returned)?
-#   - What is the behavior for invalid k values?
+#   - What is the behavior for invalid arguments/list?
 
 
 # APPROACH: Naive/Brute Force
