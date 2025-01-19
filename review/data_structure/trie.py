@@ -38,50 +38,116 @@
 #
 # This approach uses nested dictionaries as a trie.  This is a simple, easy to understand implementation, however, for
 # a large (or scalable) trie, it may be space inefficient.
-#
-# SEE: https://stackoverflow.com/questions/11015320/how-to-create-a-trie-in-python#answer-30124562
-#      https://leetcode.com/problems/implement-trie-prefix-tree/discuss/1426130/Python-3-or-simple-trie-using-dictionary
-class NestedDictionariesTrie:
-
-    def __init__(self):
-        """Initialize your data structure here."""
+class NestedDictTrie:
+    def __init__(self, *args):
         self.trie = {}
+        if not all(isinstance(x, str) for x in args):
+            raise TypeError("Trie Args Must Be Strings.")
+        for s in args:
+            self.add_word(s)
 
-    def add(self, word: str) -> None:
-        """Adds a word into the trie."""
-        t = self.trie
-        for ch in word:
-            if ch not in t:
-                t[ch] = {}
-            t = t[ch]
+    def add_word(self, word: str) -> str:
+        if not isinstance(word, str):
+            raise TypeError()
+        n = self.trie
+        for c in word:
+            if c not in n:
+                n[c] = {}
+            n = n[c]
+        n["##"] = "##"
+        return word
 
-        t['#'] = '#'
-
-    def search(self, word: str) -> bool:
-        """Returns True if the word is in the trie False otherwise."""
-        t = self.trie
-        for ch in word:
-            if ch not in t:
-                return False
-            t = t[ch]
-        if '#' in t:
-            return True
-        return False
+    def del_word(self, word:str) -> str:
+        def _rec(i, n):
+            if i == len(word):
+                if "##" in n:
+                    del n["##"]
+                else:
+                    raise TypeError()
+            else:
+                if word[i] in n:
+                    _rec(i+1, n[word[i]])
+                    if len(n[word[i]]) == 0:
+                        del n[word[i]]
+                else:
+                    raise TypeError()
+        if not isinstance(word, str):
+            raise TypeError()
+        n = self.trie
+        _rec(0, n)
+        return word
 
     def has_prefix(self, prefix: str) -> bool:
-        """Returns True if there is any word in the trie that starts with the given prefix."""
-        t = self.trie
-        for ch in prefix:
-            if ch not in t:
+        if not isinstance(prefix, str):
+            raise TypeError()
+        n = self.trie
+        for c in prefix:
+            if c not in n:
                 return False
-            t = t[ch]
+            n = n[c]
         return True
 
+    def has_word(self, word="") -> bool:
+        if not isinstance(word, str):
+            raise TypeError()
+        n = self.trie
+        for c in word:
+            if c not in n:
+                return False
+            n = n[c]
+        return "##" in n
 
-obj = NestedDictionariesTrie()
-obj.add("python")
-param_2 = obj.search("python")
-param_3 = obj.startsWith("py")
+    def get_prefixed_words(self, prefix="") -> list:
+        def _rec(n, acc):
+            if "##" in n:
+                result.append("".join(acc))
+            for e in n:
+                if isinstance(e, str) and len(e) == 1:
+                    acc.append(e)
+                    _rec(n[e], acc)
+                    acc.pop()
+        if not isinstance(prefix, str):
+            raise TypeError()
+        n = self.trie
+        acc = []
+        for c in prefix:
+            if c not in n:
+                raise TypeError()
+            n = n[c]
+            acc.append(c)
+        result = []
+        _rec(n, acc)
+        return result
+
+    def get_all_words(self) -> list:
+        return self.get_prefixed_words()
+
+print("\nAPPROACH: Via Nested Dictionaries")
+
+arg_list = ("dad", "dads", "daddy", "daddies", "baba")
+my_trie = NestedDictTrie(*arg_list)
+
+print("my_trie.get_all_words(): ", my_trie.get_all_words())
+print("my_trie.get_prefixed_words(\"da\"): ", my_trie.get_prefixed_words("da"))
+print(my_trie.trie)
+
+add_list = ("d", "dan", "dang")
+for word in add_list:
+    print("my_trie.add_word(" + word + "): ", my_trie.add_word(word))
+print(my_trie.get_all_words())
+print(my_trie.trie)
+
+del_list = ("daddy", "d", "daddies")
+for word in del_list:
+    print("my_trie.del_word(" + word + "): ", my_trie.del_word(word))
+print(my_trie.get_all_words())
+print(my_trie.trie)
+
+print("my_trie.has_word(\"dad\"): ", my_trie.has_word("dad"))
+print("my_trie.has_word(\"pad\"): ", my_trie.has_word("pad"))
+print("my_trie.has_prefix(\"d\"): ", my_trie.has_prefix("dad"))
+print("my_trie.has_prefix(\"a\"): ", my_trie.has_prefix("pad"))
+print()
 
 
 # APPROACH: Via Trie Node Object
@@ -134,7 +200,7 @@ def find_prefix(root, prefix: str):
             return False, 0                 # Return False anyway when we did not find a char.
     return True, node.counter               # Found the prefix: return True and number of words the prefix has.
 
-
+print("\nAPPROACH: Via Trie Node Object")
 root = TrieNode('*')
 add(root, "hackathon")
 add(root, 'hack')
