@@ -10,13 +10,17 @@
     Stable:             No      (the default alg changes the relative order of elements with equal keys)
     Online:             No      (can sort a list as it receives it)
 
-    Pick a random element (convention uses last), then swap the elements such that all of the elements smaller than
-    it comes before, and everything larger comes after. Recursively do this on the "smaller" and "larger" elements.
+    Pick a random element (convention uses last), then swap the elements such that all the elements smaller than it
+    comes before, and everything larger comes after. Recursively do this on the "smaller" and "larger" elements.
 """
 
 
-# Hoare Partition Approach (rewritten to use while, not do while)
-# SEE https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme
+# APPROACH: Hoare Partition
+#
+# NOTE: This partition's approach has fewer swaps than Lomuto's, however, this approach requires data structures with
+#       bi-directionality (i.e., singly linked lists wouldn't work).
+#
+# SEE: https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme
 def quick_sort_hoare(l):
 
     def _quick_sort_hoare(l, left, right):
@@ -30,7 +34,7 @@ def quick_sort_hoare(l):
         while True:
             while l[left] < pivot_val:
                 left += 1
-            while l[right] > pivot_val:
+            while pivot_val < l[right]:
                 right -= 1
             if left >= right:
                 return right
@@ -40,10 +44,15 @@ def quick_sort_hoare(l):
 
     if l is not None and len(l) > 1:
         _quick_sort_hoare(l, 0, len(l) - 1)
+        return l
 
 
-# Lomuto Partition Approach
-# SEE https://en.wikipedia.org/wiki/Quicksort#Lomuto_partition_scheme
+# APPROACH: Lomuto Partition
+#
+# NOTE: This partition's approach will involve more swaps than Hoare's, however, this can be used with singly linked
+#       list or any other forward-only data structures.
+#
+# SEE: https://en.wikipedia.org/wiki/Quicksort#Lomuto_partition_scheme
 def quick_sort_lomuto(l):
 
     def _quick_sort(l, left, right):
@@ -53,23 +62,43 @@ def quick_sort_lomuto(l):
             _quick_sort(l, p + 1, right)
 
     def _lomuto_partition(l, left, right):
+        nonlocal count
         pivot_val = l[right]
-        i = left
-        for j in range(left, right):
-            if l[j] < pivot_val:
-                l[i], l[j] = l[j], l[i]
-                i += 1
-        l[i], l[right] = l[right], l[i]
-        return i
+        p = left
+        for i in range(left, right):
+            if l[i] < pivot_val:
+                l[p], l[i] = l[i], l[p]
+                p += 1
+                count += 1
+        l[p], l[right] = l[right], l[p]
+        return p
 
     if l is not None and len(l) > 1:
+        count = 0
         _quick_sort(l, 0, len(l) - 1)
+        print("Count was: ", count)
+        return l
 
 
-l = [44, 77, 59, 39, 41, 69, 72, 72, 41, 37, 11, 72, 16, 22, 33]
+lists = [[4, 65, 2, -31, 0, 99, 83, 782, 1],
+         [44, 77, 59, 39, 41, 69, 72, 72, 41, 37, 11, 72, 16, 22, 33],
+         [170, 45, 2, 75, 90, 802, 24, 2, 66, 0, -1],
+         [170, 45, -1, -1, 2, 75, 90, 802, 24, 2, 66, 0, -1, 0, 0, 170, 45, 2, 75, 90, 802, 0, 0, 24, 2, 66, 0, -1],
+         [44, 77, 59, 39, 41, 69, 68, 10, 72, 99, 72, 11, 41, 37, 11, 72, 16, 22, 10, 100],
+         [44, 77, 59, 39, 41, 69, 68, 10, 72, 99, 72, 11, 41, 37, 11, 72, 16, 22, 10, 33],
+         [],
+         [10, -28, -75, -95, -29, -28, 27, 92, -59, 80, 45, 49, -62, 21, -79, 75, 99, 52, -28, 41],
+         [44, 77, 59, 39, 41, 69, 72, 72, 41, 37, 11, 72, 16, 22, 33],
+         [0],
+         [0, 0],
+         [1, 0, -1]]
+fns = [quick_sort_hoare,
+       quick_sort_lomuto]
 
-(lambda y: (print(f"quick_sort_hoare({y}):  ", end=""), quick_sort_hoare(y), print(y, "\n")))((lambda x: x[:])(l))
-
-(lambda y: (print(f"quick_sort_lomuto({y}): ", end=""), quick_sort_lomuto(y), print(y, "\n")))((lambda x: x[:])(l))
+for l in lists:
+    print(f"l: {l}")
+    for fn in fns:
+        print(f"{fn.__name__}(l): {fn(l[:])}")
+    print()
 
 
