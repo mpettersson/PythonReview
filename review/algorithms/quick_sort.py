@@ -62,21 +62,17 @@ def quick_sort_lomuto(l):
             _quick_sort(l, p + 1, right)
 
     def _lomuto_partition(l, left, right):
-        nonlocal count
         pivot_val = l[right]
         p = left
         for i in range(left, right):
             if l[i] < pivot_val:
                 l[p], l[i] = l[i], l[p]
                 p += 1
-                count += 1
         l[p], l[right] = l[right], l[p]
         return p
 
     if l is not None and len(l) > 1:
-        count = 0
         _quick_sort(l, 0, len(l) - 1)
-        print("Count was: ", count)
         return l
 
 
