@@ -23,11 +23,11 @@
 # SEE: https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme
 def quick_sort_hoare(l):
 
-    def _quick_sort_hoare(l, left, right):
+    def _rec(l, left, right):
         if left < right:
             p = _hoare_partition(l, left, right)
-            _quick_sort_hoare(l, left, p)
-            _quick_sort_hoare(l, p + 1, right)
+            _rec(l, left, p)
+            _rec(l, p + 1, right)
 
     def _hoare_partition(l, left, right):
         pivot_val = l[(left + right) // 2]
@@ -42,8 +42,8 @@ def quick_sort_hoare(l):
             left += 1
             right -= 1
 
-    if l is not None and len(l) > 1:
-        _quick_sort_hoare(l, 0, len(l) - 1)
+    if l is not None and isinstance(l, list):
+        _rec(l, 0, len(l) - 1)
         return l
 
 
@@ -55,11 +55,11 @@ def quick_sort_hoare(l):
 # SEE: https://en.wikipedia.org/wiki/Quicksort#Lomuto_partition_scheme
 def quick_sort_lomuto(l):
 
-    def _quick_sort(l, left, right):
+    def _rec(l, left, right):
         if left < right:
             p = _lomuto_partition(l, left, right)
-            _quick_sort(l, left, p - 1)
-            _quick_sort(l, p + 1, right)
+            _rec(l, left, p - 1)
+            _rec(l, p + 1, right)
 
     def _lomuto_partition(l, left, right):
         pivot_val = l[right]
@@ -71,8 +71,8 @@ def quick_sort_lomuto(l):
         l[p], l[right] = l[right], l[p]
         return p
 
-    if l is not None and len(l) > 1:
-        _quick_sort(l, 0, len(l) - 1)
+    if l is not None and isinstance(l, list):
+        _rec(l, 0, len(l) - 1)
         return l
 
 
@@ -85,10 +85,13 @@ lists = [[4, 65, 2, -31, 0, 99, 83, 782, 1],
          [],
          [10, -28, -75, -95, -29, -28, 27, 92, -59, 80, 45, 49, -62, 21, -79, 75, 99, 52, -28, 41],
          [44, 77, 59, 39, 41, 69, 72, 72, 41, 37, 11, 72, 16, 22, 33],
+         [-1],
          [0],
+         [1],
          [0, 0],
          [1, 0, -1]]
-fns = [quick_sort_hoare,
+fns = [sorted,
+       quick_sort_hoare,
        quick_sort_lomuto]
 
 for l in lists:

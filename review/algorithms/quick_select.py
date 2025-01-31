@@ -11,41 +11,53 @@
     Online:             No      (can search a list as it receives it)
 
     Select the kth smallest element in an unordered list; pick a random element (convention uses last), then swap the
-    elements such that all of the elements smaller than it comes before, and everything larger comes after.
+    elements such that all the elements smaller than it comes before, and everything larger comes after.
     Recursively do this on the part with k (the only bit where Quick Select differs from Quick Sort).
 """
 
 
+# APPROACH: Quick Select With Lomuto Partition
 def quick_select(l, k):
 
-    def _quick_select(l, k, lo, hi):
-        pivot_idx = _partition(l, lo, hi)
-        if pivot_idx - lo is k - 1:
-            return l[pivot_idx]
-        if pivot_idx - lo > k - 1:
-            return _quick_select(l, k, lo, pivot_idx - 1)
-        return _quick_select(l, k - pivot_idx + lo - 1, pivot_idx + 1, hi)
+    def _rec(l, k, left, right):
+        p = _partition(l, left, right)
+        if p - left is k - 1:
+            return l[p]
+        if p - left > k - 1:
+            return _rec(l, k, left, p - 1)
+        return _rec(l, k + left - p - 1, p + 1, right)
 
-    def _partition(l, lo, hi):                  # Same as _lomuto_partition() in quick_sort.py
-        pivot_val = l[hi]
-        i = lo
-        for j in range(lo, hi):
-            if l[j] <= pivot_val:
-                l[i], l[j] = l[j], l[i]
-                i += 1
-        l[i], l[hi] = l[hi], l[i]
-        return i
+    def _partition(l, left, right):                  # Same as _lomuto_partition() in quick_sort.py
+        pivot_val = l[right]
+        p = left
+        for i in range(left, right):
+            if l[i] < pivot_val:
+                l[p], l[i] = l[i], l[p]
+                p += 1
+        l[p], l[right] = l[right], l[p]
+        return p
 
-    if l is not None and k is not None and 0 < k <= len(l):
-        return _quick_select(l, k, 0, len(l) - 1)
+    if l is not None and isinstance(l, list) and k is not None and 0 < k <= len(l):
+        return _rec(l, k, 0, len(l) - 1)
 
 
-l = [44, 77, 59, 39, 41, 69, 68, 10, 72, 33, 99, 72, 11, -1, 41, 37, 11, 72, 16, 22, 10, 33]
-k_vals = [-9, -1, 1, 6, 9, 20, 22, None]
+# For comparison's sake.
+def sort_and_select(l, k):
+    if l is not None and isinstance(l, list) and k is not None and 0 < k <= len(l):
+        return sorted(l)[k-1]
 
-print(f"l: {l}\n")
 
+l = [44, 77, 59, 39, 41, 3, 2, 69, 68, 10, 72, 33, 99, 72, 11, -1, 41, 37, 11, 3, 2, 72, 16, 1, 22, 10, 33]
+k_vals = [-9, -1, 1, 2, 3, 4, 5, 6, 9, 20, 22, None] + list(range(1, len(l)+1))
+fns = [quick_select,
+       sort_and_select]
+
+print(f"l: {l}")
+print(f"sorted(l): {sorted(l)}\n")
 for k in k_vals:
-    print(f"quick_select(l, {k}): {quick_select(l[:], k)}")
+    print(f"l: {l}")
+    for fn in fns:
+        print(f"{fn.__name__}(l, {k}): {fn(l[:], k)}")
+    print()
 
 
