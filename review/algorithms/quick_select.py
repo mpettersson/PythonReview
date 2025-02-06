@@ -28,13 +28,6 @@ def quick_select_hoare(l, k):
             return _rec(l, k, left, p)
         return _rec(l, k, p + 1, right)
 
-        # The following doesn't work correctly, still trying to figure out why...
-        # if p - left == k - 1:
-        #     return l[p]
-        # if p - left > k - 1:
-        #     return _rec(l, k, left, p)
-        # return _rec(l, k - (p - left + 1), p + 1, right)
-
     def _hoare_partition(l, left, right):
         pivot_val = l[(left + right) // 2]
         while True:
@@ -57,11 +50,11 @@ def quick_select_lomuto(l, k):
 
     def _rec(l, k, left, right):
         p = _lomuto_partition(l, left, right)
-        if p - left == k - 1:
+        if p == k:
             return l[p]
-        if p - left > k - 1:
+        if k < p:
             return _rec(l, k, left, p - 1)
-        return _rec(l, k + left - p - 1, p + 1, right)
+        return _rec(l, k, p + 1, right)
 
     def _lomuto_partition(l, left, right):          # Same as _lomuto_partition() in quick_sort.py
         pivot_val = l[right]
@@ -74,7 +67,7 @@ def quick_select_lomuto(l, k):
         return p
 
     if l is not None and isinstance(l, list) and k is not None and 0 < k <= len(l):
-        return _rec(l, k, 0, len(l) - 1)
+        return _rec(l, k-1, 0, len(l) - 1)
 
 
 # For comparison's sake.
@@ -83,8 +76,8 @@ def sort_and_select(l, k):
         return sorted(l)[k-1]
 
 
-l = [44, 77, 59, 39, 41, 3, 2, 69, 68, 10, 72, 33, 99, 72, 11, -1, 41, 37, 11, 3, 2, 72, 16, 1, 22, 10, 33]
-k_vals = [-9, -1, 1, 2, 3, 4, 5, 6, 9, 20, 22, None] + list(range(1, len(l)+1))
+l = [44, 77, 59, 39, 41, 3, 2, 69, -1, -3, 68, 10, 72, 33, 99, 72, 11, -1, 41, 37, 11, 3, 2, 72, 16, 1, 22, 10, 33]
+k_vals = list(range(1, len(l)+1)) + [-1, 0, len(l)+2, None]
 fns = [quick_select_hoare,
        quick_select_lomuto,
        sort_and_select]

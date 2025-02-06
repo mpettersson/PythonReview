@@ -65,7 +65,7 @@ def quick_sort_lomuto(l):
         pivot_val = l[right]
         p = left
         for i in range(left, right):
-            if l[i] < pivot_val:
+            if l[i] <= pivot_val:
                 l[p], l[i] = l[i], l[p]
                 p += 1
         l[p], l[right] = l[right], l[p]
