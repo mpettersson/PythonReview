@@ -1,5 +1,5 @@
 """
-    BINARY WATCH TIME
+    BINARY WATCH TIME  (leetcode.com/problems/binary-watch)
 
     Write a function which takes an integer n that represents the total number of LEDs lit on a binary watch and returns
     all possible times.
@@ -7,30 +7,32 @@
     The binary watch has 4 LEDs on the top representing hours (0-11), and the 6 LEDs on the bottom representing minutes
     (0-59), where LED represents a zero or one, with the least significant bit on the right.
 
-    For example, 4:51 would be
-        H: ◻◼◻◻◻
+    For example, given the binary watch (where ◼ represents an illuminated led and ◻ is not illuminated):
+        H: ◻◼◻◻
         M: ◼◼◻◻◼◼
+    The time would be 4:51.
 
     Example:
-        Input =
-        Output =
+        Input = 1
+        Output = ["0:01","0:02","0:04","0:08","0:16","0:32","1:00","2:00","4:00","8:00"]
 """
 import itertools
+import time
 
 
 # Questions you should ask the interviewer (if not explicitly stated):
 #   - What time/space complexity are you looking for?
-#   - What should be output if... TODO
 #   - Input Validation?
+#   - What about AM/PM?
 
 
-# APPROACH: Brute Force!
+# APPROACH: Brute Force/Lookup Table
 #
-# This is not what they want... But it's funny...
+# This is not the solution that the interviewer wants; regardless of being whimsical, and very quick...
 #
 # Time Complexity: O(1).
-# Space Complexity: O(1).
-def binary_watch_time_via_bf(n):
+# Space Complexity: O(1), there are a finite number of valid time combinations (the most is 190 if 5 LEDs are lit).
+def binary_watch_time_via_lookup_table(n):
     if isinstance(n, int) and 0 <= n <= 10:
         d = {0: ['0:00'],
              1: ['0:01', '0:02', '0:04', '0:08', '0:16', '0:32', '1:00', '2:00', '4:00', '8:00'],
@@ -46,21 +48,23 @@ def binary_watch_time_via_bf(n):
         return d[n]
 
 
-# APPROACH:
+# APPROACH:  Brute Force
 #
-# Just iterate over all possible hour and minute times, if their '1' bits equal the number of LEDs (n), then add that
-# time to the results list.
+# This approach does things a bit backwards; it generates all possible hour and minute times, then checks if the number
+# of leds used to represent the generated time is equal to the specified number of illuminated leds.  If they are equal
+# then the time is added to a result list.
 #
 # Time Complexity: O(1), there will always be is 12 * 59 (or a constant number of) iterations.
 # Space Complexity: O(1), there are a finite number of valid time combinations (the most is 190 if 5 LEDs are lit).
-def binary_watch_time(n):
+def binary_watch_time_via_bf(n):
     if isinstance(n, int) and 0 <= n <= 10:
         return ['%d:%02d' % (h, m) for h in range(12) for m in range(60) if (bin(h) + bin(m)).count('1') == n]
 
 
-# APPROACH: TODO
+# APPROACH: Via Itertools Combinations
 #
-# TODO
+# This uses the itertools combinations method to generate all possible led combinations, then uses a lookup table to
+# sum the values of the illuminated leds using a look-up table of the leds values.
 #
 # Time Complexity: O(1).
 # Space Complexity: O(1).
@@ -76,42 +80,74 @@ def binary_watch_time_via_combinations(n):
         return result
 
 
-# APPROACH: TODO
+# APPROACH: Via DFS Recursion/Backtracking and Bit Shifting
 #
-# TODO
+# This is a DFS recursive, or backtracking, solution that uses bit shifting to sum the hour and minute totals.
 #
 # Time Complexity: O(1).
 # Space Complexity: O(1).
-def binary_watch_time_via_dfs(n):
+def binary_watch_time_via_rec_bit_shift(n):
 
-    def _dfs(n, hours, mins, idx):
-        if hours >= 12 or mins > 59:
-            return
-        if not n:
-            result.append("{}:{:02}".format(hours, mins))
-            return
-        for i in range(idx, 10):
-            if i < 4:
-                _dfs(n - 1, hours | (1 << i), mins, i + 1)
+    def _rec(n, i, h, m):
+        if h < 12 and m < 60:
+            if n == 0:
+                result.append("{}:{:02}".format(h, m))
             else:
-                k = i - 4
-                _dfs(n - 1, hours, mins | (1 << k), i + 1)
+                for j in range(i, 10):
+                    if j < 4:
+                        _rec(n-1, j+1, h|(1<<j), m)
+                    else:
+                        _rec(n-1, j+1, h, m|(1<<(j-4)))
 
     if isinstance(n, int) and 0 <= n <= 10:
         result = []
-        _dfs(n, 0, 0, 0)
+        _rec(n, 0, 0, 0)
+        return result
+
+
+# APPROACH: Via DFS Recursion/Backtracking
+#
+# This is a DFS recursive, or backtracking, solution that uses powers of two to sum the hour and minute totals.
+#
+# Time Complexity: O(1).
+# Space Complexity: O(1).
+def binary_watch_time_via_rec(n):
+
+    def _rec(n, i, h, m):
+        if h < 12 and m < 60:
+            if n == 0:
+                result.append(f"{h}:{m:{0}{2}}")
+            else:
+                for j in range(i, 10):
+                    if j < 6:
+                        _rec(n-1, j+1, h, m+(2**j))
+                    else:
+                        _rec(n-1, j+1, h+(2**(j-6)), m)
+
+    if n is not None and isinstance(n, int) and 0 <= n <= 10:
+        result = []
+        _rec(n, 0, 0, 0)
         return result
 
 
 args = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, None]
-fns = [binary_watch_time_via_bf,
-       binary_watch_time,
+fns = [binary_watch_time_via_lookup_table,
+       binary_watch_time_via_bf,
        binary_watch_time_via_combinations,
-       binary_watch_time_via_dfs]
+       binary_watch_time_via_rec_bit_shift,
+       binary_watch_time_via_rec]
 
 for n in args:
     for fn in fns:
         print(f"{fn.__name__}({n}): {fn(n)}")
     print()
+
+
+n = 5   # n = 5 has the longest result list.
+for fn in fns:
+    print(f"{fn.__name__}() took ", end='')
+    t = time.time()
+    fn(n)
+    print(f"{time.time() - t} seconds.")
 
 
