@@ -300,7 +300,7 @@ fill = 0
 
 print(f"{n:^5}")                                    # Align center with ^
 print(f"{n:<5}")                                    # Align left with <
-print(f"{n:>5}")                                    # Align right with <
+print(f"{n:>5}")                                    # Align right with >
 print(f"{value:{fill}{width}.{precision}}")         # Works on
 print(f"{value:.2f}")                               # Prints to second decimal place.
 print(f"{big_value:,.2f}")                          # Prints to second decimal place, with comma separated thousands.
@@ -531,6 +531,54 @@ default_none_dict = defaultdict(lambda: None)
 default_int_dict[6] += 1                        # Until this line, there was no key 6 in default_int_dict, now it's = 1.
 default_list_dict['any_key_here'].append(4)     # This works, even though a key named 'any_key_here' wasn't added!
 print(default_none_dict[3])                     # This will print 'None'.
+
+
+# ORDEREDDICT
+# Additionally, collections.OrderedDict is a dict subclass with methods specialized for rearranging dictionary order.
+# Notable OrderedDict METHODS include:
+#   .popitem(last=True)             - This remove and return a (k, v) pair from the dictionary in LIFO order if last is
+#                                     true or FIFO order if false.
+#   .move_to_end(key, last=True)    - Move an existing element to the end (or beginning if last is false).
+# Other features of OrderedDict include:
+#   - Intent Signaling: Using OrderedDict very clearly indicates/shows that the order of items in the dict is important.
+#   - Equality Tests: OrderedDict makes comparing dictionaries easier.
+#   - Backward Compatibility: Regular dicts before Python 3.6 DID NOT preserve order.
+#
+# NOTE: OrderedDict has become less important now that the built-in dict class gained the ability to remember insertion
+#       order (this new behavior became guaranteed in Python 3.7).
+#       OrderedDict is also very useful in specialized LRU implementations (e.g., TimeBoundedLRU or MultiHitLRU).
+#
+# To use it, first import it:
+from collections import OrderedDict
+
+# Create an empty OrderedDict then and add key-value pairs:
+ordered_dict = OrderedDict()
+ordered_dict['a'] = 1
+ordered_dict['b'] = 2
+ordered_dict['c'] = 3
+
+# Create a populated OrderedDict from an existing dict:
+ordered_dict_from_dict = OrderedDict({'a': 1, 'c': 3, 'b': 2})
+
+# Create a populated OrderedDict from a list of tuples:
+ordered_dict_from_tup_list = OrderedDict([('a', 1), ('c', 3), ('b', 2)])
+
+# CAN do equality comparisons with OrderedDict:
+print("ordered_dict == ordered_dict_from_dict: ", ordered_dict == ordered_dict_from_dict)
+print("ordered_dict == ordered_dict_from_tup_list: ", ordered_dict == ordered_dict_from_tup_list)
+print("ordered_dict_from_dict == ordered_dict_from_tup_list: ", ordered_dict_from_dict == ordered_dict_from_tup_list)
+
+# Move an existing key to the end:
+ordered_dict.move_to_end('b')
+
+# Move an existing key to the beginning:
+ordered_dict.move_to_end('b', last=False)
+
+# Pop the last added, or most recent, item:
+ordered_dict.popitem()
+
+# Pop the first added, or oldest, item:
+ordered_dict.popitem(last=False)
 
 
 ########
@@ -1037,9 +1085,9 @@ complex_string_to_sort = "Sorting1234"  # == 'ginortS1324' if sorted by the rule
 print(*sorted(complex_string_to_sort, key=lambda c: (-ord(c) >> 5, c in '02468', c)), sep='')
 print(*sorted(complex_string_to_sort, key=lambda c: (c.isdigit() - c.islower(), c in '02468', c)), sep='')
 order = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1357902468'
-print(*sorted(input(), key=order.index), sep='')
+# print(*sorted(input(), key=order.index), sep='')
 import string
-print(*sorted(input(), key=(string.ascii_letters + '1357902468').index), sep='')
+# print(*sorted(input(), key=(string.ascii_letters + '1357902468').index), sep='')
 
 
 #############
@@ -2083,6 +2131,10 @@ import heapq
 min_heap = [5, 4, 3, 2, 1]
 n = 3
 
+# NOTE: If you start with an empty list, and always use heappush/heappop methods, then you don't need to use heapify.
+#       Furthermore, if a heapified list was modified by any non-heapq methods, it must be heapified prior to any heapq
+#       methods.
+
 # How to CREATE min heap from existing list:
 heapq.heapify(min_heap)
 
@@ -2096,7 +2148,6 @@ heapq.heappop(min_heap)
 heapq.heappushpop(min_heap, 8)  # Will return smallest item INCLUDING item pushed (8).
 heapq.heapreplace(min_heap, 9)  # Will return smallest item NOT INCLUDING item pushed (9).
 
-
 # How to return a LIST of the N largest items (largest at index 0) in heap:
 heapq.nlargest(n, min_heap)
 
@@ -2107,12 +2158,26 @@ heapq.nsmallest(n, min_heap)
 print(min_heap[0])
 print(len(min_heap))
 
+# NOTE: Heap elements can be TUPLES, this is helpful for prioritized/ordered tasks; SEE the following example:
+
+# Create an empty min heap for (priority/order, task) tuples:
+min_tuple_heap = []
+
+# Populate with ordered tasks:
+heappush(min_tuple_heap, (5, 'write code'))
+heappush(min_tuple_heap, (7, 'release product'))
+heappush(min_tuple_heap, (1, 'write spec'))
+heappush(min_tuple_heap, (3, 'create tests'))
+
+# Pop the min ordered task:
+heappop(min_tuple_heap) # (1, 'write spec') is popped.
+
 
 # MAX HEAPS
-# NOTE: To use max heaps with heapq, you either need to use the underscore methods OR you can negate the values before
-# pushing and after popping...
 
-# NOTE: If you start with an empty list, and always use heap push/pop ops, then you don't need to use heapify.
+# NOTE: To use heapq for MAX heaps there are two options:
+#           (1) Use the underscore methods (see below).
+#           (2) Negate the values before pushing and after popping.
 
 max_heap = [0, 1, 2, 3, 4]
 
