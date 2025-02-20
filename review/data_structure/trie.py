@@ -38,89 +38,116 @@
 #
 # This approach uses nested dictionaries as a trie.  This is a simple, easy to understand implementation, however, for
 # a large (or scalable) trie, it may be space inefficient.
-class NestedDictTrie:
-    def __init__(self, *args):
-        self.trie = {}
-        if not all(isinstance(x, str) for x in args):
-            raise TypeError("Trie Args Must Be Strings.")
-        for s in args:
-            self.add_word(s)
 
-    def add_word(self, word: str) -> str:
-        if not isinstance(word, str):
-            raise TypeError()
-        n = self.trie
+
+class NestedDictTrie:
+    def __init__(self, *args, word_flag="##"):
+        if all(isinstance(arg, str) for arg in args) and word_flag is not None and isinstance(word_flag, str) and len(word_flag) > 1:
+            self._root = {}
+            self._size = 0
+            self._word_flag = word_flag
+            for arg in args:
+                self.add_word(arg)
+            return
+        raise TypeError
+
+    def add_word(self, word):
+        if word is None or not isinstance(word, str):
+            raise TypeError
+        n = self._root
         for c in word:
             if c not in n:
                 n[c] = {}
             n = n[c]
-        n["##"] = "##"
+        if self._word_flag not in n:
+            self._size += 1
+            n[self._word_flag] = self._word_flag
         return word
 
-    def del_word(self, word:str) -> str:
-        def _rec(i, n):
-            if i == len(word):
-                if "##" in n:
-                    del n["##"]
-                else:
-                    raise TypeError()
-            else:
-                if word[i] in n:
-                    _rec(i+1, n[word[i]])
-                    if len(n[word[i]]) == 0:
-                        del n[word[i]]
-                else:
-                    raise TypeError()
-        if not isinstance(word, str):
-            raise TypeError()
-        n = self.trie
-        _rec(0, n)
-        return word
-
-    def has_prefix(self, prefix: str) -> bool:
-        if not isinstance(prefix, str):
-            raise TypeError()
-        n = self.trie
-        for c in prefix:
-            if c not in n:
-                return False
-            n = n[c]
-        return True
-
-    def has_word(self, word="") -> bool:
-        if not isinstance(word, str):
-            raise TypeError()
-        n = self.trie
+    def has_word(self, word):
+        if word is None or not isinstance(word, str):
+            raise TypeError
+        n = self._root
         for c in word:
             if c not in n:
                 return False
             n = n[c]
-        return "##" in n
+        return self._word_flag in n
 
-    def get_prefixed_words(self, prefix="") -> list:
-        def _rec(n, acc):
-            if "##" in n:
-                result.append("".join(acc))
-            for e in n:
-                if isinstance(e, str) and len(e) == 1:
-                    acc.append(e)
-                    _rec(n[e], acc)
-                    acc.pop()
-        if not isinstance(prefix, str):
-            raise TypeError()
-        n = self.trie
-        acc = []
+    def has_prefix(self, prefix):
+        if prefix is None or not isinstance(prefix, str):
+            raise TypeError
+        n = self._root
         for c in prefix:
             if c not in n:
-                raise TypeError()
-            n = n[c]
-            acc.append(c)
+                return False
+        return True
+
+    def __len__(self):
+        return self._size
+
+    def is_empty(self):
+        return self._size == 0
+
+    def get_prefixed_words(self, prefix):
+        def _rec(n, acc):
+            for k in n:
+                if k is self._word_flag:
+                    result.append("".join(acc))
+                elif len(k) == 1:
+                    _rec(n[k], acc + [k])
+        if prefix is None or not isinstance(prefix, str):
+            raise TypeError
         result = []
-        _rec(n, acc)
+        n = self._root
+        for c in prefix:
+            if c not in n:
+                return result
+            n = n[c]
+        _rec(n, list(prefix))
         return result
 
-    def get_all_words(self) -> list:
-        return self.get_prefixed_words()
+    def get_all_words(self):
+        return self.get_prefixed_words("")
+
+    def remove_word(self, word):
+        def _rec(i, n):
+            if i == len(word):
+                if self._word_flag not in n:
+                    raise KeyError(word)
+                else:
+                    del n[self._word_flag]
+            else:
+                _rec(i+1, n[word[i]])
+                if len(n[word[i]]) == 0:
+                    del n[word[i]]
+        if word is None or not isinstance(word, str):
+            raise TypeError
+        n = self._root
+        _rec(0, n)
+        return word
+
+    def prune_prefix(self, prefix):
+        def _rec(i, n):
+            if i == len(prefix)-1:
+                if prefix[i] not in n:
+                    raise KeyError(prefix)
+                else:
+                    del n[prefix[i]]
+            else:
+                if prefix[i] not in n:
+                    raise KeyError(prefix)
+                _rec(i+1, n[prefix[i]])
+        if prefix is None or not isinstance(prefix, str):
+            raise TypeError
+        n = self._root
+        _rec(0, n)
+        return prefix
+
+    def __repr__(self):
+        return f"{self._root!r}"
+
+
 
 print("\nAPPROACH: Via Nested Dictionaries")
 
@@ -129,19 +156,19 @@ my_trie = NestedDictTrie(*arg_list)
 
 print("my_trie.get_all_words(): ", my_trie.get_all_words())
 print("my_trie.get_prefixed_words(\"da\"): ", my_trie.get_prefixed_words("da"))
-print(my_trie.trie)
+print(my_trie)
 
 add_list = ("d", "dan", "dang")
 for word in add_list:
     print("my_trie.add_word(" + word + "): ", my_trie.add_word(word))
 print(my_trie.get_all_words())
-print(my_trie.trie)
+print(my_trie)
 
 del_list = ("daddy", "d", "daddies")
 for word in del_list:
-    print("my_trie.del_word(" + word + "): ", my_trie.del_word(word))
+    print("my_trie.remove_word(" + word + "): ", my_trie.remove_word(word))
 print(my_trie.get_all_words())
-print(my_trie.trie)
+print(my_trie)
 
 print("my_trie.has_word(\"dad\"): ", my_trie.has_word("dad"))
 print("my_trie.has_word(\"pad\"): ", my_trie.has_word("pad"))
