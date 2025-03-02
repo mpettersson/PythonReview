@@ -54,7 +54,7 @@ class HashMap:
     def __init__(self, init_capacity=10, load_capacity=.7):
         self.size = 0
         if init_capacity < 1 or load_capacity <= 0 or load_capacity > 1:
-            raise ValueError
+            raise TypeError
         self.capacity = init_capacity
         self.load_capacity = load_capacity
         self._list = [None] * self.capacity
@@ -74,19 +74,15 @@ class HashMap:
         prev = None
         while node:
             if node.key is key:
-                break
+                self.size -= 1
+                if prev:
+                    prev.next_node = node.next_node
+                else:
+                    self._list[index] = node.next_node
+                return node.value
             prev = node
             node = node.next_node
-
-        if not node:
-            raise KeyError(key)
-
-        self.size -= 1
-        if prev:
-            prev.next_node = node.next_node
-        else:
-            self._list[index] = node.next_node
-        return node.value
+        raise KeyError(key)
 
     def get(self, key):
         node = self._list[self.get_index(key)]
@@ -104,12 +100,8 @@ class HashMap:
                 node.value = value
                 return value
             node = node.next_node
-
         self.size += 1
-        node = self._list[index]
-        new_node = HashNode(key, value)
-        new_node.next_node = node
-        self._list[index] = new_node
+        self._list[index] = HashNode(key, value, self._list[index])
         if self.size / self.capacity > self.load_capacity:
             temp = self._list
             self.capacity = self.capacity * 2
@@ -154,6 +146,15 @@ class HashMap:
     def __delitem__(self, key):
         return self.remove(key)
 
+    def __contains__(self, key):
+        index = self.get_index(key)
+        n = self._list[index]
+        while n:
+            if n.key is key:
+                return True
+            n = n.next_node
+        return False
+
     def __iter__(self):
         for n in self._list:
             while n:
@@ -165,9 +166,14 @@ class HashMap:
 
 
 # Create and Populate with Random Values
+print("hm = HashMap(10, 1)\n")
 hm = HashMap(10, 1)
+
+print(f"1 in hm: {1 in hm}")
 print("hm.add(1, 'a')")
 hm.add(1, 'a')
+print(f"1 in hm: {1 in hm}\n")
+
 print("hm.add('a', 'a')")
 hm.add('a', 'a')
 print(f"Capacity: {hm.capacity} \tSize: {hm.size} \thm:{hm!r}\n")
