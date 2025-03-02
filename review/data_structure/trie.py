@@ -1,10 +1,6 @@
 """
     TRIE (AKA PREFIX TREE, AKA DIGITAL TREE)
 
-    TODO:
-        - Add more functionality (only add and basic searches are available now).
-        - Add and improve the examples.
-
     A trie is a type of SEARCH TREE, a tree data structure used for locating specific keys from within a set. These keys
     are most often strings, with links between nodes defined not by the entire key, but by individual characters. In
     order to access a key (to recover its value, change it, or remove it), the trie is traversed depth-first, following
@@ -38,8 +34,6 @@
 #
 # This approach uses nested dictionaries as a trie.  This is a simple, easy to understand implementation, however, for
 # a large (or scalable) trie, it may be space inefficient.
-
-
 class NestedDictTrie:
     def __init__(self, *args, word_flag="##"):
         if all(isinstance(arg, str) for arg in args) and word_flag is not None and isinstance(word_flag, str) and len(word_flag) > 1:
@@ -112,11 +106,10 @@ class NestedDictTrie:
 
     def remove_word(self, word):
         def _rec(i, n):
+            if (i == len(word) and self._word_flag not in n) or (i < len(word) and word[i] not in n):
+                raise KeyError(word)
             if i == len(word):
-                if self._word_flag not in n:
-                    raise KeyError(word)
-                else:
-                    del n[self._word_flag]
+                del n[self._word_flag]
             else:
                 _rec(i+1, n[word[i]])
                 if len(n[word[i]]) == 0:
@@ -148,33 +141,61 @@ class NestedDictTrie:
         return f"{self._root!r}"
 
 
+print("\n---------------------------------")
+print("APPROACH: Via Nested Dictionaries")
+print("---------------------------------")
 
-print("\nAPPROACH: Via Nested Dictionaries")
+arg_list = ("dad", "dads", "daddy", "daddies", "baba", "do")
+nested_dict_trie = NestedDictTrie(*arg_list)
+print(f"arg_list: {arg_list}")
+print(f"nested_dict_trie = NestedDictTrie(*arg_list)\n")
 
-arg_list = ("dad", "dads", "daddy", "daddies", "baba")
-my_trie = NestedDictTrie(*arg_list)
+print(f"len(nested_dict_trie): {len(nested_dict_trie)}\n")
+print(f"nested_dict_trie.is_empty(): {nested_dict_trie.is_empty()}\n")
 
-print("my_trie.get_all_words(): ", my_trie.get_all_words())
-print("my_trie.get_prefixed_words(\"da\"): ", my_trie.get_prefixed_words("da"))
-print(my_trie)
+print("nested_dict_trie.remove_word('do'): ", end='')
+print(f"{nested_dict_trie.remove_word('do')}\n")
+
+try:
+    print("nested_dict_trie.remove_word('doe'): ", end='')
+    print(f"{nested_dict_trie.remove_word('doe')}\n")
+except KeyError as e:
+    print(f"KEYERROR--Correctly caught KeyError for nested_dict_trie.remove_word('doe'): {e}--KEYERROR\n")
+
+print("nested_dict_trie.get_all_words(): ", nested_dict_trie.get_all_words())
+print("nested_dict_trie.get_prefixed_words(\"da\"): ", nested_dict_trie.get_prefixed_words("da"))
+print(f"nested_dict_trie: {nested_dict_trie}\n")
 
 add_list = ("d", "dan", "dang")
 for word in add_list:
-    print("my_trie.add_word(" + word + "): ", my_trie.add_word(word))
-print(my_trie.get_all_words())
-print(my_trie)
+    print("nested_dict_trie.add_word('" + word + "'): ", nested_dict_trie.add_word(word))
+print("nested_dict_trie.get_all_words(): ", nested_dict_trie.get_all_words())
+print(f"nested_dict_trie: {nested_dict_trie}\n")
 
 del_list = ("daddy", "d", "daddies")
 for word in del_list:
-    print("my_trie.remove_word(" + word + "): ", my_trie.remove_word(word))
-print(my_trie.get_all_words())
-print(my_trie)
+    print("nested_dict_trie.remove_word(" + word + "): ", nested_dict_trie.remove_word(word))
+print("nested_dict_trie.get_all_words(): ", nested_dict_trie.get_all_words())
+print(f"nested_dict_trie: {nested_dict_trie}\n")
 
-print("my_trie.has_word(\"dad\"): ", my_trie.has_word("dad"))
-print("my_trie.has_word(\"pad\"): ", my_trie.has_word("pad"))
-print("my_trie.has_prefix(\"d\"): ", my_trie.has_prefix("dad"))
-print("my_trie.has_prefix(\"a\"): ", my_trie.has_prefix("pad"))
-print()
+print(f"nested_dict_trie.has_word('dad'): {nested_dict_trie.has_word('dad')}")
+print(f"nested_dict_trie.has_word('pad'): {nested_dict_trie.has_word('pad')}")
+print(f"nested_dict_trie.has_prefix('d'): {nested_dict_trie.has_prefix('dad')}")
+print(f"nested_dict_trie.has_prefix('a'): {nested_dict_trie.has_prefix('pad')}\n")
+
+add_list = ("can", "cat", "cats")
+for word in add_list:
+    print("nested_dict_trie.add_word('" + word + "'): ", nested_dict_trie.add_word(word))
+
+print("\nnested_dict_trie.get_all_words(): ", nested_dict_trie.get_all_words())
+print(f"nested_dict_trie.prune_prefix('da'): {nested_dict_trie.prune_prefix('da')}")
+print("nested_dict_trie.get_all_words(): ", nested_dict_trie.get_all_words())
+try:
+    print(f"nested_dict_trie.prune_prefix('dd'): ", end='')
+    print(f"{nested_dict_trie.prune_prefix('dd')}\n")
+except KeyError as e:
+    print(f"KEYERROR--Correctly caught KeyError for nested_dict_trie.prune_prefix('dd'): {e}--KEYERROR")
+print(f"nested_dict_trie.get_all_words(): {nested_dict_trie.get_all_words()}\n")
 
 
 # APPROACH: Via Trie Node Object
@@ -227,15 +248,21 @@ def find_prefix(root, prefix: str):
             return False, 0                 # Return False anyway when we did not find a char.
     return True, node.counter               # Found the prefix: return True and number of words the prefix has.
 
-print("\nAPPROACH: Via Trie Node Object")
-root = TrieNode('*')
-add(root, "hackathon")
-add(root, 'hack')
 
-print(find_prefix(root, 'hac'))
-print(find_prefix(root, 'hack'))
-print(find_prefix(root, 'hackathon'))
-print(find_prefix(root, 'ha'))
-print(find_prefix(root, 'hammer'))
+print("\n------------------------------")
+print("APPROACH: Via Trie Node Object")
+print("------------------------------")
+
+trienode = TrieNode('*')
+print(f"\ntrienode = TrieNode('*')\n")
+
+word_list = ['hackathon', 'hack']
+for word in word_list:
+    print(f"add(trienode, '{word}'): {add(trienode, word)}")
+print()
+
+word_list = ['hac', 'hack', 'hackathon', 'ha', 'hammer']
+for word in word_list:
+    print(f"find_prefix(trienode, '{word}'): {find_prefix(trienode, word)}")
 
 
