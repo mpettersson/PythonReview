@@ -51,13 +51,17 @@ class HashNode:
 
 
 class HashMap:
-    def __init__(self, init_capacity=10, load_capacity=.7):
+    def __init__(self, *args, init_capacity=10, load_capacity=.7):
         self.size = 0
-        if init_capacity < 1 or load_capacity <= 0 or load_capacity > 1:
+        if ((len(args) == 1 and not all((isinstance(x, tuple) and len(x) == 2) for x in args[0])) or len(args) > 1
+                or init_capacity < 1 or load_capacity <= 0 or load_capacity > 1):
             raise TypeError
         self.capacity = init_capacity
         self.load_capacity = load_capacity
         self._list = [None] * self.capacity
+        if len(args) == 1:
+            for k, v in args[0]:
+                self.add(k, v)
 
     def __len__(self):
         return self.size
@@ -165,9 +169,17 @@ class HashMap:
         return "{" + ", ".join([repr(x) for x in iter(self)]) + "}"
 
 
-# Create and Populate with Random Values
-print("hm = HashMap(10, 1)\n")
-hm = HashMap(10, 1)
+print("hm = HashMap()")
+hm = HashMap()
+print(f"hm: {hm},  hm.size: {hm.size},  hm.capacity: {hm.capacity}, hm.load_capacity: {hm.load_capacity}\n")
+
+print("hm = HashMap([(1, 1), (2, 2), ('three', 'three')])")
+hm = HashMap([(1, 1), (2, 2), ('three', 'three')])
+print(f"hm: {hm},  hm.size: {hm.size},  hm.capacity: {hm.capacity}, hm.load_capacity: {hm.load_capacity}\n")
+
+print("hm = HashMap(init_capacity=8, load_capacity=1)")
+hm = HashMap(init_capacity=8, load_capacity=1)
+print(f"hm: {hm},  hm.size: {hm.size},  hm.capacity: {hm.capacity}, hm.load_capacity: {hm.load_capacity}\n")
 
 print(f"1 in hm: {1 in hm}")
 print("hm.add(1, 'a')")
@@ -176,25 +188,26 @@ print(f"1 in hm: {1 in hm}\n")
 
 print("hm.add('a', 'a')")
 hm.add('a', 'a')
-print(f"Capacity: {hm.capacity} \tSize: {hm.size} \thm:{hm!r}\n")
+print(f"hm: {hm},  hm.size: {hm.size},  hm.capacity: {hm.capacity}, hm.load_capacity: {hm.load_capacity}\n")
 
 print("Adding: ", end="")
-for n in range(8):
+for n in range(6):
     print(f" ({n}:{n})", end="")
     hm.add(n, n)
-print(f"\nCapacity: {hm.capacity} \tSize: {hm.size} \thm:{hm}\n")
+print(f"\nhm: {hm},  hm.size: {hm.size},  hm.capacity: {hm.capacity}, hm.load_capacity: {hm.load_capacity}\n")
 
 print("hm.add('A', 'A')")
 hm.add('A', 'A')
-print(f"Capacity: {hm.capacity} \tSize: {hm.size} \thm:{hm}\n")
+print(f"hm: {hm},  hm.size: {hm.size},  hm.capacity: {hm.capacity}, hm.load_capacity: {hm.load_capacity}\n")
 
 print("hm.add('B', 'B')")
 hm.add('B', 'B')
-print(f"Capacity: {hm.capacity} \tSize: {hm.size} \thm:{hm}\n")
+print(f"hm: {hm},  hm.size: {hm.size},  hm.capacity: {hm.capacity}, hm.load_capacity: {hm.load_capacity}\n")
 
 print("hm.keys():", hm.keys())
 print("hm.items():", hm.items())
 print("hm.values():", hm.values())
-print()
 
-print(hm)
+print(f"\nhm: {hm},  hm.size: {hm.size},  hm.capacity: {hm.capacity}, hm.load_capacity: {hm.load_capacity}\n")
+
+
