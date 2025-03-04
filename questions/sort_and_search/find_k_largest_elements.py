@@ -15,6 +15,7 @@
         SEE: find_kth_largest_element.py, find_kth_smallest_element.py, and find_k_smallest_elements.py
 """
 import heapq
+import time
 
 
 # APPROACH: Naive/Brute Force Via Sorting
@@ -51,93 +52,68 @@ def find_k_largest_elements_via_min_heap(l, k):
         return heap
 
 
-# APPROACH: Quick Select
+# APPROACH: Via Quick Select
 #
-# NOTE: The return list is not sorted (this is quick select, not quick sort).
-#
-# Using a pivot value (convention is last value), swap the elements such that all of the elements smaller than the pivot
-# value comes before, and everything larger comes after. Recursively repeat this on the the partition that holds k,
-# until k is reached.
+# This approach is simply a modified version of quick select, with Lomuto partition, algorithm.
 #
 # Average Time Complexity: O(n), where n is the number of elements in the list.
 # Worst Time Complexity: O(n**2), where n is the number of elements in the list.
 # Space Complexity: O(log(n)), where n is the number of elements in the list (because of the recursion stack).
 #
 # NOTE: Quick select (and this solution) is (usually) an in-place algorithm.
+# NOTE: The return list is not truly sorted (this is quick select, not quick sort).
 def find_k_largest_elements_via_quick_select(l, k):
 
-    def _find_k_largest_elements_via_quick_select(l, k, lo, hi):
-        pivot_idx = _partition(l, lo, hi)
-        if pivot_idx - lo is k - 1:
-            return l[pivot_idx]
-        if pivot_idx - lo > k - 1:
-            return _find_k_largest_elements_via_quick_select(l, k, lo, pivot_idx - 1)
-        return _find_k_largest_elements_via_quick_select(l, k - pivot_idx + lo - 1, pivot_idx + 1, hi)
+    def _rec(l, k, left, right):
+        p = _partition(l, left, right)          # Pivot Index
+        if k == p:
+            return p
+        if k < p:
+            return _rec(l, k, left, p-1)
+        return _rec(l, k, p+1, right)
 
-    def _partition(l, lo, hi):
-        pivot_val = l[hi]
-        i = lo
-        for j in range(lo, hi):
-            if l[j] > pivot_val:                                        # DIFFERENT THAN QUICK SELECT
-                l[i], l[j] = l[j], l[i]
-                i += 1
-        l[i], l[hi] = l[hi], l[i]
-        return i
-
-    if l is not None and k is not None and 0 < k <= len(l):
-        _find_k_largest_elements_via_quick_select(l, k, 0, len(l) - 1)  # DIFFERENT THAN QUICK SELECT
-        return l[:k]                                                    # DIFFERENT THAN QUICK SELECT
-
-
-# NOTE: Alternatively, k could be modified to reflect the largest, then use the 'normal' select search/partition algs.
-def find_k_largest_elements_via_quick_select_alt(l, k):
-
-    def _find_k_largest_elements_via_quick_select_alt(l, k, lo, hi):
-        pivot_idx = _partition(l, lo, hi)
-        if pivot_idx - lo is k - 1:
-            return l[pivot_idx]
-        if pivot_idx - lo > k - 1:
-            return _find_k_largest_elements_via_quick_select_alt(l, k, lo, pivot_idx - 1)
-        return _find_k_largest_elements_via_quick_select_alt(l, k - pivot_idx + lo - 1, pivot_idx + 1, hi)
-
-    def _partition(l, lo, hi):
-        pivot_val = l[hi]
-        i = lo
-        for j in range(lo, hi):
-            if l[j] <= pivot_val:
-                l[i], l[j] = l[j], l[i]
-                i += 1
-        l[i], l[hi] = l[hi], l[i]
-        return i
+    def _partition(l, left, right):
+        pivot_val = l[right]
+        p = left
+        for i in range(left, right):
+            if l[i] <= pivot_val:
+                l[p], l[i] = l[i], l[p]
+                p += 1
+        l[p], l[right] = l[right], l[p]
+        return p
 
     if l is not None and k is not None and 0 < k <= len(l):
-        k = len(l) - (k - 1)                                                # DIFFERENT THAN QUICK SELECT
-        _find_k_largest_elements_via_quick_select_alt(l, k, 0, len(l) - 1)  # DIFFERENT THAN QUICK SELECT
-        return l[k-1:]                                                      # DIFFERENT THAN QUICK SELECT
+        k = len(l) - (k-1)                      # Convert to Kth smallest.
+        p = _rec(l, k-1, 0, len(l)-1)       # Don't forget to -1 for the index.
+        return l[p:]                            # Return the values.
 
 
-lists = [[3, 6, 0, 1, 5, 9, 2, 8, 7, 4],
-         [420, 857, 223, 744, 637, 14, 128, 882, 28, 431, 32, 894, 332, 780, 394, 789, 830, 564, 592, 252, 485, 363,
-          385, 69, 903, 26, 666, 99, 806, 986, 126, 596, 56, 992, 102, 193, 466, 923, 173, 127, 719, 640, 543, 853, 487,
-          408, 210, 629, 709, 4, 395, 296, 756, 343, 652, 367, 187, 982, 175, 409, 182, 17, 710, 440, 940, 0, 785, 779,
-          428, 5, 702, 677, 571, 858, 54, 76, 693, 346, 558, 668, 22, 590, 522, 470, 48, 598, 130, 999, 639, 71, 31,
-          444, 206, 840, 294, 927, 234, 19, 311, 609],
-         [468, 54, 689, 342, 992, 540, 534, 49, 389, 624, 794, 941, 805, 83, 935, 714, 738, 36, 130, 34, 10, 953, 374,
-          445, 226, 675, 489, 854, 579, 938, 677, 740, 958, 92, 105, 69, 982, 375, 827, 466, 438, 318, 181, 767, 129,
-          782, 645, 409, 556, 714, 553, 197, 697, 974, 763, 247, 736, 159, 858, 391, 223, 883, 527, 612, 501, 702, 849,
-          837, 679, 395, 807, 982, 195, 69, 548, 746, 767, 158, 874, 620, 605, 551, 133, 73, 672, 405, 466, 90, 874,
-          971, 214, 960, 12, 465, 183, 680, 174, 375, 393, 647]]
-k_vals = [-10, 0, 1, 2, 3, 98, 99, 100, None]
 fns = [find_k_largest_elements_via_sorted,
        find_k_largest_elements_via_min_heap,
-       find_k_largest_elements_via_quick_select,
-       find_k_largest_elements_via_quick_select_alt]
+       find_k_largest_elements_via_quick_select]
+l = [8, -19, 2, 1, -4, 8, -5, 9, 666, 99, 806, 986, 126, 596, 5, 7, 4, 6, -7, 6, 6, -22, 15, 0, 0, 1, 88, -82, 3, -5, 4]
+l_sorted = sorted(l)
+for k in range(len(l) + 2):
+    print(f"l:         {l}")
+    print(f"sorted(l): {l_sorted}")
+    for fn in fns:
+        print(f"{fn.__name__}(l, {k}):", fn(l[:], k))
+    print()
 
-for l in lists:
-    for k in k_vals:
-        print(f"l: {l}")
-        for fn in fns:
-            print(f"{fn.__name__}(l, {k}):", fn(l[:], k))
-        print()
+l = [-19, 54, 805, 0, 181, 126, 982, 69, 938, 551, 438, 88, 0, -647, 195, 645, -982, 666, 223, -405, -341, 740, -548,
+     36, 391, 806, 746, 534, 15, 466, 6, 605, 677, 736, 689, 226, 938, 794, 738, 8, -620, 596, 874, 174, 874, 680, 854,
+     393, 83, 767, 4, 527, 6, 858, 1, -466, -2, -938, 501, 49, 579, 953, 214, 73, 489, 12, -767, 5, 105, 992, 679, 395,
+     -714, 10, 389, 612, 697, 675, -5, 960, 130, 2, -4, -333, 782, 468, -7, 8, 92, -714, -837, 374, 807, 4, -82, -22,
+     197, 986, 465, 958, 69, 9, -5, 941, 974, 540, -215, 556, 7, 99, 405, 1, 129, 827, 158, 672, 445, 702, -849, 3, 375,
+     624, -971, 90, 6, 133, 183, -763, 159, 375, 553, 34]
+l_sorted = sorted(l)
+k = 42
+print(f"l:         {l}")
+print(f"sorted(l): {l_sorted}")
+for fn in fns:
+    t = time.time()
+    print(f"{fn.__name__}(l) took ", end='')
+    fn(l[:], k)
+    print(f"{time.time() - t} seconds.")
 
 
