@@ -23,7 +23,7 @@ import time
 
 # APPROACH: Naive Count & Sort
 #
-# Build a dictionary with the elements as the keys and the frequency as the values, then sort on the values (in
+# Build a dictionary with the elements as the keys and the frequency as the values, then sort on the frequencies (by
 # decreasing order) and return the element associated with the kth frequency.
 #
 # Time Complexity: O(n + (u * log(u))), where n is the size of l and u is the number of unique elements in l.
@@ -43,7 +43,7 @@ def find_kth_most_frequent_element_naive(l, k):
 
 # APPROACH: Naive Count & Sort Minimized
 #
-# Build a dictionary with the elements as the keys and the frequency as the values, then sort on the values (in
+# Build a dictionary with the elements as the keys and the frequency as the values, then sort on the frequencies (by
 # decreasing order) and return the element associated with the kth frequency.
 #
 # Time Complexity: O(n + (u * log(u))), where n is the size of l and u is the number of unique elements in l.
@@ -59,7 +59,7 @@ def find_kth_most_frequent_element_min(l, k):
 # APPROACH: Heapq
 #
 # Build a dictionary with the elements as the keys and the frequency as the values, then use a min heap
-# with size equal to k to find the k largest elements.  Once all of the values in the dictionary have been push (and
+# with size equal to k to find the k largest elements.  Once all the elements in the dictionary have been pushed (and
 # possibly popped) from the min heap, return the key at the top of the stack as the kth most frequent element.
 #
 # Time Complexity: O(n + (u * log(k))), where n is the size of l and u is the number of unique elements in l.
@@ -76,13 +76,13 @@ def find_kth_most_frequent_element_heapq(l, k):
             d = {}
             min_heap = []
             for e in l:
-                d[e] = d.setdefault(e, 0) + 1                               # Find frequencies FIRST.
+                d[e] = d.setdefault(e, 0) + 1                                   # Find frequencies FIRST.
             if k <= len(d):
-                for key, val in d.items():                                  # THEN put in min_heap to prevent duplicate
+                for key, val in d.items():                                      # THEN put in min_heap to prevent dup
                     if len(min_heap) < k:                                       # values with different counts.
-                        heapq.heappush(min_heap, (val, id(key), key))       # SEE note above about id(key).
+                        heapq.heappush(min_heap, (val, id(key), key))      # SEE note above about id(key).
                     elif val > min_heap[0][0]:
-                        heapq.heappushpop(min_heap, (val, id(key), key))    # SEE note above about id(key).
+                        heapq.heappushpop(min_heap, (val, id(key), key))   # SEE note above about id(key).
                 _, _, result = heapq.heappop(min_heap)
                 return result
         raise IndexError("IndexError: invalid k")
@@ -92,7 +92,7 @@ def find_kth_most_frequent_element_heapq(l, k):
 # APPROACH: (FASTEST) Counter & Heapq
 #
 # This is essentially the same approach as the heapq approach above, with the following exceptions:  The Counters object
-# (from collections) is used (as opposed to using a plain dictionary).  The values were returned from heapq via the
+# (from collections) is used (as opposed to using a plain dictionary).  The elements were returned from heapq via the
 # nlargest method (as opposed to constructing a return list via popping items off of the stack).
 #
 # Time Complexity: O(n + (m * log(m))), where n is the size of l and m is the number of distinct elements in l.
@@ -117,23 +117,23 @@ def find_kth_most_frequent_element_counter_heapq(l, k):
 # Space Complexity: O(u), where u is the number of unique elements in l.
 def find_kth_most_frequent_element_quick_select(l, k):
 
-    def _quick_select(lo, hi, l, k):
-        pivot_index = _partition(lo, hi, l)
-        if pivot_index - lo is k - 1:
-            return l[pivot_index]
-        if pivot_index - lo > k - 1:
-            return _quick_select(lo, pivot_index - 1, l, k)
-        return _quick_select(pivot_index + 1, hi, l, k - pivot_index + lo - 1)
+    def _quick_select(l, k, left, right):
+        p = _partition(l, left, right)
+        if k == p:
+            return l[p]
+        if k < p:
+            return _quick_select(l, k, left, p-1)
+        return _quick_select(l, k, p+1, right)
 
-    def _partition(lo, hi, l):
-        pivot_val = l[hi][0]
-        i = lo
-        for j in range(lo, hi):
-            if l[j][0] <= pivot_val:
-                l[i], l[j] = l[j], l[i]
-                i += 1
-        l[hi], l[i] = l[i], l[hi]
-        return i
+    def _partition(l, left, right):
+        pivot_val = l[right][0]
+        p = left
+        for i in range(left, right):
+            if l[i][0] <= pivot_val:
+                l[p], l[i] = l[i], l[p]
+                p += 1
+        l[right], l[p] = l[p], l[right]
+        return p
 
     if isinstance(l, list):
         if isinstance(k, int) and 0 < k:
@@ -143,7 +143,7 @@ def find_kth_most_frequent_element_quick_select(l, k):
             m = [(val, key) for key, val in d.items()]
             if k <= len(m):
                 k = len(m) - (k - 1)
-                return _quick_select(0, len(m)-1, m, k)[1]
+                return _quick_select(m, k-1, 0, len(m) - 1)[1]
         raise IndexError("IndexError: invalid k")
     raise TypeError("TypeError: l must be of type list")
 
@@ -158,12 +158,27 @@ def find_kth_most_frequent_element_quick_select(l, k):
 def find_kth_most_frequent_element_bucket_sort(l, k):
     if isinstance(l, list):
         if isinstance(k, int) and 0 < k:
-            bucket = [[] for _ in range(len(l) + 1)]            # Empty buckets for frequencies 1 ... k.
-            counter = collections.Counter(l)                    # Get a value:frequency count.
+            bucket = [[] for _ in range(len(l) + 1)]            # Empty buckets for frequencies 0...len(l).
+            counter = collections.Counter(l)                    # Get an element:frequency count.
             if k <= len(counter):
-                for num, freq in counter.items():
-                    bucket[freq].append(num)                    # Put each value in its corresponding frequency bucket.
+                for ele, freq in counter.items():
+                    bucket[freq].append(ele)                    # Put each element in its corresponding frequency bucket.
                 return list(itertools.chain(*bucket))[-k]       # Flatten the list (of lists) & return the kth value.
+        raise IndexError("IndexError: invalid k")
+    raise TypeError("TypeError: l must be of type list")
+
+# This is the same as above only using a dict instead of collections.Counter.
+def find_kth_most_frequent_element_bucket_sort_dict(l, k):
+    if isinstance(l, list):
+        if isinstance(k, int) and 0 < k:
+            bucket = [[] for _ in range(len(l) + 1)]            # Empty buckets for frequencies 0...len(l).
+            counter = {}
+            for e in l:                                         # Get an element:frequency count.
+                counter[e] = counter.setdefault(e, 0)+1
+            if k <= len(counter):
+                for ele, freq in counter.items():
+                    bucket[freq].append(ele)                    # Put each element in its corresponding frequency bucket.
+                return[x for b in bucket for x in b][-k]        # Flatten the list (of lists) & return the kth value.
         raise IndexError("IndexError: invalid k")
     raise TypeError("TypeError: l must be of type list")
 
@@ -179,7 +194,8 @@ fns = [find_kth_most_frequent_element_naive,
        find_kth_most_frequent_element_heapq,
        find_kth_most_frequent_element_counter_heapq,
        find_kth_most_frequent_element_quick_select,
-       find_kth_most_frequent_element_bucket_sort]
+       find_kth_most_frequent_element_bucket_sort,
+       find_kth_most_frequent_element_bucket_sort_dict]
 
 for l in lists:
     print(f"\nl: {l!r}\nFrequencies: {str(dict(collections.Counter(l)))[1:-1]}\n")
@@ -192,7 +208,7 @@ for l in lists:
                 print(e)
         print()
 
-l = [random.randrange(-1000, 1001) for _ in range(500)]
+l = [random.randrange(-1000, 1001) for _ in range(1000)]
 k = 10
 print(f"\nl: {l}\nk: {k}\n")
 for fn in fns:
