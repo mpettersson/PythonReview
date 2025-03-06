@@ -1,89 +1,101 @@
 """
-    PAINT FILL (CCI 8.10)
+    PAINT FILL (CCI 8.10,
+                leetcode.com/problems/flood-fill)
 
-    Implement the "paint fill" function that one might see on many image editing programs.  That is, given a screen
-    (represented by two-dimensional list of colors), a point, and a new color, fill in the surrounding area until the
+    Create a 'paint fill', or 'flood-fill', function which accepts a matrix representing the colors of an image, the
+    starting row, the starting column, and a new color, and then fills in the surrounding area until the
     color changes from the original color.
+
+    Example:
+        Input:  [[0, 0, 0, 1], [0, 0, 1, 1]], 0, 0, 1
+        Output: [[1, 1, 1, 1], [1, 1, 1, 1]]
 """
 import copy
 
 
-# DFS/Recursive Approach: Time and space complexity is O(rc) where r is the number of rows in the screen (or matrix m)
-# and c is the number of columns in the screen (or matrix m).
-def paint_fill_dfs(m, row, col, new_color):
-    if m is not None and len(m) > 0 and row is not None and 0 <= row < len(m) and col is not None and 0 <= col < len(m[row]) and new_color is not None:
-        if m[row][col] != new_color:
-            old_color = m[row][col]
-            m[row][col] = new_color
-            for r in range(row - 1, row + 2):
-                if 0 <= r < len(m):
-                    for c in range(col - 1, col + 2):
-                        if 0 <= c < len(m[r]):
-                            if m[r][c] is old_color:
-                                paint_fill_dfs(m, r, c, new_color)
+# Questions you should ask the interviewer (if not explicitly stated):
+#   - What are the time/space complexities are you looking for?
+#   - What are the size limits of the lists?
+#   - How are the colors encoded/represented?
 
 
-# BFS/Iterative Approach: Time complexity is O(rc), where r is the number of rows in the screen (or matrix m) and c is
-# the number of columns in the screen (or matrix m).  Space complexity is O(r+c) (more precisely, it is O(2r+2c),
-# however, this reduces to O(r+c)).
-def paint_fill_bfs(m, row, col, new_color):
-    if m is not None and len(m) > 0 and row is not None and 0 <= row < len(m) and col is not None and 0 <= col < len(m[row]) and new_color is not None:
-        old_color = m[row][col]
-        if old_color is not new_color:
-            q = [(row, col)]
-            while len(q) > 0:
+# APPROACH: DFS/Recursive
+#
+# This approach uses a depth first search to make the color changes.
+#
+# Time Complexity: O(rc), where r and c are the number of rows and columns in the image matrix.
+# Space Complexity: O(rc), where r and c are the number of rows and columns in the image matrix.
+def paint_fill_via_dfs(m, r, c, new_color):
+
+    def _rec(r, c):
+        if m[r][c] == old_color:    # Only continue if this cell needs to be updated.
+            m[r][c] = new_color     # Update cell color.
+            if r-1 >= 0:            # Recurse on the cell to the left (if it exists).
+                _rec(r-1, c)
+            if r+1 < len(m):        # Recurse on the cell to the right (if it exists).
+                _rec(r+1, c)
+            if c-1 >= 0:            # Recurse on the cell above (if it exists).
+                _rec(r, c-1)
+            if c+1 < len(m[0]):     # Recurse on the cell below (if it exists).
+                _rec(r, c+1)
+
+    if isinstance(m, list) and all(isinstance(x, int) for x in [r, c, new_color]) and 0 <= r < len(m) and 0 <= c < len(m[r]):
+        old_color = m[r][c]         # Get the old color.
+        if old_color != new_color:  # Only continue if there is an actual change.
+            _rec(r, c)
+        return m
+
+
+# APPROACH: BFS/Iterative Approach
+#
+# This approach uses a breadth first search to make the color changes.
+#
+# Time Complexity: O(rc), where r and c are the number of rows and columns in the image matrix.
+# Space Complexity: O(rc), where r and c are the number of rows and columns in the image matrix.
+def paint_fill_via_bfs(m, r, c, new_color):
+    if isinstance(m, list) and all(isinstance(x, int) for x in [r, c, new_color]) and 0 <= r < len(m) and 0 <= c < len(m[r]):
+        old_color = m[r][c]
+        if old_color != new_color:
+            q = [(r, c)]
+            while q:
                 r, c = q.pop(0)
-                m[r][c] = new_color
-                for i in range(r-1, r+2):
-                    if 0 <= i < len(m):
-                        for j in range(c-1, c+2):
-                            if 0 <= j < len(m[i]) and m[i][j] is old_color and (i, j) not in q:
-                                q.append((i, j))
+                if m[r][c] == old_color:    # Only continue if this cell needs to be updated.
+                    m[r][c] = new_color     # Update cell color.
+                    if r-1 >= 0:            # Queue the cell to the left (if it exists).
+                        q.append((r-1, c))
+                    if r+1 < len(m):        # Queue the cell to the right (if it exists).
+                        q.append((r+1, c))
+                    if c-1 >= 0:            # Queue the cell above (if it exists).
+                        q.append((r, c-1))
+                    if c+1 < len(m[0]):     # Queue the cell below (if it exists).
+                        q.append((r, c+1))
+        return m
 
 
-def print_screen(m):
-    if not m:
-        print("None")
-    else:
-        print('\n'.join([''.join(['{:8}'.format(item) for item in row if len(row) > 0]) for row in m if len(m) > 0]))
-
-
-screen = [["red", "red", "red", "blue"],
-          ["red", "red", "blue", "blue"],
-          ["red", "red", "red", "blue"],
-          ["red", "red", "red", "blue"],
-          ["yellow", "blue", "blue", "red"]]
-dfs_screen = copy.deepcopy(screen)
-bfs_screen = copy.deepcopy(screen)
-
-print(f"print_screen(dfs_screen):")
-print_screen(dfs_screen)
-
-print(f"\npaint_fill_dfs(dfs_screen, 1, 1, 'green'): {paint_fill_dfs(dfs_screen, 1, 1, 'green')}")
-print_screen(dfs_screen)
-
-print(f"\npaint_fill_dfs(dfs_screen, 4, 3, 'black'): {paint_fill_dfs(dfs_screen, 4, 3, 'black')}")
-print_screen(dfs_screen)
-
-print(f"\npaint_fill_dfs(dfs_screen, 0, 3, 'black'): {paint_fill_dfs(dfs_screen, 0, 3, 'black')}")
-print_screen(dfs_screen)
-
-print(f"\npaint_fill_dfs(dfs_screen, 0, 0, 'blue'): {paint_fill_dfs(dfs_screen, 0, 0, 'blue')}")
-print_screen(dfs_screen)
-
-print(f"\nprint_screen(bfs_screen):")
-print_screen(bfs_screen)
-
-print(f"\npaint_fill_bfs(bfs_screen, 1, 1, 'green'): {paint_fill_bfs(bfs_screen, 1, 1, 'green')}")
-print_screen(bfs_screen)
-
-print(f"\npaint_fill_bfs(bfs_screen, 4, 3, 'black'): {paint_fill_bfs(bfs_screen, 4, 3, 'black')}")
-print_screen(bfs_screen)
-
-print(f"\npaint_fill_bfs(bfs_screen, 0, 3, 'black'): {paint_fill_bfs(bfs_screen, 0, 3, 'black')}")
-print_screen(bfs_screen)
-
-print(f"\npaint_fill_bfs(bfs_screen, 0, 0, 'blue'): {paint_fill_bfs(bfs_screen, 0, 0, 'blue')}")
-print_screen(bfs_screen)
+fns = [paint_fill_via_dfs,
+       paint_fill_via_bfs]
+images = [[[0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0]],
+          [[3, 3, 3, 4],
+           [3, 3, 4, 4],
+           [3, 3, 3, 4],
+           [3, 3, 3, 4],
+           [6, 4, 4, 3]]]
+args = [(0, 0, 0, 1),
+        (0, 4, 4, 1),
+        (0, 2, 2, 1),
+        (1, 1, 1, 5),
+        (1, 4, 3, 0),
+        (1, 0, 3, 0),
+        (1, 0, 0, 4)]
+for m, r, c, new_color in args:
+    m_str = "\n\t".join(["  ".join(map(str, row)) for row in images[m]])
+    print(f"\n\nm:\n\t{m_str}")
+    for fn in fns:
+        result_str = "\t" + "\n\t".join(["  ".join(map(str, row)) for row in fn(copy.deepcopy(images[m]), r, c, new_color)])
+        print(f"{fn.__name__}(m, {r}, {c}, {new_color}):\n{result_str}")
 
 
