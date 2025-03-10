@@ -30,27 +30,20 @@ import copy
 
 # APPROACH: DFS/Recursive
 #
-# This approach first iterates over the board’s edges, running DFS (the _rec function) on any 'O' values to mark the "O"
-# region as safe ("S"). The _rec function achieves this by recursively exploring and marking all connected 'O' cells to
+# This approach first iterates over the board’s edges, running DFS (the _dfs function) on any 'O' values to mark the "O"
+# region as safe ("S"). The _dfs function achieves this by recursively exploring and marking all connected 'O' cells to
 # prevent them from being captured. Finally, the board is scanned again, and any 'O' not marked as safe is replaced with
 # 'X', as it is fully surrounded.
 #
 # Time Complexity: O(rc), where r and c are the number of rows and columns on the board.
 # Space Complexity: O(rc), where r and c are the number of rows and columns on the board.
 def capture_regions_via_dfs(board):
-    def _check(r, c):
-        return 0 <= r < m and 0 <= c < n and board[r][c] == "O"
-
-    def _rec(r, c):
+    def _dfs(r, c):
+        dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         board[r][c] = "S"
-        if _check(r + 1, c):
-            _rec(r + 1, c)
-        if _check(r - 1, c):
-            _rec(r - 1, c)
-        if _check(r, c + 1):
-            _rec(r, c + 1)
-        if _check(r, c - 1):
-            _rec(r, c - 1)
+        for rd, cd in dirs:
+            if 0 <= r + rd < m and 0 <= c + cd < n and board[r + rd][c + cd] == "O":
+                _dfs(r + rd, c + cd)
 
     m = len(board)
     n = len(board[0])
@@ -58,7 +51,7 @@ def capture_regions_via_dfs(board):
         for c in range(n):
             if r == 0 or r == m - 1 or c == 0 or c == n - 1:
                 if board[r][c] == "O":
-                    _rec(r, c)
+                    _dfs(r, c)
     for r in range(m):
         for c in range(n):
             if board[r][c] == "O":
@@ -78,22 +71,15 @@ def capture_regions_via_dfs(board):
 # Time Complexity: O(rc), where r and c are the number of rows and columns on the board.
 # Space Complexity: O(rc), where r and c are the number of rows and columns on the board.
 def capture_regions_via_bfs(board):
-    def _check(r, c):
-        return 0 <= r < m and 0 <= c < n and board[r][c] == "O"
-
     def _bfs(row, col):
+        dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         q = [(row, col)]
         while q:
             (r, c) = q.pop(0)
             board[r][c] = "S"
-            if _check(r+1, c):
-                q.append((r+1, c))
-            if _check(r-1, c):
-                q.append((r-1, c))
-            if _check(r, c+1):
-                q.append((r, c+1))
-            if _check(r, c-1):
-                q.append((r, c-1))
+            for rd, cd in dirs:
+                if 0 <= r + rd < m and 0 <= c + cd < n and board[r + rd][c + cd] == "O":
+                    q.append((r + rd, c + cd))
 
     m = len(board)
     n = len(board[0])
