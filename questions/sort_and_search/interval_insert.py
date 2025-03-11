@@ -1,9 +1,10 @@
 """
-    INTERVAL: MERGE WITH SORTED INTERVALS (EPI 14.5: MERGING INTERVALS)
+    INTERVAL INSERT (EPI 14.5: MERGING INTERVALS,
+                     leetcode.com/problems/insert-interval)
 
     Write a function which takes an interval to be added and a list of disjoint closed intervals with integer endpoints
     (sorted by left endpoint), then computes and returns the union of the intervals in the list and the added interval
-    sorted by left endpoint).
+    (sorted by left endpoint).
 
     Example:
         Input = ([1,8], [[-4, -1], [0, 2], [3, 6], [7, 9], [11, 12], [14, 17]])
@@ -16,7 +17,7 @@
 # Questions you should ask the interviewer (if not explicitly stated):
 #   - What time/space complexity are you looking for?
 #   - What are the possible list lengths (empty)?
-#   - Will each interval be correctly formatted (have a start and and end, start < end)?
+#   - Will each interval be correctly formatted (have a start and end, start < end)?
 #   - Are the interval endpoints open or closed?
 
 
@@ -43,31 +44,30 @@
 #
 # Time Complexity: O(n), where n is the length of the list.
 # Space Complexity: O(r), where r is the length of the result list.
-def merge_with_sorted_intervals(new_interval, intervals_list):
-    if intervals_list is not None and new_interval is not None:
+def insert_interval(new_interval, intervals):
+    if intervals is not None and new_interval is not None:
         result = []
         i = 0
-        while i < len(intervals_list) and intervals_list[i][1] < new_interval[0]:
-            result.append(intervals_list[i])
+        while i < len(intervals) and intervals[i][1] < new_interval[0]:
+            result.append(intervals[i])
             i += 1
-        merged_interval = None
-        while i < len(intervals_list) and intervals_list[i][0] <= new_interval[1]:
-            merged_interval = [min(new_interval[0], intervals_list[i][0]), max(new_interval[1], intervals_list[i][1])]
+        while i < len(intervals) and intervals[i][0] <= new_interval[1]:
+            new_interval = [min(new_interval[0], intervals[i][0]), max(new_interval[1], intervals[i][1])]
             i += 1
-        result.append(merged_interval)
-        result += intervals_list[i:]
+        result.append(new_interval)
+        result += intervals[i:]
         return result
 
 
 args = [([1, 8], [[-4, -1], [0, 2], [3, 6], [7, 9], [11, 12], [14, 17]]),
         ([2, 6], [[1, 3], [8, 10], [15, 18]]),
         ([1, 4], [[4, 5]])]
-fns = [merge_with_sorted_intervals]
+fns = [insert_interval]
 
-for new_interval, interval_list in args:
-    print(f"new_interval: {new_interval}\ninterval_list: {interval_list}")
+for new_interval, intervals in args:
+    print(f"new_interval: {new_interval}\nintervals: {intervals}")
     for fn in fns:
-        print(f"{fn.__name__}(new_interval, intervals_list): {fn(new_interval, interval_list)}")
+        print(f"{fn.__name__}(new_interval, intervals): {fn(new_interval, intervals)}")
     print()
 
 
